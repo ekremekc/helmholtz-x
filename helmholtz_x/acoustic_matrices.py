@@ -44,7 +44,7 @@ class AcousticMatrices:
 
         if self.parameter.name =="temperature":
             self.c = sound_speed_variable_gamma(self.mesh, parameter, degree=degree)
-            self.gamma = gamma_function(self.mesh, self.parameter, degree=degree)
+            self.gamma = gamma_function(self.parameter)
             self.T = self.parameter
             info("/\ Temperature function is used for passive flame matrices.")
         else:

@@ -80,10 +80,10 @@ def sound_speed_variable_gamma(mesh, temperature, degree=1):
     c.name = "soundspeed"
     r_gas = 287.1
     if isinstance(temperature, Function):
-        gamma = gamma_function(mesh,temperature, degree=degree)
+        gamma = gamma_function(temperature)
         c.x.array[:] = np.sqrt(gamma.x.array[:]*r_gas*temperature.x.array[:])
     else:
-        gamma_ = gamma_function(mesh,temperature, degree=degree)
+        gamma_ = gamma_function(temperature)
         c.x.array[:] = np.sqrt(gamma_ * r_gas * temperature)
     c.x.scatter_forward()
     return c

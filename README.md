@@ -8,18 +8,19 @@ The nonlinear eigenvalue problem is solved using [PETSc](https://petsc.org/relea
 
 ### Docker images
 
-To run a Docker image with the latest release of DOLFINx:
+The helmholtz-x runs with the latest release of DOLFINx. And easiest way of getting the latest DOLFINx is docker containers;
 
 ```shell
 docker run -ti dolfinx/dolfinx:stable
 ```
 
-To switch between real and complex builds of DOLFINx/PETSc.
+The code should also utilize complex builds of DOLFINx/PETSc and it can be activated running;
 
 ```shell
 source /usr/local/bin/dolfinx-complex-mode
-source /usr/local/bin/dolfinx-real-mode
 ```
+
+We specifically address thermoacoustic Helmholtz equation in this paper.
 
 ## Thermoacoustic Helmholtz equation
 

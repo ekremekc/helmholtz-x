@@ -25,7 +25,7 @@ boundary_conditions = {}
 
 T = temperature_step(mesh, params_dim.x_f, params_dim.T_u, params_dim.T_d)
 
-matrices = AcousticMatrices(mesh, subdomains, facet_tags, boundary_conditions, T, degree=degree)
+matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, T, degree=degree)
 
 matrices.assemble_A()
 matrices.assemble_B()
@@ -37,7 +37,7 @@ rho = rho(mesh, params_dim.x_f, params_dim.a_f, params_dim.rho_d, params_dim.rho
 w = gaussianFunction(mesh, params_dim.x_r, params_dim.a_r)
 h = gaussianFunction(mesh, params_dim.x_f, params_dim.a_f)
 
-D = ActiveFlameNT(mesh, subdomains, w, h, rho, T, params_dim.eta, params_dim.tau, degree=degree)
+D = ActiveFlameNT(mesh, w, h, rho, T, params_dim.eta, params_dim.tau, degree=degree)
 
 # Introduce solver object and start
 

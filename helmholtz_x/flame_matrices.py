@@ -366,7 +366,7 @@ class ActiveFlameNT:
         if gamma: # This is for constant gamma like in PRF paper (2018, Matthew Juniper)
             self.gamma = gamma 
         else: # This gamma comes from variable cp in LOTAN
-            self.gamma = gamma_function(self.mesh, self.T, degree=degree) 
+            self.gamma = gamma_function(self.T) 
 
         self._a = None
         self._b = None
