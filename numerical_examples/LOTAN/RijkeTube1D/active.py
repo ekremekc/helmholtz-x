@@ -1,5 +1,5 @@
 from helmholtz_x.eigensolvers import fixed_point_iteration_pep
-from helmholtz_x.acoustic_matrices import PassiveFlame
+from helmholtz_x.acoustic_matrices import AcousticMatrices
 from helmholtz_x.flame_matrices import ActiveFlameNT
 from helmholtz_x.eigenvectors import normalize_eigenvector, velocity_eigenvector
 from helmholtz_x.dolfinx_utils import xdmf_writer, OneDimensionalSetup
@@ -19,18 +19,13 @@ mesh, subdomains, facet_tags = OneDimensionalSetup(n_elem)
 
 # Define the boundary conditions
 
-# boundary_conditions = {1: {'Robin': params_dim.R_in},  # inlet
-#                        2: {'Robin': params_dim.R_out}}  # outlet
-# boundary_conditions = {1: {'Dirichlet'},  # inlet
-#                        2: {'Dirichlet'}}  # outlet}
-
 boundary_conditions = {}
 
 # Introduce Passive Flame Matrices
 
 T = temperature_step(mesh, params_dim.x_f, params_dim.T_u, params_dim.T_d)
 
-matrices = PassiveFlame(mesh, subdomains, facet_tags, boundary_conditions, T, degree=degree)
+matrices = AcousticMatrices(mesh, subdomains, facet_tags, boundary_conditions, T, degree=degree)
 
 matrices.assemble_A()
 matrices.assemble_B()
@@ -46,7 +41,7 @@ D = ActiveFlameNT(mesh, subdomains, w, h, rho, T, params_dim.eta, params_dim.tau
 
 # Introduce solver object and start
 
-target = 200 * 2 * np.pi # 150 * 2 * np.pi
+target = 200 * 2 * np.pi
 E = fixed_point_iteration_pep(matrices, D, target, nev=2, i=0, print_results= False)
 
 # Extract eigenvalue and normalized eigenvector 

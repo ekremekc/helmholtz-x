@@ -1,7 +1,6 @@
-from dolfinx.fem import Function, FunctionSpace, Expression, form, locate_dofs_topological
+from dolfinx.fem import Function, FunctionSpace, Expression, form
 from .petsc4py_utils import multiply, vector_matrix_vector, matrix_vector, FixSign
-from .dolfinx_utils import unroll_dofmap
-from ufl import dx, VectorElement, grad, inner, sqrt, FiniteElement
+from ufl import dx, VectorElement, grad, inner, sqrt
 from .solver_utils import info
 from dolfinx.fem.assemble import assemble_scalar
 from slepc4py import SLEPc
@@ -65,14 +64,11 @@ def normalize_eigenvector(mesh, obj, i, absolute=False, degree=1, which='right',
         temp = abs_temp/max_temp
 
     p_normalized = Function(V) # Required for Parallel runs
-    # p_normalized.name = "P"
     p_normalized.vector.setArray(temp)
     p_normalized.x.scatter_forward()
 
     if MPI.COMM_WORLD.rank == 0:
         print(f"Eigenvalue-> {omega:.6f} | Eigenfrequency-> {omega/(2*np.pi):.6f}\n ")
-        # print(f"Frequency -> {omega.real/(2*np.pi):.6f} (1/s) | Growth Rate -> {omega.imag:.6f} (rad/s) \n")
-        # print(f"Frequency -> {omega.real/(2*np.pi):.6f} {omega.imag:.6f} \n")
 
     return omega, p_normalized
 
@@ -108,94 +104,6 @@ def velocity_eigenvector(mesh, p, omega, rho, degree=1, normalize=True, absolute
         velocity_expr = Expression(grad(p), Q.element.interpolation_points())
         v_h.interpolate(velocity_expr)
         v_h.x.array[:] /= (1j*omega*rho)
-
-    if normalize:
-        meas = np.sqrt(mesh.comm.allreduce(assemble_scalar(form(inner(v_h,v_h)*dx)), op=MPI.SUM))
-        v_h.x.array[:] /= meas
-
-    if absolute:
-        
-        if len(v_h)==1:
-            mag = v_h
-        elif len(v_h)==2:
-            mag = sqrt(v_h[0]**2 + v_h[1]**2)
-        elif len(v_h)==3:
-            mag = sqrt(v_h[0]**2 + v_h[1]**2 + v_h[2]**2)
-
-        V = FunctionSpace(mesh,("CG", degree))
-        vs_mag = Function(V)
-        vs_mag_expr = Expression(mag, V.element.interpolation_points())
-        vs_mag.interpolate(vs_mag_expr) 
-        vs_mag.x.array[:] = np.abs(vs_mag.x.array[:])
-        max_mag = mesh.comm.allreduce(np.amax(vs_mag.x.array), op=MPI.MAX) 
-
-        v_h.x.array[:] = np.abs(v_h.x.array[:]) / max_mag    
-
-    v_h.x.scatter_forward()
-    
-    return v_h
-
-def velocity_eigenvector_holes(mesh, subdomains, p, omega, rho, holes, degree=1, normalize=True, absolute=False):
-    """
-    This function calculates velocity eigenfunction using momentum equation for multiple dilution holes;
-        -i \omega u \rho + \nabla p = f -> Eq (2b) in PRF paper
-
-        mesh ([dolfinx.cpp.mesh.Mesh]): mesh of the domain
-        p ([dolfinx.fem.function.Function]): acoustic pressure eigenfunction
-        omega ([complex]): eigenvalue
-        rho ([dolfinx.fem.function.Function]): density field
-        holes ([dictionary]): Dictionary stating the holes with their parameters
-        degree (int, optional): degree of finite elements. Defaults to 1.
-
-    Returns:
-        [<class 'dolfinx.fem.function.Function'>]: normalized eigenfunction such that \int (u * u * dx) = 1
-    
-    """
-    if mesh.topology.dim ==1:
-        Q = FunctionSpace(mesh, ("CG",degree))
-    else:
-        v_cg = VectorElement("CG", mesh.ufl_cell(), degree)
-        Q = FunctionSpace(mesh, v_cg)
-   
-    v_h = Function(Q)
-
-    if isinstance(rho, Function):
-        velocity_expr = Expression(grad(p)/rho, Q.element.interpolation_points())
-        v_h.interpolate(velocity_expr)
-
-        all_array= np.arange(0,len(v_h.x.array),1)
-
-        for hole_number, hole in holes.items():
-
-            cells_holes = subdomains.find(hole['tag'])
-            dofs_holes = locate_dofs_topological(Q, mesh.topology.dim, cells_holes)
-            hole_array = unroll_dofmap(dofs_holes, Q.dofmap.bs)
-            
-            rest_array = [x for x in all_array if x not in hole_array]
-            all_array = rest_array
-
-            v_h.x.array[hole_array] =  v_h.x.array[hole_array] *hole['L']/hole['U']
-
-        v_h.x.array[rest_array] /= (1j*omega)
-
-    else:
-        velocity_expr = Expression(grad(p), Q.element.interpolation_points())
-        v_h.interpolate(velocity_expr)
-
-        all_array= np.arange(0,len(v_h.x.array),1)
-
-        for hole_number, hole in holes.items():
-
-            cells_holes = subdomains.find(hole['tag'])
-            dofs_holes = locate_dofs_topological(Q, mesh.topology.dim, cells_holes)
-            hole_array = unroll_dofmap(dofs_holes, Q.dofmap.bs)
-            
-            v_h.x.array[hole_array] =  v_h.x.array[hole_array] *hole['L']/(rho*hole['U'])
-
-            rest_array = [x for x in all_array if x not in hole_array]
-            all_array = rest_array
-
-        v_h.x.array[rest_array] /= (1j*omega*rho)
 
     if normalize:
         meas = np.sqrt(mesh.comm.allreduce(assemble_scalar(form(inner(v_h,v_h)*dx)), op=MPI.SUM))
@@ -277,5 +185,3 @@ def normalize_adjoint(omega_dir, p_dir, p_adj, matrices, D=None):
         print("! Normalization Check: ", integral)
 
     return p_adj1
-
-

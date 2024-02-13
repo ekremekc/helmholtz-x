@@ -12,19 +12,18 @@ import numpy as np
 
 class AcousticMatrices:
 
-    def __init__(self, mesh, subdomains, facet_tags, boundary_conditions,
+    def __init__(self, mesh, facet_tags, boundary_conditions,
                  parameter, degree=1):
 
         self.mesh = mesh
         self.facet_tags = facet_tags
-        self.subdomains = subdomains
         self.fdim = self.mesh.topology.dim - 1
         self.boundary_conditions = boundary_conditions
         self.parameter = parameter
         self.degree = degree
         self.omega = None
         self.dimension = self.mesh.topology.dim
-        self.dx = Measure('dx', domain=mesh, subdomain_data=subdomains)
+        self.dx = Measure('dx', domain=mesh)
         self.ds = Measure('ds', domain=mesh, subdomain_data=facet_tags)
 
         self.V = FunctionSpace(self.mesh, ("Lagrange", degree))

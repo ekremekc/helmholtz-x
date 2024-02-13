@@ -61,7 +61,7 @@ if __name__ == '__main__':
     plt.xlabel("x")
     plt.ylabel(r"$w$")
     plt.tight_layout()
-    plt.savefig("InputFunctions/w.pdf")
+    plt.savefig("InputFunctions/w.png")
     plt.clf()
     
     h_plot = gaussianFunction(mesh, x_f, a_f)
@@ -87,5 +87,3 @@ if __name__ == '__main__':
     plt.tight_layout()
     plt.savefig("InputFunctions/c.png")
     plt.clf()
-    
-    
