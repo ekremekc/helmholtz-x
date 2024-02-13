@@ -19,6 +19,7 @@ To switch between real and complex builds of DOLFINx/PETSc.
 ```shell
 source /usr/local/bin/dolfinx-complex-mode
 source /usr/local/bin/dolfinx-real-mode
+```
 
 ## Thermoacoustic Helmholtz equation
 
