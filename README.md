@@ -1,17 +1,23 @@
 # helmholtz-x
 
-This python library implements the complex number version of Helmholtz solver using finite element method.
+**helmholtz-x** is a python library which solves a non-homogeneous Helmholtz equation using finite element method (FEM).
 
-It is using extensive parallelization with handled preallocations for generation of nonlinear part of the thermoacoustic Helmlholtz equation.
+In helmholtz-x, the nonlinear eigenvalue problem is determined using [PETSc](https://petsc.org/release/overview/), [SLEPc](https://slepc.upv.es/) and [FEniCSx](https://github.com/FEniCS) libraries. 
 
-The nonlinear eigenvalue problem is solved using [PETSc](https://petsc.org/release/overview/), [SLEPc](https://slepc.upv.es/) and [FEniCSx](https://github.com/FEniCS/dolfinx) libraries. You can get packaged installation of those using Docker. 
+## Installation
+
+We advise to install those packages from source in Ubuntu/Linux OS, but there is an another option: *Docker*.  
 
 ### Docker images
-
-The helmholtz-x runs with the latest release of DOLFINx. And easiest way of getting the latest DOLFINx is docker containers;
+You can get packaged installation of dependencies counted above using Docker images. The *helmholtz-x* runs with the v0.7.3 of [DOLFINx](https://github.com/FEniCS/dolfinx). And easiest way of getting the latest DOLFINx is docker containers;
 
 ```shell
-docker run -ti dolfinx/dolfinx:stable
+docker run -ti dolfinx/dolfinx:v0.7.3
+```
+for Bloch boundary condition, user should also use [DOLFINX MPC](https://github.com/jorgensd/dolfinx_mpc);
+
+```shell
+docker run -ti -v $(pwd):/root/shared -w /root/shared ghcr.io/jorgensd/dolfinx_mpc:v0.7.2
 ```
 
 The code should also utilize complex builds of DOLFINx/PETSc/SLEPc and it can be activated running;
@@ -20,7 +26,7 @@ The code should also utilize complex builds of DOLFINx/PETSc/SLEPc and it can be
 source /usr/local/bin/dolfinx-complex-mode
 ```
 
-We specifically address thermoacoustic Helmholtz equation in this paper.
+We specifically address thermoacoustic Helmholtz equation within **helmholtz-x**. In its submodules, **helmholtz-x** exploits extensive parallelization with handled preallocations for the generation of nonlinear part of the thermoacoustic Helmlholtz equation.
 
 ## Thermoacoustic Helmholtz equation
 
