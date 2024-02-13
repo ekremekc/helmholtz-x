@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>
+<Xdmf Version="3.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <Domain>
+    <Grid Name="Grid" GridType="Uniform">
+      <Topology TopologyType="Tetrahedron" NumberOfElements="52442" NodesPerElement="4">
+        <DataItem Dimensions="52442 4" NumberType="Int" Format="HDF">T.h5:/Mesh/Grid/topology</DataItem>
+      </Topology>
+      <Geometry GeometryType="XYZ">
+        <DataItem Dimensions="11968 3" Format="HDF">T.h5:/Mesh/Grid/geometry</DataItem>
+      </Geometry>
+    </Grid>
+    <Grid Name="temperature" GridType="Collection" CollectionType="Temporal">
+      <Grid Name="temperature" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="0" />
+        <Attribute Name="real_temperature" AttributeType="Scalar" Center="Node">
+          <DataItem Dimensions="11968 1" Format="HDF">T.h5:/Function/real_temperature/0</DataItem>
+        </Attribute>
+        <Attribute Name="imag_temperature" AttributeType="Scalar" Center="Node">
+          <DataItem Dimensions="11968 1" Format="HDF">T.h5:/Function/imag_temperature/0</DataItem>
+        </Attribute>
+      </Grid>
+    </Grid>
+  </Domain>
+</Xdmf>

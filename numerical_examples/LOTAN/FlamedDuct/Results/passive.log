@@ -1,0 +1,39 @@
+XDMF Mesh is loaded.
+Number of cells:  55,020
+Number of cores:  1 
+
+/\ Temperature function is used for passive flame matrices.
+- Passive matrices are assembling..
+- Matrix A is assembled.
+- Matrix B is assembled.
+- Matrix C is assembled.
+
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
+
+******************************
+*** SLEPc Solution Results ***
+******************************
+
+Number of iterations of the method: 6
+Solution method: toar
+Number of requested eigenvalues: 10
+Stopping condition: tol=1e-15, maxit=1810
+Number of converged eigenpairs 10
+
+       0.000000,       -0.000000
+       0.000000,      -10.301502
+    1646.792771,      -11.765524
+   -1646.792771,      -11.765524
+    3820.150779,       -4.510362
+   -3820.150779,       -4.510362
+    5850.333668,       -6.741806
+   -5850.333668,       -6.741806
+    7949.915400,       -6.081852
+   -7949.915400,       -6.081852
+
+Eigenvalue-> 1646.792771-11.765524j
+
+Frequency -> 262.095210 (1/s) | Growth Rate -> -11.765524 (rad/s) 
+
+Total Execution Time:  0:00:04.031962
