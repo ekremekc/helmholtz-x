@@ -14,7 +14,7 @@ The helmholtz-x runs with the latest release of DOLFINx. And easiest way of gett
 docker run -ti dolfinx/dolfinx:stable
 ```
 
-The code should also utilize complex builds of DOLFINx/PETSc and it can be activated running;
+The code should also utilize complex builds of DOLFINx/PETSc/SLEPc and it can be activated running;
 
 ```shell
 source /usr/local/bin/dolfinx-complex-mode

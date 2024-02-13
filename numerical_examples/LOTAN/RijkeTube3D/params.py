@@ -1,7 +1,5 @@
 import numpy as np
 
-# ------------------------------------------------------------
-
 r_gas = 287.  # [J/kg/K]
 gamma = 1.4  # [/]
 
@@ -23,9 +21,7 @@ c_d = np.sqrt(gamma*p_amb/rho_d)
 T_u = c_u**2/(gamma*r_gas)
 T_d = c_d**2/(gamma*r_gas)
 
-# Reflection coefficients
-R_in = - 0.975 - 0.05j  # [/] #\abs(Z} e^{\angle(Z) i} 
-R_out = - 0.975 - 0.05j  # [/]
+d_tube = 0.047
 
 # ------------------------------------------------------------
 # Flame transfer function
@@ -47,12 +43,12 @@ a_r = 0.025
 if __name__ == '__main__':
 
     from helmholtz_x.dolfinx_utils import XDMFReader,xdmf_writer
-    from helmholtz_x.parameters_utils import c_step, rho, gaussianFunction
+    from helmholtz_x.parameters_utils import c_step, rho_step, gaussianFunction
 
-    rijke3d = XDMFReader("MeshDir/rijke")
+    rijke3d = XDMFReader("MeshDir/mesh")
     mesh, subdomains, facet_tags = rijke3d.getAll()
 
-    rho_func = rho(mesh, x_f, a_f, rho_d, rho_u)
+    rho_func = rho_step(mesh, x_f, a_f, rho_d, rho_u)
     w_func = gaussianFunction(mesh, x_r, a_r)
     h_func = gaussianFunction(mesh, x_f, a_f)
     

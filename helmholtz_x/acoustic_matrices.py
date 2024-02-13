@@ -54,6 +54,8 @@ class AcousticMatrices:
             info("\/ Speed of sound function is used for passive flame matrices.")
 
         for i in boundary_conditions:
+            if 'Neumann' in boundary_conditions[i]:
+                info("- Neumann boundaries on boundary "+str(i))
             if 'Dirichlet' in boundary_conditions[i]:
                 u_bc = Function(self.V)
                 facets = np.array(self.facet_tags.indices[self.facet_tags.values == i])
@@ -78,7 +80,7 @@ class AcousticMatrices:
                 Z = (1+R)/(1-R)
                 integral_C_i = 1j * self.c / Z * inner(self.u, self.v) * self.ds(i)
                 self.integrals_R.append(integral_C_i)
-                info("- Choked inlet boundaries are modelled.")
+                info("- Choked inlet boundary on boundary "+str(i)")
 
             if 'ChokedOutlet' in boundary_conditions[i]:
                 # https://www.oscilos.com/download/OSCILOS_Long_Tech_report.pdf
@@ -91,7 +93,7 @@ class AcousticMatrices:
                 Z = (1+R)/(1-R)
                 integral_C_o = 1j * self.c / Z * inner(self.u, self.v) * self.ds(i)
                 self.integrals_R.append(integral_C_o)
-                info("- Choked outlet boundaries are modelled.")
+                info("- Choked outlet boundary on boundary "+str(i)")
 
         self.a_form_eq = -self.c**2* inner(grad(self.u), grad(self.v))*self.dx
         self.b_form_eq = sum(self.integrals_R)

@@ -99,19 +99,19 @@ def sound_speed(temperature):
     c.x.scatter_forward()
     return c
 
-def density(x, x_f, sigma, rho_d, rho_u):
+def density_step(x, x_f, sigma, rho_d, rho_u):
     return rho_u + (rho_d-rho_u)/2*(1+np.tanh((x-x_f)/(sigma)))
 
-def rho(mesh, x_f, a_f, rho_d, rho_u, degree=1):
+def rho_step(mesh, x_f, a_f, rho_d, rho_u, degree=1):
     V = FunctionSpace(mesh, ("CG", degree))
     rho = Function(V)
     # x = V.tabulate_dof_coordinates()   
     if mesh.geometry.dim == 1 or mesh.geometry.dim == 2:
         x_f = x_f[0]
-        rho.interpolate(lambda x: density(x[0], x_f, a_f, rho_d, rho_u))
+        rho.interpolate(lambda x: density_step(x[0], x_f, a_f, rho_d, rho_u))
     elif mesh.geometry.dim == 3:
         x_f = x_f[2]
-        rho.interpolate(lambda x: density(x[2], x_f, a_f, rho_d, rho_u))
+        rho.interpolate(lambda x: density_step(x[2], x_f, a_f, rho_d, rho_u))
     return rho
 
 def rho_ideal(mesh, temperature, P_amb, R, degree=1):

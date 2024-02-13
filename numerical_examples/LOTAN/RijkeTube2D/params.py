@@ -1,5 +1,4 @@
 import numpy as np
-# ------------------------------------------------------------
 
 r_gas = 287.  # [J/kg/K]
 gamma = 1.4  # [/]
@@ -22,11 +21,6 @@ c_d = np.sqrt(gamma*p_amb/rho_d)
 T_u = c_u**2/(gamma*r_gas)
 T_d = c_d**2/(gamma*r_gas)
 
-# Reflection coefficients
-R_in = - 0.975 - 0.05j  # [/] #\abs(Z} e^{\angle(Z) i} 
-R_out = - 0.975 - 0.05j  # [/]
-
-# ------------------------------------------------------------
 # Flame transfer function
 
 FTF_mag =  0.1  # [/]
@@ -35,7 +29,7 @@ U_bulk = 0.10066660027273297 # [m/s]
 
 eta = FTF_mag * Q_tot / U_bulk
 
-# For 1D dimensional consistency
+# For dimensional consistency
 d_tube = 0.047
 S_c = np.pi * d_tube / 4
 eta /=  S_c
@@ -51,12 +45,12 @@ a_r = 0.025
 if __name__ == '__main__':
 
     from helmholtz_x.dolfinx_utils import XDMFReader,xdmf_writer
-    from helmholtz_x.parameters_utils import c_step, rho, gaussianFunction
+    from helmholtz_x.parameters_utils import c_step, rho_step, gaussianFunction
 
-    RijkeTube2D = XDMFReader("MeshDir/rijke")
+    RijkeTube2D = XDMFReader("MeshDir/mesh")
     mesh, subdomains, facet_tags = RijkeTube2D.getAll()
 
-    rho_func = rho(mesh, x_f, a_f, rho_d, rho_u)
+    rho_func = rho_step(mesh, x_f, a_f, rho_d, rho_u)
     w_func = gaussianFunction(mesh, x_r, a_r)
     h_func = gaussianFunction(mesh, x_f, a_f)
     

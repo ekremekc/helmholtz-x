@@ -1,14 +1,13 @@
 from dolfinx.fem import Function, FunctionSpace, form, locate_dofs_topological
 from dolfinx.fem.assemble import assemble_scalar
-from dolfinx.mesh import meshtags,locate_entities,create_unit_interval, create_unit_square, create_rectangle
-from dolfinx.io import XDMFFile, VTXWriter, VTKFile
+from dolfinx.mesh import meshtags,locate_entities,create_unit_interval, create_unit_square
+from dolfinx.io import XDMFFile, VTKFile
 from .solver_utils import info
 from mpi4py import MPI
-from scipy import interpolate
 import ufl
 import numpy as np
 import meshio
-
+import os
 
 def cyl2cart(rho, phi, zeta):
     # cylindrical to Cartesian
