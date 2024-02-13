@@ -141,6 +141,7 @@ def c_step(mesh, x_f, c_u, c_d):
             c.vector.setValueLocal(i, c_u)
         else:
             c.vector.setValueLocal(i, c_d)
+    c.x.scatter_forward()
     return c
 
 def c_uniform(mesh, sos, degree=1):

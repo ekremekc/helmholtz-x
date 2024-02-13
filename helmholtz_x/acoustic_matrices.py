@@ -80,7 +80,7 @@ class AcousticMatrices:
                 Z = (1+R)/(1-R)
                 integral_C_i = 1j * self.c / Z * inner(self.u, self.v) * self.ds(i)
                 self.integrals_R.append(integral_C_i)
-                info("- Choked inlet boundary on boundary "+str(i)")
+                info("- Choked inlet boundary on boundary "+str(i))
 
             if 'ChokedOutlet' in boundary_conditions[i]:
                 # https://www.oscilos.com/download/OSCILOS_Long_Tech_report.pdf
@@ -93,7 +93,7 @@ class AcousticMatrices:
                 Z = (1+R)/(1-R)
                 integral_C_o = 1j * self.c / Z * inner(self.u, self.v) * self.ds(i)
                 self.integrals_R.append(integral_C_o)
-                info("- Choked outlet boundary on boundary "+str(i)")
+                info("- Choked outlet boundary on boundary "+str(i))
 
         self.a_form_eq = -self.c**2* inner(grad(self.u), grad(self.v))*self.dx
         self.b_form_eq = sum(self.integrals_R)
