@@ -1,0 +1,69 @@
+
+XDMF Mesh - Cell data loaded.
+XDMF Mesh - Facet data loaded.
+Number of cells:  47,672
+Number of cores:  1 
+
+Degree of basis functions:  1 
+
+\/ Speed of sound function is used for passive flame matrices.
+- Neumann boundaries on boundary 1
+- Neumann boundaries on boundary 2
+- Neumann boundaries on boundary 3
+- Neumann boundaries on boundary 4
+- Neumann boundaries on boundary 5
+- Neumann boundaries on boundary 6
+- Neumann boundaries on boundary 7
+- Neumann boundaries on boundary 8
+- Neumann boundaries on boundary 9
+- Neumann boundaries on boundary 10
+- Passive matrices are assembling..
+- Matrix A is assembled.
+- Matrix C is assembled.
+
+(6.05928068588038e-06+0j)
+--> Fixed point iteration started.
+
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
++ Starting eigenvalue is found: +3011.976  +0.000j. 
+-> Iterations are starting.
+ 
+* iter =  1
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
++ omega = +3027.641  +560.721j,  |domega| = 5.61e+02
+
+* iter =  2
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
++ omega = +3168.794  +427.776j,  |domega| = 1.94e+02
+
+* iter =  3
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
++ omega = +3230.174  +457.748j,  |domega| = 6.83e+01
+
+* iter =  4
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
++ omega = +3238.288  +451.852j,  |domega| = 1.00e+01
+
+* iter =  5
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
++ omega = +3238.606  +451.581j,  |domega| = 4.18e-01
+
+* iter =  6
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
++ omega = +3238.606  +451.579j,  |domega| = 2.30e-03
+
+* iter =  7
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
++ omega = +3238.606  +451.579j,  |domega| = 5.06e-07
+
+Eigenvalue-> 3238.605734+451.578684j | Eigenfrequency-> 515.440111+71.870980j
+ 
+Total Execution Time:  0:00:27.990523

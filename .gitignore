@@ -2,7 +2,11 @@
 # https://stackoverflow.com/questions/48072655/django-settings-cpython-36-pyc-not-ignored-by-gitignore
 # this file ignores the files with the extensions below;
 
-**/__pycache__/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
 *.pyc
 *.egg-info/
 *.egg

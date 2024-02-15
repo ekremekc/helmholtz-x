@@ -1,0 +1,37 @@
+
+XDMF Mesh - Cell data loaded.
+XDMF Mesh - Facet data loaded.
+Number of cells:  47,672
+Number of cores:  1 
+
+47672
+Degree of basis functions:  1 
+
+\/ Speed of sound function is used for passive flame matrices.
+- Neumann boundaries on boundary 1
+- Neumann boundaries on boundary 2
+- Neumann boundaries on boundary 3
+- Neumann boundaries on boundary 4
+- Neumann boundaries on boundary 5
+- Neumann boundaries on boundary 6
+- Neumann boundaries on boundary 7
+- Neumann boundaries on boundary 8
+- Neumann boundaries on boundary 9
+- Neumann boundaries on boundary 10
+- Neumann boundaries on boundary 11
+- Passive matrices are assembling..
+- Matrix A is assembled.
+- Matrix C is assembled.
+
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+Eigenvalue-> 2913.667876+0.000000j | Eigenfrequency-> 463.724645+0.000000j
+ 
+Eigenvalue-> 4625.333481+0.000000j | Eigenfrequency-> 736.144687+0.000000j
+ 
+Eigenvalue-> 10971.585406-0.000000j | Eigenfrequency-> 1746.182051-0.000000j
+ 
+Eigenvalues 1 -> 2913.668+0.000j | Eigenfrequencies ->  463.725+0.000j
+Eigenvalues 2 -> 4625.333+0.000j | Eigenfrequencies ->  736.145+0.000j
+Eigenvalues 3 -> 10971.585-0.000j | Eigenfrequencies ->  1746.182-0.000j
+Total Execution Time:  0:00:02.462228

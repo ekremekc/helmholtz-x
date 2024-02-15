@@ -57,4 +57,4 @@ Eigenvalue-> 3250.697492+465.643915j | Eigenfrequency-> 517.364574+74.109531j
 Eigenvalue-> 3250.642234+435.378057j | Eigenfrequency-> 517.355780+69.292570j
  
 Results/Active/eigenvalues.txt  is saved.
-Total Execution Time for Direct Modes:  0:02:02.614945
+Total Execution Time for Direct Modes:  0:02:02.473446
