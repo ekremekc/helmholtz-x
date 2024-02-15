@@ -1,6 +1,5 @@
-from dolfinx.fem  import Function, FunctionSpace, Constant, form, assemble_scalar
+from dolfinx.fem  import FunctionSpace, Constant, form, assemble_scalar
 from dolfinx.fem.petsc import assemble_vector
-from dolfinx.geometry import compute_colliding_cells, BoundingBoxTree, bb_tree, compute_collisions_points
 from ufl import Measure, TestFunction, TrialFunction, inner, as_vector, grad, dx, exp, conj
 from .parameters_utils import gamma_function
 from .solver_utils import info
@@ -8,12 +7,11 @@ from petsc4py import PETSc
 from mpi4py import MPI
 import numpy as np
 import basix
+import dolfinx
 
 class ActiveFlame:
 
-    gamma = 1.4
-
-    def __init__(self, mesh, subdomains, x_r, rho_u, Q, U, FTF, degree=1, bloch_object=None):
+    def __init__(self, mesh, subdomains, x_r, rho_u, Q, U, FTF, degree=1, bloch_object=None, gamma=1.4):
 
         self.mesh = mesh
         self.subdomains = subdomains
@@ -24,11 +22,28 @@ class ActiveFlame:
         self.FTF = FTF
         self.degree = degree
         self.bloch_object = bloch_object
+        self.coeff = (gamma - 1) / rho_u * Q / U
 
-        self.coeff = (self.gamma - 1) / rho_u * Q / U
+        self.V = FunctionSpace(mesh, ("Lagrange", degree))
+        self.dofmaps = self.V.dofmap
+        self.u = TrialFunction(self.V)
+        self.v = TestFunction(self.V)
+        self.dx = Measure("dx", subdomain_data=self.subdomains)
+        self.gdim = self.mesh.geometry.dim
 
-        # __________________________________________________
+        # PETSc matrix utils
+        self.comm = MPI.COMM_WORLD
+        self.rank = self.comm.Get_rank()
+        self.size = self.comm.Get_size()
+        self.global_size = self.V.dofmap.index_map.size_global
+        self.local_size = self.V.dofmap.index_map.size_local
 
+        # Reference cell data required for evaluation of derivative
+        ct = self.mesh.basix_cell()
+        self.coordinate_element = basix.create_element(basix.finite_element.string_to_family(
+                "Lagrange", ct.name), basix.cell.string_to_type(ct.name), 1, basix.LagrangeVariant.equispaced)
+
+        # Utility objects for flame matrix
         self._a = {}
         self._b = {}
         self._D_kj = None
@@ -36,13 +51,7 @@ class ActiveFlame:
         self._D = None
         self._D_adj = None
 
-        # __________________________________________________
-
-        self.V = FunctionSpace(mesh, ("Lagrange", degree))
-
-        self.u = TrialFunction(self.V)
-        self.v = TestFunction(self.V)
-
+        # Starting assembly for the flames
         for fl, x in enumerate(self.x_r):
             self._a[str(fl)] = self._assemble_left_vector(fl)
             self._b[str(fl)] = self._assemble_right_vector(x)
@@ -75,29 +84,23 @@ class ActiveFlame:
             flame tag
         Returns
         -------
-        v : <class 'tuple'>
+        v : <class 'list'>
             includes assembled nonzero elements of a and row indices
         """
 
-        dx = Measure("dx", subdomain_data=self.subdomains)
-
-        phi_k = self.v
-        volume_form = form(Constant(self.mesh, PETSc.ScalarType(1))*dx(fl))
+        volume_form = form(Constant(self.mesh, PETSc.ScalarType(1))*self.dx(fl))
         V_fl = MPI.COMM_WORLD.allreduce(assemble_scalar(volume_form), op=MPI.SUM)
-        b = Function(self.V)
-        b.x.array[:] = 0
-        const = Constant(self.mesh, (PETSc.ScalarType(1/V_fl))) 
-        gradient_form = form(inner(const, phi_k)*dx(fl))
-        a = assemble_vector(b.vector, gradient_form)
-        b.vector.ghostUpdate(addv=PETSc.InsertMode.ADD_VALUES, mode=PETSc.ScatterMode.REVERSE)
-        b.vector.ghostUpdate(addv=PETSc.InsertMode.INSERT, mode=PETSc.ScatterMode.FORWARD)
-        indices1 = np.array(np.flatnonzero(a.array),dtype=np.int32)
-        a = b.x.array
-        dofmaps = self.V.dofmap
-        global_indices = dofmaps.index_map.local_to_global(indices1)
-        a = list(zip(global_indices, a[indices1]))
+        gradient_form = form(inner(1/V_fl, self.v)*self.dx(fl))
 
-        return a
+        left_vector = assemble_vector(gradient_form)
+        left_vector.ghostUpdate(addv=PETSc.InsertMode.ADD_VALUES, mode=PETSc.ScatterMode.REVERSE)
+        left_vector.ghostUpdate(addv=PETSc.InsertMode.INSERT, mode=PETSc.ScatterMode.FORWARD)
+        
+        indices = np.array(np.flatnonzero(left_vector.array),dtype=np.int32)
+        global_indices = self.dofmaps.index_map.local_to_global(indices)
+        packed = list(zip(global_indices, left_vector.array[indices]))
+
+        return packed
 
     def _assemble_right_vector(self, point):
         """
@@ -126,69 +129,45 @@ class ActiveFlame:
         elif tdim == 2:
             v = np.array([[1, 0]]).T
 
-        # Finds the basis function's derivative at point x and returns the relevant dof and derivative as a list
-
-        tree = bb_tree(self.mesh, tdim)
-        cell = compute_collisions_points(tree,point)
-        
-        # Choose one of the cells that contains the point
-
-        if len(cell.array)>0: 
-            cell = [cell.array[0]]
-        else: # For Parallel Runs
-            cell = []
+        _, _, owning_points, cell = dolfinx.cpp.geometry.determine_point_ownership( self.mesh._cpp_object, point, 1e-10)
 
         # Data required for pull back of coordinate
-        gdim = self.mesh.geometry.dim
-        num_local_cells = self.mesh.topology.index_map(tdim).size_local
         num_dofs_x = self.mesh.geometry.dofmap[0].size  # NOTE: Assumes same cell geometry in whole mesh
         t_imap = self.mesh.topology.index_map(tdim)
         num_cells = t_imap.size_local + t_imap.num_ghosts
-        
-        x = self.mesh.geometry.x
         x_dofs = self.mesh.geometry.dofmap.reshape(num_cells, num_dofs_x)
-        cell_geometry = np.zeros((num_dofs_x, gdim), dtype=np.float64)
+        
+        point_ref = np.zeros((len(cell), self.mesh.geometry.dim), dtype=self.mesh.geometry.x.dtype)
 
-        points_ref = np.zeros((1, tdim)) #INTERESTINGLY REQUIRED FOR PARALLEL RUNS
+        right_vector = []
 
-        # Data required for evaluation of derivative
-        ct = self.mesh.basix_cell()
-        element = basix.create_element(basix.finite_element.string_to_family( #INTERESTINGLY REQUIRED FOR PARALLEL RUNS
-        "Lagrange", ct.name), basix.cell.string_to_type(ct.name), self.degree, basix.LagrangeVariant.equispaced)
-        dofmaps = self.V.dofmap
-        coordinate_element = basix.create_element(basix.finite_element.string_to_family(
-                "Lagrange", ct.name), basix.cell.string_to_type(ct.name), 1, basix.LagrangeVariant.equispaced)
-
-        point_ref = None
-        B = []
+        # Only add contribution if cell is owned 
         if len(cell) > 0:
-            # Only add contribution if cell is owned
-            cell = cell[0]
-            
-            if cell < num_local_cells:
-                cell_geometry[:] = x[x_dofs[cell], :gdim]
-                point_ref = self.mesh.geometry.cmaps[0].pull_back([point[:gdim]], cell_geometry)
-                dphi = coordinate_element.tabulate(1, point_ref)[1:,0,:]
-                dphi = dphi.reshape((dphi.shape[0], dphi.shape[1]))
-                J = np.dot(cell_geometry.T, dphi.T)
-                Jinv = np.linalg.inv(J)  
 
-                cell_dofs = dofmaps.cell_dofs(cell)
-                global_dofs = dofmaps.index_map.local_to_global(cell_dofs)
-                d_dx = (Jinv.T @ dphi).T
-                d_dv = np.dot(d_dx, v)[:, 0]
-                for i in range(len(d_dv)):
-                    B.append([global_dofs[i], d_dv[i]])
-                    
-            else:
-                print(MPI.COMM_WORLD.rank, "Ghost", cell) 
-                
-        root = 0 #it was -1
-        if len(B) > 0:
-            root = MPI.COMM_WORLD.rank
-        b_root = MPI.COMM_WORLD.allreduce(root, op=MPI.MAX)
-        B = MPI.COMM_WORLD.bcast(B, root=b_root)
-        return B
+            cell = cell[0]
+            cell_geometry = self.mesh.geometry.x[x_dofs[cell], :self.gdim]
+            point_ref = self.mesh.geometry.cmaps[0].pull_back([point[:self.gdim]], cell_geometry)
+            dphi = self.coordinate_element.tabulate(1, point_ref)[1:,0,:]
+            dphi = dphi.reshape((dphi.shape[0], dphi.shape[1]))
+            
+            J = np.dot(cell_geometry.T, dphi.T)
+            Jinv = np.linalg.inv(J)  
+
+            cell_dofs = self.dofmaps.cell_dofs(cell)
+            global_dofs = self.dofmaps.index_map.local_to_global(cell_dofs)
+            d_dx = (Jinv.T @ dphi).T
+            d_dv = np.dot(d_dx, v)[:, 0]
+            for i in range(len(d_dv)):
+                right_vector.append([global_dofs[i], d_dv[i]])
+
+        right_vector = self.comm.gather(right_vector, root=0)
+        if right_vector:
+            right_vector = [j for i in right_vector for j in i]
+        else:
+            right_vector=[]
+        right_vector = self.comm.bcast(right_vector,root=0)
+
+        return right_vector
 
     @staticmethod
     def _csr_matrix(a, b):
@@ -233,15 +212,11 @@ class ActiveFlame:
         
         """
 
-        num_fl = len(self.x_r)  # number of flames
-        global_size = self.V.dofmap.index_map.size_global
-        local_size = self.V.dofmap.index_map.size_local
-
         row = dict()
         col = dict()
         val = dict()
 
-        for fl in range(num_fl):
+        for fl, point_contribution in enumerate(self.x_r):
 
             u = None
             v = None
@@ -256,33 +231,22 @@ class ActiveFlame:
 
             row[str(fl)], col[str(fl)], val[str(fl)] = self._csr_matrix(u, v)
 
-        row = np.concatenate([row[str(fl)] for fl in range(num_fl)])
-        col = np.concatenate([col[str(fl)] for fl in range(num_fl)])
-        val = np.concatenate([val[str(fl)] for fl in range(num_fl)])
+        row = np.concatenate([row[str(fl)] for fl in range(len(self.x_r))])
+        col = np.concatenate([col[str(fl)] for fl in range(len(self.x_r))])
+        val = np.concatenate([val[str(fl)] for fl in range(len(self.x_r))])
 
         i = np.argsort(row)
 
-        row = row[i]
-        col = col[i]
-        val = val[i]
+        row, col, val = row[i], col[i], val[i]
 
-        if len(val)==0:
-            
-            mat = PETSc.Mat().create(comm=PETSc.COMM_WORLD) #PETSc.COMM_WORLD
-            mat.setSizes([(local_size, global_size), (local_size, global_size)])
-            mat.setFromOptions()
-            mat.setUp()
-            mat.assemble()
-            
-        else:
-            mat = PETSc.Mat().create(PETSc.COMM_WORLD) # MPI.COMM_SELF
-            mat.setSizes([(local_size, global_size), (local_size, global_size)])
-            mat.setType('aij') 
-            mat.setUp()
-            for i in range(len(row)):
-                mat.setValue(row[i],col[i],val[i], addv=PETSc.InsertMode.ADD_VALUES)
-            mat.assemblyBegin()
-            mat.assemblyEnd()
+        mat = PETSc.Mat().create(PETSc.COMM_WORLD)
+        mat.setSizes([(self.local_size, self.global_size), (self.local_size, self.global_size)])
+        mat.setType('aij') 
+        mat.setUp()
+        for i in range(len(row)):
+            mat.setValue(row[i],col[i],val[i], addv=PETSc.InsertMode.ADD_VALUES)
+        mat.assemblyBegin()
+        mat.assemblyEnd()
 
         if problem_type == 'direct':
             self._D_kj = mat
@@ -363,9 +327,10 @@ class ActiveFlameNT:
         self.tol = tol
         self.omega = Constant(self.mesh, PETSc.ScalarType(0))
 
-        if gamma: # This is for constant gamma like in PRF paper (2018, Matthew Juniper)
+        if gamma: # Constant gamma [PRF paper (2018, Matthew Juniper)] 
             self.gamma = gamma 
-        else: # This gamma comes from variable cp in LOTAN
+        
+        else: # Variable gamma [LOTAN]
             self.gamma = gamma_function(self.T) 
 
         self._a = None
@@ -434,7 +399,6 @@ class ActiveFlameNT:
         indices = np.array(np.flatnonzero(packed),dtype=np.int32)
         global_indices = self.dofmaps.index_map.local_to_global(indices)
         packed = list(zip(global_indices, packed[indices]))
-        # print("LEN VECTOR:", len(packed))
         return packed
 
     def _distribute_vector_as_chunks(self, vector):
