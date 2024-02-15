@@ -3,11 +3,11 @@
 <Xdmf Version="3.0" xmlns:xi="https://www.w3.org/2001/XInclude">
   <Domain>
     <Grid Name="Grid" GridType="Uniform">
-      <Topology TopologyType="Tetrahedron" NumberOfElements="55200" NodesPerElement="4">
-        <DataItem Dimensions="55200 4" NumberType="Int" Format="HDF">p1_active_phase.h5:/Mesh/Grid/topology</DataItem>
+      <Topology TopologyType="Tetrahedron" NumberOfElements="55100" NodesPerElement="4">
+        <DataItem Dimensions="55100 4" NumberType="Int" Format="HDF">p_phase.h5:/Mesh/Grid/topology</DataItem>
       </Topology>
       <Geometry GeometryType="XYZ">
-        <DataItem Dimensions="11345 3" Format="HDF">p1_active_phase.h5:/Mesh/Grid/geometry</DataItem>
+        <DataItem Dimensions="11330 3" Format="HDF">p_phase.h5:/Mesh/Grid/geometry</DataItem>
       </Geometry>
     </Grid>
     <Grid Name="P_angle" GridType="Collection" CollectionType="Temporal">
@@ -15,10 +15,10 @@
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
         <Time Value="0" />
         <Attribute Name="real_P_angle" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="11345 1" Format="HDF">p1_active_phase.h5:/Function/real_P_angle/0</DataItem>
+          <DataItem Dimensions="11330 1" Format="HDF">p_phase.h5:/Function/real_P_angle/0</DataItem>
         </Attribute>
         <Attribute Name="imag_P_angle" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="11345 1" Format="HDF">p1_active_phase.h5:/Function/imag_P_angle/0</DataItem>
+          <DataItem Dimensions="11330 1" Format="HDF">p_phase.h5:/Function/imag_P_angle/0</DataItem>
         </Attribute>
       </Grid>
     </Grid>

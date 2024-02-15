@@ -2,7 +2,8 @@ from helmholtz_x.eigensolvers import fixed_point_iteration_pep
 from helmholtz_x.acoustic_matrices import AcousticMatrices
 from helmholtz_x.flame_matrices import ActiveFlameNT
 from helmholtz_x.eigenvectors import normalize_eigenvector
-from helmholtz_x.dolfinx_utils import xdmf_writer,  XDMFReader, phase, absolute
+from helmholtz_x.dolfinx_utils import phase, absolute
+from helmholtz_x.io_utils import xdmf_writer,  XDMFReader
 from helmholtz_x.parameters_utils import temperature_step, c_step, gaussianFunction, rho_step
 from helmholtz_x.solver_utils import start_time, execution_time
 start = start_time()

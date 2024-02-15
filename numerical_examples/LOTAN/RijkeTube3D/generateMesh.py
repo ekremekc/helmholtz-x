@@ -1,4 +1,3 @@
-from math import pi, cos, sin
 import gmsh
 import os 
 import params

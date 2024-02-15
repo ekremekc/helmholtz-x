@@ -44,7 +44,7 @@ a_r = 0.025
 
 if __name__ == '__main__':
 
-    from helmholtz_x.dolfinx_utils import XDMFReader,xdmf_writer
+    from helmholtz_x.io_utils import XDMFReader,xdmf_writer
     from helmholtz_x.parameters_utils import c_step, rho_step, gaussianFunction
 
     RijkeTube2D = XDMFReader("MeshDir/mesh")

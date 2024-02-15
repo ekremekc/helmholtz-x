@@ -1,7 +1,7 @@
 from helmholtz_x.eigensolvers import pep_solver
 from helmholtz_x.acoustic_matrices import AcousticMatrices
 from helmholtz_x.eigenvectors import normalize_eigenvector
-from helmholtz_x.dolfinx_utils import xdmf_writer, XDMFReader
+from helmholtz_x.io_utils import xdmf_writer, XDMFReader
 from helmholtz_x.solver_utils import start_time, execution_time
 from helmholtz_x.parameters_utils import c_step
 start = start_time()
