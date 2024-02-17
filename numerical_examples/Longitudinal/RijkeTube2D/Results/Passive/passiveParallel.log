@@ -1,0 +1,38 @@
+
+XDMF Mesh - Cell data loaded.
+XDMF Mesh - Facet data loaded.
+Number of cells:  1,268
+Number of cores:  4 
+
+Degree of basis functions:  1 
+
+\/ Speed of sound function is used for passive flame matrices.
+- Neumann boundaries on boundary 4
+- Neumann boundaries on boundary 3
+- Neumann boundaries on boundary 2
+- Neumann boundaries on boundary 1
+- Passive matrices are assembling..
+- Matrix A is assembled.
+! Note: It can be faster to use EPS solver.
+- Matrix B is assembled.
+- Matrix C is assembled.
+
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
+
+******************************
+*** SLEPc Solution Results ***
+******************************
+
+Number of iterations of the method: 2
+Solution method: toar
+Number of requested eigenvalues: 2
+Stopping condition: tol=1e-15, maxit=170
+Number of converged eigenpairs 2
+
+    1064.258412,        0.000000
+    2128.709154,        0.000000
+
+Eigenvalue-> 1064.258412+0.000000j | Eigenfrequency-> 169.381987+0.000000j
+ 
+Total Execution Time:  0:00:00.132485

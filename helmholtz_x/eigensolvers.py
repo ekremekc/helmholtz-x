@@ -117,69 +117,6 @@ def pep_solver(A, B, C, target, nev, print_results=False):
         results(Q)
 
     return Q
-    
-
-def fixed_point_iteration_pep( operators, D,  target, nev=2, i=0,
-                                    tol=1e-8, maxiter=50,
-                                    print_results=False,
-                                    problem_type='direct'):
-    A = operators.A
-    C = operators.C
-    B = operators.B
-    if problem_type == 'adjoint':
-        B = operators.B_adj
-
-    omega = np.zeros(maxiter, dtype=complex)
-    f = np.zeros(maxiter, dtype=complex)
-    alpha = np.zeros(maxiter, dtype=complex)
-    E = pep_solver(A, B, C, target, nev, print_results=print_results)
-    vr, vi = A.getVecs()
-    eig = E.getEigenpair(i, vr, vi)
-    omega[0] = eig
-    alpha[0] = .5
-
-    domega = 2 * tol
-    k = - 1
-
-    # formatting
-    s = "{:.0e}".format(tol)
-    s = int(s[-2:])
-    s = "{{:+.{}f}}".format(s)
-    
-    info("-> Fixed point iteration started.\n")
-
-    while abs(domega) > tol:
-
-        k += 1
-        E.destroy()
-        if MPI.COMM_WORLD.rank == 0:
-            print("* iter = {:2d}".format(k+1))
-        D.assemble_matrix(omega[k], problem_type)
-        if problem_type == 'direct':
-            D_Mat = D.matrix
-        if problem_type == 'adjoint':
-            D_Mat = D.adjoint_matrix
-
-        D_Mat = A - D_Mat
-
-        E = pep_solver(D_Mat, B, C, target, nev, print_results=print_results)
-
-        D_Mat.destroy()
-        eig = E.getEigenpair(i, vr, vi)
-        f[k] = eig
-
-        if k != 0:
-            alpha[k] = 1 / (1 - ((f[k] - f[k-1]) / (omega[k] - omega[k-1])))
-
-        omega[k+1] = alpha[k] * f[k] + (1 - alpha[k]) * omega[k]
-
-        domega = omega[k+1] - omega[k]
-        if MPI.COMM_WORLD.rank == 0:
-            print('+ omega = {}  {}j,  |domega| = {:.2e}\n'.format(
-                 s.format(omega[k + 1].real), s.format(omega[k + 1].imag), abs(domega)
-            ))
-
-    return E
 
 def fixed_point_iteration_eps(operators, D, target, nev=2, i=0,
                               tol=1e-8, maxiter=50,
@@ -253,16 +190,74 @@ def fixed_point_iteration_eps(operators, D, target, nev=2, i=0,
 
     return E
 
-def newton_solver(operators, D,
-           init, nev=2, i=0,
-           tol=1e-3, maxiter=100,
-           print_results=False):
+def fixed_point_iteration_pep( operators, D,  target, nev=2, i=0,
+                                    tol=1e-8, maxiter=50,
+                                    print_results=False,
+                                    problem_type='direct'):
+    A = operators.A
+    C = operators.C
+    B = operators.B
+    if problem_type == 'adjoint':
+        B = operators.B_adj
+
+    omega = np.zeros(maxiter, dtype=complex)
+    f = np.zeros(maxiter, dtype=complex)
+    alpha = np.zeros(maxiter, dtype=complex)
+    E = pep_solver(A, B, C, target, nev, print_results=print_results)
+    vr, vi = A.getVecs()
+    eig = E.getEigenpair(i, vr, vi)
+    omega[0] = eig
+    alpha[0] = .5
+
+    domega = 2 * tol
+    k = - 1
+
+    # formatting
+    s = "{:.0e}".format(tol)
+    s = int(s[-2:])
+    s = "{{:+.{}f}}".format(s)
+    
+    info("-> Fixed point iteration started.\n")
+
+    while abs(domega) > tol:
+
+        k += 1
+        E.destroy()
+        if MPI.COMM_WORLD.rank == 0:
+            print("* iter = {:2d}".format(k+1))
+        D.assemble_matrix(omega[k], problem_type)
+        if problem_type == 'direct':
+            D_Mat = D.matrix
+        if problem_type == 'adjoint':
+            D_Mat = D.adjoint_matrix
+
+        D_Mat = A - D_Mat
+
+        E = pep_solver(D_Mat, B, C, target, nev, print_results=print_results)
+
+        D_Mat.destroy()
+        eig = E.getEigenpair(i, vr, vi)
+        f[k] = eig
+
+        if k != 0:
+            alpha[k] = 1 / (1 - ((f[k] - f[k-1]) / (omega[k] - omega[k-1])))
+
+        omega[k+1] = alpha[k] * f[k] + (1 - alpha[k]) * omega[k]
+
+        domega = omega[k+1] - omega[k]
+        if MPI.COMM_WORLD.rank == 0:
+            print('+ omega = {}  {}j,  |domega| = {:.2e}\n'.format(
+                 s.format(omega[k + 1].real), s.format(omega[k + 1].imag), abs(domega)
+            ))
+
+    return E
+
+def newton_solver(operators, D, init, nev=2, i=0, tol=1e-3, maxiter=100, print_results=False):
     """
     The convergence strongly depends/relies on the initial value assigned to omega.
     Targeting zero in the shift-and-invert (spectral) transformation or, more in general,
     seeking for the eigenvalues nearest to zero might also be problematic.
-    The implementation uses the TwoSided option to compute the adjoint eigenvector
-    (IT HAS BEEN TESTED).
+    The implementation uses the TwoSided option to compute the adjoint eigenvector.
     :param operators:
     :param D:
     :param init: initial value assigned to omega
@@ -278,14 +273,9 @@ def newton_solver(operators, D,
     C = operators.C
     B = operators.B
 
-    vr, vi = A.createVecs()
-
-    # mesh and degree as instance variables of ActiveFlame
-    mesh = D.mesh
-    degree = D.degree
-
     omega = np.zeros(maxiter, dtype=complex)
     omega[0] = init
+    alpha = 1.0
 
     domega = 2 * tol
     k = 0
@@ -294,6 +284,8 @@ def newton_solver(operators, D,
     tol_ = "{:.0e}".format(tol)
     tol_ = int(tol_[-2:])
     s = "{{:+.{}f}}".format(tol_)
+
+    info("-> Newton solver started.\n")
 
     while abs(domega) > tol:
 
@@ -313,20 +305,19 @@ def newton_solver(operators, D,
 
         eig = E.getEigenvalue(i)
 
-        omega_dir, p = normalize_eigenvector(mesh, E, i, degree=1, which='right')
+        omega_dir, p = normalize_eigenvector(operators.mesh, E, i, degree=operators.degree, which='right', print_eigs=False)
 
-        omega_adj, p_adj = normalize_eigenvector(mesh, E, i, degree=1, which='left')
-
-        # convert into PETSc.Vec type
-        p_vec = p.vector
-        p_adj_vec = p_adj.vector
+        omega_adj, p_adj = normalize_eigenvector(operators.mesh, E, i, degree=operators.degree, which='left', print_eigs=False)
 
         # numerator and denominator
-        num = vector_matrix_vector(p_adj_vec, dL_domega, p_vec)
-        den = vector_matrix_vector(p_adj_vec, C, p_vec)
+        num = vector_matrix_vector(p_adj.vector, dL_domega, p.vector)
+        den = vector_matrix_vector(p_adj.vector, C, p.vector)
 
         deig = num / den
-        domega = - eig / deig
+
+        alpha *= 0.6
+
+        domega = - alpha * eig / deig
 
         omega[k + 1] = omega[k] + domega
         
@@ -336,4 +327,7 @@ def newton_solver(operators, D,
 
         k += 1
 
-    return E
+        if abs(domega) > tol:
+            del E
+            
+    return omega[k], p

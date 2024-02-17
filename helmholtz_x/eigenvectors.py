@@ -7,7 +7,7 @@ from slepc4py import SLEPc
 from mpi4py import MPI
 import numpy as np
 
-def normalize_eigenvector(mesh, obj, i, absolute=False, degree=1, which='right',mpc=None, matrices=None):
+def normalize_eigenvector(mesh, obj, i, absolute=False, degree=1, which='right',mpc=None, matrices=None, print_eigs=True):
     """ 
     This function normalizes the eigensolution vr
      which is obtained from complex slepc build
@@ -67,7 +67,7 @@ def normalize_eigenvector(mesh, obj, i, absolute=False, degree=1, which='right',
     p_normalized.vector.setArray(temp)
     p_normalized.x.scatter_forward()
 
-    if MPI.COMM_WORLD.rank == 0:
+    if MPI.COMM_WORLD.rank == 0 and print_eigs:
         print(f"Eigenvalue-> {omega:.6f} | Eigenfrequency-> {omega/(2*np.pi):.6f}\n ")
 
     return omega, p_normalized

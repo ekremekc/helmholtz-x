@@ -90,7 +90,6 @@ class ActiveFlame:
 
         volume_form = form(Constant(self.mesh, PETSc.ScalarType(1))*self.dx(fl))
         V_fl = MPI.COMM_WORLD.allreduce(assemble_scalar(volume_form), op=MPI.SUM)
-        print(V_fl)
         gradient_form = form(inner(1/V_fl, self.v)*self.dx(fl))
 
         left_vector = assemble_vector(gradient_form)

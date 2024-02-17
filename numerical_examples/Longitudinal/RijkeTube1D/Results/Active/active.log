@@ -1,0 +1,52 @@
+Degree of basis functions:  1 
+
+/\ Temperature function is used for passive flame matrices.
+- Passive matrices are assembling..
+- Matrix A is assembled.
+! Note: It can be faster to use EPS solver.
+- Matrix B is assembled.
+- Matrix C is assembled.
+
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
+-> Fixed point iteration started.
+
+* iter =  1
+- Direct matrix D is assembling...
+- Generating matrix D..
+- Submatrix D is Assembled.
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1243.22432314  +3.37135949j,  |domega| = 3.54e+00
+
+* iter =  2
+- Direct matrix D is assembling...
+- Generating matrix D..
+- Submatrix D is Assembled.
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1242.18527193  +6.68307193j,  |domega| = 3.47e+00
+
+* iter =  3
+- Direct matrix D is assembling...
+- Generating matrix D..
+- Submatrix D is Assembled.
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1242.18511738  +6.68317959j,  |domega| = 1.88e-04
+
+* iter =  4
+- Direct matrix D is assembling...
+- Generating matrix D..
+- Submatrix D is Assembled.
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1242.18511737  +6.68317959j,  |domega| = 5.97e-09
+
+Eigenvalue-> 1242.185117+6.683180j | Eigenfrequency-> 197.699902+1.063661j
+ 
+Total Execution Time:  0:00:06.559908
