@@ -36,18 +36,15 @@ This library has the following capabilities;
 
 ## Installation
 
-We advise to install those packages from source in Ubuntu/Linux OS, but there is an another option: *Docker*.  
+We advise to install those packages from source in Ubuntu/Linux OS, but there is a simple option: *Docker*.  
 
 ### Docker images
-You can get packaged installation of dependencies counted above using Docker images. The **helmholtz-x** runs with the v0.7.3 of [DOLFINx](https://github.com/FEniCS/dolfinx). And easiest way of getting the latest DOLFINx is docker containers;
+You can get packaged installation of dependencies counted above using Docker images. To install to docker to your system, you can find the instructions in this [link](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository). 
+
+The **helmholtz-x** runs with the v0.7.3 of [DOLFINx](https://github.com/FEniCS/dolfinx). And easiest way of getting the latest DOLFINx is docker containers;
 
 ```shell
-docker run -ti dolfinx/dolfinx:v0.7.3
-```
-for Bloch boundary condition, user should also use [DOLFINX MPC](https://github.com/jorgensd/dolfinx_mpc);
-
-```shell
-docker run -ti -v $(pwd):/root/shared -w /root/shared ghcr.io/jorgensd/dolfinx_mpc:v0.7.2
+sudo docker run -ti dolfinx/dolfinx:v0.7.3
 ```
 
 The code should also utilize complex builds of DOLFINx/PETSc/SLEPc and it can be activated running;
@@ -55,6 +52,8 @@ The code should also utilize complex builds of DOLFINx/PETSc/SLEPc and it can be
 ```shell
 source /usr/local/bin/dolfinx-complex-mode
 ```
+
+Then download the **helmholtz-x** and install it within the docker image envirinment.
 
 ### Conda
 Users may install the dependencies with conda. Here is the livestock for [PETSc/SLEPc/FEniCSx](https://fenicsproject.discourse.group/t/error-when-trying-to-solve-complex-eigenvalue-problem-in-parallel/13546/3);
