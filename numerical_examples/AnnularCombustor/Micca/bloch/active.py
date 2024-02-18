@@ -42,8 +42,8 @@ matrices.assemble_A()
 matrices.assemble_C()
 
 # set the bloch elements
-BlochNumber = 16 # Bloch number
-bloch_matrices = Blochifier(geometry=micca, boundary_conditions=boundary_conditions, BlochNumber=BlochNumber, passive_matrices=matrices)
+N = 16 # Bloch number
+bloch_matrices = Blochifier(geometry=micca, boundary_conditions=boundary_conditions, N=N, passive_matrices=matrices)
 bloch_matrices.blochify_A()
 bloch_matrices.blochify_C()
 
@@ -82,9 +82,6 @@ xdmf_writer("Results/Active/p_1_dir", mesh, p_1_dir)
 # print(f"Eigenvalues 3 -> {omega_3_adj:.3f} | Eigenfrequencies ->  {omega_3_adj/(2*np.pi):.3f}")
 
 # # Save eigenvectors
-
-# p_1_adj.name = "P_1_Adjoint"
-# p_2_adj.name = "P_2_Adjoint"
 
 # xdmf_writer("Results/p_1_adj", mesh, p_1_adj)
 # xdmf_writer("Results/p_2_adj", mesh, p_2_adj)

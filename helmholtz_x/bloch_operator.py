@@ -3,12 +3,19 @@ from scipy.sparse import csr_matrix
 import numpy as np
 from petsc4py import PETSc
 
+
 class Blochifier:
-    def __init__(self, geometry, boundary_conditions, BlochNumber, passive_matrices,  active_matrix=None):
+    def __init__(self, geometry, boundary_conditions, N, passive_matrices,  active_matrix=None):
+        
         self.passive_matrices = passive_matrices
         self.active_matrix = active_matrix
 
-        self.f = np.exp(1j * 2 * np.pi / BlochNumber) # impose periodicity scalar (B is bloch elements)
+        # Blochwave number
+        self.b = 1.0
+        # Periodicity
+        self.N = N        
+        # Periodicity scalar
+        self.f_b = np.exp(self.b * 1j * 2 * np.pi / self.N)
 
         self.mesh = geometry.mesh
         self.facet_tags = geometry.facet_tags

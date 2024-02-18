@@ -40,8 +40,8 @@ matrices.assemble_A()
 matrices.assemble_C()
 
 # set the bloch elements
-B = 16
-bloch_matrices = Blochifier(geometry=micca, boundary_conditions=boundary_conditions, BlochNumber=B, passive_matrices=matrices)
+N = 16
+bloch_matrices = Blochifier(geometry=micca, boundary_conditions=boundary_conditions, N=N, passive_matrices=matrices)
 bloch_matrices.blochify_A()
 bloch_matrices.blochify_C()
 
