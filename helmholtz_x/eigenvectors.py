@@ -7,7 +7,7 @@ from slepc4py import SLEPc
 from mpi4py import MPI
 import numpy as np
 
-def normalize_eigenvector(mesh, obj, i, absolute=False, degree=1, which='right',mpc=None, matrices=None, print_eigs=True):
+def normalize_eigenvector(mesh, obj, i, absolute=False, degree=1, which='right',BlochRemapper=None, matrices=None, print_eigs=True):
     """ 
     This function normalizes the eigensolution vr
      which is obtained from complex slepc build
@@ -37,12 +37,8 @@ def normalize_eigenvector(mesh, obj, i, absolute=False, degree=1, which='right',
         eig = obj.getEigenpair(i, vr, vi)
         omega = eig
 
-    if mpc:
-        from dolfinx_mpc.multipointconstraint import MultiPointConstraint
-        if isinstance(mpc, MultiPointConstraint):
-            mpc.backsubstitution(vr)
-        else:
-            vr = matrix_vector(mpc,vr)
+    if BlochRemapper:
+        vr = matrix_vector(BlochRemapper,vr)
             
     if matrices:
         V=matrices.V
