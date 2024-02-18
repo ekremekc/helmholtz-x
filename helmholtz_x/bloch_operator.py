@@ -28,7 +28,8 @@ class Blochifier:
 
         facets_slave = np.array(self.facet_tags.indices[self.facet_tags.values == slave_tag])
         dofs_slave = locate_dofs_topological(self.V, fdim, facets_slave)
-        #assert len(dofs_master) ==  len(dofs_slave)
+
+        assert len(dofs_master) ==  len(dofs_slave)
 
         boundary_map_points = np.vstack([dofs_master, dofs_slave])
 
@@ -40,7 +41,7 @@ class Blochifier:
         direct_map_points = [item for item in range(self.N) if item not in dofs_master]
         direct_map_points = np.vstack([direct_map_points, direct_map_points])
 
-        # Make matrix that maps from circulant points to neumann points
+        # Make matrix that maps from slave nodes to master nodes and vice versa
         ii = np.concatenate((direct_map_points[0, :], boundary_map_points[0, :]))
         jj = np.concatenate((direct_map_points[1, :], boundary_map_points[1, :]))
 
