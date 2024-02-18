@@ -47,13 +47,24 @@ The **helmholtz-x** runs with the v0.7.3 of [DOLFINx](https://github.com/FEniCS/
 sudo docker run -ti dolfinx/dolfinx:v0.7.3
 ```
 
-The code should also utilize complex builds of DOLFINx/PETSc/SLEPc and it can be activated running;
+You can make a docker environment for **helmholtz-x** by typing;
+```
+sudo docker run -ti -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $(pwd):/root/shared -w /root/shared --name=helmholtz-x dolfinx/dolfinx:v0.7.3
+```
+
+#TODO: now explain how to install **helmholtz-x** 
+
+and exit the terminal. Now, open a new terminal then run 
+```
+sudo docker start -i helmholtz-x
+```
+When you activate the container, you should always switch into the complex number mode, as the **helmholtz-x** utilizes complex builds of DOLFINx/PETSc/SLEPc and it can be activated running;
 
 ```shell
 source /usr/local/bin/dolfinx-complex-mode
 ```
 
-Then download the **helmholtz-x** and install it within the docker image envirinment.
+Now, you should be able to run the demos in the *numerical_example* directory.
 
 ### Conda
 Users may install the dependencies with conda. Here is the livestock for [PETSc/SLEPc/FEniCSx](https://fenicsproject.discourse.group/t/error-when-trying-to-solve-complex-eigenvalue-problem-in-parallel/13546/3);
