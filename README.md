@@ -36,10 +36,11 @@ This library has the following capabilities;
 
 ## Installation
 
-We advise to install those packages from source in Ubuntu/Linux OS, but there is a simple option: *Docker*.  
+We advise to install those packages from source in Ubuntu/Linux OS, but there is a very simple option to run **helmholtz-x**: *Docker*.  
 
 ### Docker images
-You can get packaged installation of dependencies counted above using Docker images. To install to docker to your system, you can find the instructions in this [link](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository). 
+
+You can get packaged installation of dependencies counted above using Docker images. To install the docker into your system, you can find the instructions in this [link](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository). 
 
 The **helmholtz-x** runs with the v0.7.3 of [DOLFINx](https://github.com/FEniCS/dolfinx). And easiest way of getting the latest DOLFINx is docker containers;
 
@@ -58,7 +59,7 @@ Now, you need to pull the docker container for DOLFINx. You can make a docker en
 ```
 sudo docker run -ti -v $(pwd):/root/shared -w /root/shared --name=helmholtz-x dolfinx/dolfinx:v0.7.3
 ```
-It would take some time (5-10 min). Then you will be in the new terminal within docker container. At the present working directory you should run;
+It might take some time (5-10 min) depending on your system and internet connection. Then you will be in the new terminal within the docker container. At the present working directory, you should run;
 
 ```
 pip3 install -e .
@@ -71,21 +72,21 @@ source /usr/local/bin/dolfinx-complex-mode
 
 Now, you should be able to run the demos in the *numerical_example* directory.
 
-Then, when you exit the terminal by typing `Ctrl+D`, you can always login to docker container of helmholtz-x by typing;
+When you exit the terminal by typing `Ctrl+D`, you can always login back into the docker container for helmholtz-x by typing;
 
 ```
 sudo docker start -i helmholtz-x
 ```
-then you are again in the **helmholtz-x** directory. Do not forget, you always have to run
+then you are again in the **helmholtz-x** directory in the fresh terminal. It is important to note that, you always have to run
 
 ```shell
 source /usr/local/bin/dolfinx-complex-mode
 ```
-upon your every new login to the docker container.
+to activate the complex build of DOLFINx, upon your every new login to the docker container.
 
 ### Conda
 
-Users may install the dependencies with conda. Here is the livestock for [PETSc/SLEPc/FEniCSx](https://fenicsproject.discourse.group/t/error-when-trying-to-solve-complex-eigenvalue-problem-in-parallel/13546/3);
+It is advised to use **helmholtz-x** using *docker* images. But, users may install the dependencies with the conda, which generally takes much longer time to install, compared to the installation of *docker*. Here is the livestock for [PETSc/SLEPc/FEniCSx](https://fenicsproject.discourse.group/t/error-when-trying-to-solve-complex-eigenvalue-problem-in-parallel/13546/3);
 
 ```shell
 conda create -n helmholtzx-env
