@@ -43,22 +43,27 @@ You can get packaged installation of dependencies counted above using Docker ima
 
 The **helmholtz-x** runs with the v0.7.3 of [DOLFINx](https://github.com/FEniCS/dolfinx). And easiest way of getting the latest DOLFINx is docker containers;
 
-```shell
-sudo docker run -ti dolfinx/dolfinx:v0.7.3
-```
+First, you need to clone the **helmholtz-x** repository by typing;
 
-You can make a docker environment for **helmholtz-x** by typing;
 ```
-sudo docker run -ti -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $(pwd):/root/shared -w /root/shared --name=helmholtz-x dolfinx/dolfinx:v0.7.3
+git clone https://github.com/ekremekc/helmholtz-x.git
 ```
+then `cd` into the **helmholtz-x** with
 
-#TODO: now explain how to install **helmholtz-x** 
+```
+cd helmholtz-x
+```
+Now, you need to pull the docker container for DOLFINx. You can make a docker environment for **helmholtz-x** by typing;
 
-and exit the terminal. Now, open a new terminal then run 
 ```
-sudo docker start -i helmholtz-x
+sudo docker run -ti -v $(pwd):/root/shared -w /root/shared --name=helmholtz-x dolfinx/dolfinx:v0.7.3
 ```
-When you activate the container, you should always switch into the complex number mode, as the **helmholtz-x** utilizes complex builds of DOLFINx/PETSc/SLEPc and it can be activated running;
+It would take some time (5-10 min). Then you will be in the new terminal within docker container. At the present working directory you should run;
+
+```
+pip3 install -e .
+```
+in order to install **helmholtz-x** within the docker container. Then, lastly you need to activate the complex number mode of DOLFINx, as the **helmholtz-x** utilizes complex builds of DOLFINx/PETSc/SLEPc. It can be activated running;
 
 ```shell
 source /usr/local/bin/dolfinx-complex-mode
@@ -66,11 +71,30 @@ source /usr/local/bin/dolfinx-complex-mode
 
 Now, you should be able to run the demos in the *numerical_example* directory.
 
+Then, when you exit the terminal by typing `Ctrl+D`, you can always login to docker container of helmholtz-x by typing;
+
+```
+sudo docker start -i helmholtz-x
+```
+then you are again in the **helmholtz-x** directory. Do not forget, you always have to run
+
+```shell
+source /usr/local/bin/dolfinx-complex-mode
+```
+upon your every new login to the docker container.
+
 ### Conda
+
 Users may install the dependencies with conda. Here is the livestock for [PETSc/SLEPc/FEniCSx](https://fenicsproject.discourse.group/t/error-when-trying-to-solve-complex-eigenvalue-problem-in-parallel/13546/3);
+
 ```shell
 conda create -n helmholtzx-env
 conda activate helmholtzx-env
 conda install -c conda-forge python=3.10 mpich fenics-dolfinx hdf5=1.14.2 petsc=*=complex* slepc=*=complex*
 ```
-Then **helmholtz-x** can be installed within this conda environment.
+Then **helmholtz-x** can be installed within this conda environment by typing.
+
+```
+pip3 install -e .
+```
+in the **helmholtz-x** directory.
