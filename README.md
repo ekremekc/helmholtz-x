@@ -14,18 +14,18 @@ $$ \nabla\cdot\left( c^2 \nabla  \hat{p}_1 \right) + \omega^2\hat{p}_1  = -i\ome
 
 In matrix form;
 
-$$ A\textbf{P} + \omega B\textbf{P} + \omega^2C\textbf{P} = D(\omega)\textbf{P} $$
+$$ \mathbf{A}\textbf{P} + \omega \mathbf{B}\textbf{P} + \omega^2 \mathbf{C} \textbf{P} = \mathbf{D}(\omega)\textbf{P} $$
 
 where 
 $\textbf{P}$ is the eigenvector or eigenfunction, $\omega$ is the eigenvalue ( $f$ = $\omega$ / $2\pi$ is eigenfrequency) and the discretized matrices are;
 
-$$ A_{jk} = -\int_\Omega c^2\nabla \phi_j \cdot\nabla \phi_k dx   $$
+$$ \mathbf{A}_{jk} = -\int_\Omega c^2\nabla \phi_j \cdot\nabla \phi_k dx   $$
 
-$$ B_{jk} = \int_{\partial \Omega} \left( \frac{  ic}{Z}\right)  \phi_j\phi_k d{\sigma}   $$
+$$ \mathbf{B}_{jk} = \int_{\partial \Omega} \left( \frac{  ic}{Z}\right)  \phi_j\phi_k d{\sigma}   $$
 
-$$ C_{jk} = \int_\Omega\phi_j\phi_k\ dx   $$
+$$ \mathbf{C}_{jk} = \int_\Omega\phi_j\phi_k\ dx   $$
 
-$$ D_{jk} = (\gamma-1) |FTF|\frac{ q_{tot}  }{ U_{bulk}} \int_{\Omega} \phi_i h(\textbf{x}) e^{i \omega \tau(\textbf{x})} d\textbf{x}  \int_{\Omega} \frac{w(\chi)}{\rho_0 (\chi)}  \nabla{\phi_j} \cdot \textbf{n}_{ref} d\chi $$
+$$ \mathbf{D}_{jk} = (\gamma-1) |FTF|\frac{ q_{tot}  }{ U_{bulk}} \int_{\Omega} \phi_i h(\textbf{x}) e^{i \omega \tau(\textbf{x})} d\textbf{x}  \int_{\Omega} \frac{w(\chi)}{\rho_0 (\chi)}  \nabla{\phi_j} \cdot \textbf{n}_{ref} d\chi $$
 
 This library has the following capabilities;
 
