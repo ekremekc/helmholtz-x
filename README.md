@@ -58,7 +58,7 @@ cd helmholtz-x
 Now, you need to pull the docker container for DOLFINx. You can make a docker environment for **helmholtz-x** by typing;
 
 ```
-sudo docker run -ti -v $(pwd):/root/shared -w /root/shared --name=helmholtz-x dolfinx/dolfinx:v0.7.3
+sudo docker run -ti -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $(pwd):/root/shared -w /root/shared --name=helmholtz-x dolfinx/dolfinx:v0.7.3
 ```
 It might take some time (5-10 min) depending on your system and internet connection. Then you will be in the new terminal within the docker container. At the present working directory, you should run;
 
