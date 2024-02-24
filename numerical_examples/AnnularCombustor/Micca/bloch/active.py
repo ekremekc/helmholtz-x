@@ -59,7 +59,7 @@ target_dir = PETSc.ScalarType(3200+500j) #1st mode
 E = fixed_point_iteration_eps(bloch_matrices, D, target_dir**2, nev=3, i=0, tol=1e-3)
 
 # Extract eigenvalue and normalized eigenvector 
-omega_1_dir, p_1_dir = normalize_eigenvector(mesh, E, i=0, degree=degree,mpc=bloch_matrices.remapper)
+omega_1_dir, p_1_dir = normalize_eigenvector(mesh, E, i=0, degree=degree, BlochRemapper=bloch_matrices.remapper)
 
 # Save eigenvectors
 xdmf_writer("Results/Active/p_1_dir", mesh, p_1_dir)

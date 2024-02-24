@@ -21,7 +21,6 @@ Degree of basis functions:  1
 - Matrix A is assembled.
 - Matrix C is assembled.
 
-(6.05928068588038e-06+0j)
 --> Fixed point iteration started.
 
 - EPS solver started.
@@ -66,4 +65,4 @@ Degree of basis functions:  1
 
 Eigenvalue-> 3238.605734+451.578684j | Eigenfrequency-> 515.440111+71.870980j
  
-Total Execution Time:  0:00:27.990523
+Total Execution Time:  0:00:27.631803

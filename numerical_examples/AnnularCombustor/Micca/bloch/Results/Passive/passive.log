@@ -4,7 +4,6 @@ XDMF Mesh - Facet data loaded.
 Number of cells:  47,672
 Number of cores:  1 
 
-47672
 Degree of basis functions:  1 
 
 \/ Speed of sound function is used for passive flame matrices.
@@ -31,7 +30,4 @@ Eigenvalue-> 4625.333481+0.000000j | Eigenfrequency-> 736.144687+0.000000j
  
 Eigenvalue-> 10971.585406-0.000000j | Eigenfrequency-> 1746.182051-0.000000j
  
-Eigenvalues 1 -> 2913.668+0.000j | Eigenfrequencies ->  463.725+0.000j
-Eigenvalues 2 -> 4625.333+0.000j | Eigenfrequencies ->  736.145+0.000j
-Eigenvalues 3 -> 10971.585-0.000j | Eigenfrequencies ->  1746.182-0.000j
-Total Execution Time:  0:00:02.462228
+Total Execution Time:  0:00:02.508634

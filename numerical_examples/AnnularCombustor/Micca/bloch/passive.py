@@ -51,9 +51,9 @@ eigensolver = eps_solver(bloch_matrices.A, bloch_matrices.C, target_dir**2,nev =
 
 # Extract eigenvalue and normalized eigenvector 
 BN_petsc = bloch_matrices.remapper
-omega_1, p_1 = normalize_eigenvector(mesh, eigensolver, 0, mpc=BN_petsc)
-omega_2, p_2 = normalize_eigenvector(mesh, eigensolver, 1, mpc=BN_petsc)
-omega_3, p_3 = normalize_eigenvector(mesh, eigensolver, 2, mpc=BN_petsc)
+omega_1, p_1 = normalize_eigenvector(mesh, eigensolver, 0, BlochRemapper=BN_petsc)
+omega_2, p_2 = normalize_eigenvector(mesh, eigensolver, 1, BlochRemapper=BN_petsc)
+omega_3, p_3 = normalize_eigenvector(mesh, eigensolver, 2, BlochRemapper=BN_petsc)
 
 # Save eigenvectors
 xdmf_writer("Results/Passive/p_1", mesh, p_1)

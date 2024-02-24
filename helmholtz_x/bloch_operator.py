@@ -58,11 +58,11 @@ class Blochifier:
         for nn in range(Nb):
             x_ = boundary_map_points[0][nn]
             y_ = boundary_map_points[1][nn]
-            BN_csr[x_, y_] = self.f
+            BN_csr[x_, y_] = self.f_b
 
             x__ = boundary_map_points[1][nn]
             y__ = boundary_map_points[0][nn]
-            NB_csr[x__, y__] = 1 / self.f
+            NB_csr[x__, y__] = 1 / self.f_b
 
         self.BN_csr = self._dropcols_fancy(BN_csr, dofs_master)
         self.NB_csr = self._droprows_fancy(NB_csr, dofs_master)
