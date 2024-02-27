@@ -28,8 +28,8 @@ class AcousticMatrices:
 
         self.V = FunctionSpace(self.mesh, ("Lagrange", degree))
 
-        self.u = TrialFunction(self.V)
-        self.v = TestFunction(self.V)
+        self.phi_i = TrialFunction(self.V)
+        self.phi_j = TestFunction(self.V)
         
         self.AreaConstant = Constant(mesh, PETSc.ScalarType(1))
 
@@ -53,51 +53,51 @@ class AcousticMatrices:
             self.gamma.x.array[:] = 1.4
             info("\/ Speed of sound function is used for passive flame matrices.")
 
-        for i in boundary_conditions:
-            if 'Neumann' in boundary_conditions[i]:
-                info("- Neumann boundaries on boundary "+str(i))
-            if 'Dirichlet' in boundary_conditions[i]:
+        for boundary in boundary_conditions:
+            if 'Neumann' in boundary_conditions[boundary]:
+                info("- Neumann boundaries on boundary "+str(boundary))
+            if 'Dirichlet' in boundary_conditions[boundary]:
                 u_bc = Function(self.V)
-                facets = np.array(self.facet_tags.indices[self.facet_tags.values == i])
+                facets = np.array(self.facet_tags.indices[self.facet_tags.values == boundary])
                 dofs = locate_dofs_topological(self.V, self.fdim, facets)
                 bc = dirichletbc(u_bc, dofs)
                 self.bcs.append(bc)
 
-            if 'Robin' in boundary_conditions[i]:
-                R = boundary_conditions[i]['Robin']
+            if 'Robin' in boundary_conditions[boundary]:
+                R = boundary_conditions[boundary]['Robin']
                 Z = (1+R)/(1-R)
-                integrals_Impedance = 1j * self.c / Z * inner(self.u, self.v) * self.ds(i)
+                integrals_Impedance = 1j * self.c / Z * inner(self.phi_i, self.phi_j) * self.ds(boundary)
                 self.integrals_R.append(integrals_Impedance)
 
-            if 'ChokedInlet' in boundary_conditions[i]:
+            if 'ChokedInlet' in boundary_conditions[boundary]:
                 # https://www.oscilos.com/download/OSCILOS_Long_Tech_report.pdf
-                A_inlet = MPI.COMM_WORLD.allreduce(assemble_scalar(form(self.AreaConstant * self.ds(i))), op=MPI.SUM)
-                gamma_inlet_form = form(self.gamma/A_inlet* self.ds(i))
+                A_inlet = MPI.COMM_WORLD.allreduce(assemble_scalar(form(self.AreaConstant * self.ds(boundary))), op=MPI.SUM)
+                gamma_inlet_form = form(self.gamma/A_inlet* self.ds(boundary))
                 gamma_inlet = MPI.COMM_WORLD.allreduce(assemble_scalar(gamma_inlet_form), op=MPI.SUM)
 
-                Mach = boundary_conditions[i]['ChokedInlet']
+                Mach = boundary_conditions[boundary]['ChokedInlet']
                 R = (1-gamma_inlet*Mach/(1+(gamma_inlet-1)*Mach**2))/(1+gamma_inlet*Mach/(1+(gamma_inlet-1)*Mach**2))
                 Z = (1+R)/(1-R)
-                integral_C_i = 1j * self.c / Z * inner(self.u, self.v) * self.ds(i)
+                integral_C_i = 1j * self.c / Z * inner(self.phi_i, self.phi_j) * self.ds(boundary)
                 self.integrals_R.append(integral_C_i)
-                info("- Choked inlet boundary on boundary "+str(i))
+                info("- Choked inlet boundary on boundary "+str(boundary))
 
-            if 'ChokedOutlet' in boundary_conditions[i]:
+            if 'ChokedOutlet' in boundary_conditions[boundary]:
                 # https://www.oscilos.com/download/OSCILOS_Long_Tech_report.pdf
-                A_outlet = MPI.COMM_WORLD.allreduce(assemble_scalar(form(self.AreaConstant * self.ds(i))), op=MPI.SUM)
-                gamma_outlet_form = form(self.gamma/A_outlet* self.ds(i))
+                A_outlet = MPI.COMM_WORLD.allreduce(assemble_scalar(form(self.AreaConstant * self.ds(boundary))), op=MPI.SUM)
+                gamma_outlet_form = form(self.gamma/A_outlet* self.ds(boundary))
                 gamma_outlet = MPI.COMM_WORLD.allreduce(assemble_scalar(gamma_outlet_form), op=MPI.SUM)
 
-                Mach = boundary_conditions[i]['ChokedOutlet']
+                Mach = boundary_conditions[boundary]['ChokedOutlet']
                 R = (1-0.5*(gamma_outlet-1)*Mach)/(1+0.5*(gamma_outlet-1)*Mach)
                 Z = (1+R)/(1-R)
-                integral_C_o = 1j * self.c / Z * inner(self.u, self.v) * self.ds(i)
+                integral_C_o = 1j * self.c / Z * inner(self.phi_i, self.phi_j) * self.ds(boundary)
                 self.integrals_R.append(integral_C_o)
-                info("- Choked outlet boundary on boundary "+str(i))
+                info("- Choked outlet boundary on boundary "+str(boundary))
 
-        self.a_form_eq = -self.c**2* inner(grad(self.u), grad(self.v))*self.dx
+        self.a_form_eq = -self.c**2* inner(grad(self.phi_i), grad(self.phi_j))*self.dx
         self.b_form_eq = sum(self.integrals_R)
-        self.c_form_eq = inner(self.u , self.v) * self.dx
+        self.c_form_eq = inner(self.phi_i , self.phi_j) * self.dx
 
         if self.integrals_R:
             info("- Robin boundaries are modelled.")

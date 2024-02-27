@@ -1,6 +1,8 @@
 Degree of basis functions:  1 
 
 /\ Temperature function is used for passive flame matrices.
+- Neumann boundaries on boundary 1
+- Neumann boundaries on boundary 2
 - Passive matrices are assembling..
 - Matrix A is assembled.
 ! Note: It can be faster to use EPS solver.
@@ -49,4 +51,4 @@ Degree of basis functions:  1
 
 Eigenvalue-> 1242.185117+6.683180j | Eigenfrequency-> 197.699902+1.063661j
  
-Total Execution Time:  0:00:01.704164
+Total Execution Time:  0:00:01.925917

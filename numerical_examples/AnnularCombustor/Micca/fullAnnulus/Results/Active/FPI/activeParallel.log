@@ -57,7 +57,7 @@ Eigenvalue-> 3250.697492+465.643915j | Eigenfrequency-> 517.364574+74.109531j
 Eigenvalue-> 3250.642234+435.378057j | Eigenfrequency-> 517.355780+69.292570j
  
 Results/Active/FPI/eigenvalues_dir.txt  is saved.
-Total Execution Time for Direct Modes:  0:00:14.437053 
+Total Execution Time for Direct Modes:  0:00:14.337090 
 
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
@@ -103,4 +103,4 @@ Eigenvalue-> 3250.697492-465.643915j | Eigenfrequency-> 517.364574-74.109531j
 Eigenvalue-> 3250.642234-435.378057j | Eigenfrequency-> 517.355780-69.292570j
  
 Results/Active/FPI/eigenvalues_adj.txt  is saved.
-Total Execution Time:  0:00:24.909384
+Total Execution Time:  0:00:24.262228

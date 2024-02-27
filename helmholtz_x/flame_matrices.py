@@ -26,8 +26,8 @@ class ActiveFlame:
 
         self.V = FunctionSpace(mesh, ("Lagrange", degree))
         self.dofmaps = self.V.dofmap
-        self.u = TrialFunction(self.V)
-        self.v = TestFunction(self.V)
+        self.phi_i = TrialFunction(self.V)
+        self.phi_j = TestFunction(self.V)
         self.dx = Measure("dx", subdomain_data=self.subdomains)
         self.gdim = self.mesh.geometry.dim
 
@@ -90,7 +90,7 @@ class ActiveFlame:
 
         volume_form = form(Constant(self.mesh, PETSc.ScalarType(1))*self.dx(fl))
         V_fl = MPI.COMM_WORLD.allreduce(assemble_scalar(volume_form), op=MPI.SUM)
-        gradient_form = form(inner(1/V_fl, self.v)*self.dx(fl))
+        gradient_form = form(inner(1/V_fl, self.phi_j)*self.dx(fl))
 
         left_vector = assemble_vector(gradient_form)
         left_vector.ghostUpdate(addv=PETSc.InsertMode.ADD_VALUES, mode=PETSc.ScatterMode.REVERSE)
@@ -123,11 +123,11 @@ class ActiveFlame:
         """
         tdim = self.mesh.topology.dim
 
-        v = np.array([[0, 0, 1]]).T
+        n_ref = np.array([[0, 0, 1]]).T
         if tdim == 1:
-            v = np.array([[1]])
+            n_ref = np.array([[1]])
         elif tdim == 2:
-            v = np.array([[1, 0]]).T
+            n_ref = np.array([[1, 0]]).T
 
         _, _, owning_points, cell = dolfinx.cpp.geometry.determine_point_ownership( self.mesh._cpp_object, point, 1e-10)
 
@@ -156,9 +156,9 @@ class ActiveFlame:
             cell_dofs = self.dofmaps.cell_dofs(cell)
             global_dofs = self.dofmaps.index_map.local_to_global(cell_dofs)
             d_dx = (Jinv.T @ dphi).T
-            d_dv = np.dot(d_dx, v)[:, 0]
-            for i in range(len(d_dv)):
-                right_vector.append([global_dofs[i], d_dv[i]])
+            d_dphi_j = np.dot(d_dx, n_ref)[:, 0]
+            for i in range(len(d_dphi_j)):
+                right_vector.append([global_dofs[i], d_dphi_j[i]])
 
         right_vector = self.comm.gather(right_vector, root=0)
         if right_vector:

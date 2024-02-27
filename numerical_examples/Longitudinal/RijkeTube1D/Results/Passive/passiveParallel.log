@@ -1,6 +1,8 @@
 Degree of basis functions:  1 
 
 \/ Speed of sound function is used for passive flame matrices.
+- Neumann boundaries on boundary 1
+- Neumann boundaries on boundary 2
 - Passive matrices are assembling..
 - Matrix A is assembled.
 ! Note: It can be faster to use EPS solver.
@@ -20,9 +22,9 @@ Number of requested eigenvalues: 2
 Stopping condition: tol=1e-15, maxit=100
 Number of converged eigenpairs 2
 
-    1050.373534,        0.000000
-    2100.482504,        0.000000
+    1064.231133,        0.000000
+    2128.491442,       -0.000000
 
-Eigenvalue-> 1050.373534+0.000000j | Eigenfrequency-> 167.172140+0.000000j
+Eigenvalue-> 1064.231133+0.000000j | Eigenfrequency-> 169.377645+0.000000j
  
-Total Execution Time:  0:00:00.148813
+Total Execution Time:  0:00:00.176096
