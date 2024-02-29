@@ -11,18 +11,14 @@ import dolfinx
 
 class ActiveFlame:
 
-    def __init__(self, mesh, subdomains, x_r, rho_u, Q, U, FTF, degree=1, bloch_object=None, gamma=1.4):
+    def __init__(self, mesh, subdomains, x_r, rho_u, Q, u_b, FTF, degree=1, bloch_object=None, gamma=1.4):
 
         self.mesh = mesh
         self.subdomains = subdomains
         self.x_r = x_r
-        self.rho_u = rho_u
-        self.Q = Q
-        self.U = U
         self.FTF = FTF
-        self.degree = degree
         self.bloch_object = bloch_object
-        self.coeff = (gamma - 1) / rho_u * Q / U
+        self.coeff = (gamma - 1) * Q / (u_b * rho_u)
 
         self.V = FunctionSpace(mesh, ("Lagrange", degree))
         self.dofmaps = self.V.dofmap
