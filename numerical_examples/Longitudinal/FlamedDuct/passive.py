@@ -24,16 +24,13 @@ boundary_conditions = {3:{"ChokedInlet":params.M0},
 # Introduce Passive Flame Matrices
 T = temperature_uniform(mesh, params.T_passive)
 matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, T, degree=degree)
-matrices.assemble_A()
-matrices.assemble_B()
-matrices.assemble_C()
 
 # Introduce solver object and start
 target_dir = 262 * 2 * np.pi
 E = pep_solver(matrices.A, matrices.B, matrices.C, target_dir, nev=10, print_results=True)
 
 # Extract eigenvalue and normalized eigenvector 
-omega, p = normalize_eigenvector(mesh, E, 2, degree=degree, which='right')
+omega, p = normalize_eigenvector(mesh, E, 0, degree=degree, which='right')
 xdmf_writer("Results/Passive/p", mesh, p)
 
 execution_time(start)

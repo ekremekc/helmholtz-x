@@ -13,21 +13,22 @@ Degree of basis functions:  1
 - Neumann boundaries on boundary 1
 - Passive matrices are assembling..
 - Matrix A is assembled.
-! Note: It can be faster to use EPS solver.
-- Matrix B is assembled.
 - Matrix C is assembled.
 
-- PEP solver started.
-- PEP solver converged. Eigenvalue computed.
--> Fixed point iteration started.
+--> Fixed point iteration started.
 
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
++ Starting eigenvalue is found: +1244.69894962  -0.00000000j. 
+-> Iterations are starting.
+ 
 * iter =  1
 - Direct matrix D is assembling...
 - Generating matrix D..
 - Submatrix D is Assembled.
 - Matrix D is assembled.
-- PEP solver started.
-- PEP solver converged. Eigenvalue computed.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
 + omega = +1243.61625909  +3.36349236j,  |domega| = 3.53e+00
 
 * iter =  2
@@ -35,8 +36,8 @@ Degree of basis functions:  1
 - Generating matrix D..
 - Submatrix D is Assembled.
 - Matrix D is assembled.
-- PEP solver started.
-- PEP solver converged. Eigenvalue computed.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
 + omega = +1242.57717331  +6.66765159j,  |domega| = 3.46e+00
 
 * iter =  3
@@ -44,8 +45,8 @@ Degree of basis functions:  1
 - Generating matrix D..
 - Submatrix D is Assembled.
 - Matrix D is assembled.
-- PEP solver started.
-- PEP solver converged. Eigenvalue computed.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
 + omega = +1242.57701949  +6.66775824j,  |domega| = 1.87e-04
 
 * iter =  4
@@ -53,10 +54,10 @@ Degree of basis functions:  1
 - Generating matrix D..
 - Submatrix D is Assembled.
 - Matrix D is assembled.
-- PEP solver started.
-- PEP solver converged. Eigenvalue computed.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
 + omega = +1242.57701949  +6.66775824j,  |domega| = 5.00e-09
 
 Eigenvalue-> 1242.577019+6.667758j | Eigenfrequency-> 197.762275+1.061207j
  
-Total Execution Time:  0:00:00.182572
+Total Execution Time:  0:00:00.191430

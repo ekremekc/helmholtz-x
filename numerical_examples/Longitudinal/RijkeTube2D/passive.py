@@ -1,4 +1,4 @@
-from helmholtz_x.eigensolvers import pep_solver
+from helmholtz_x.eigensolvers import eps_solver
 from helmholtz_x.acoustic_matrices import AcousticMatrices
 from helmholtz_x.eigenvectors import normalize_eigenvector
 from helmholtz_x.io_utils import xdmf_writer, XDMFReader
@@ -28,13 +28,10 @@ c = c_step(mesh, params.x_f, params.c_u, params.c_u)
 
 # Introduce Passive Flame Matrices
 matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, c, degree=degree)
-matrices.assemble_A()
-matrices.assemble_B()
-matrices.assemble_C()
 
 # Introduce solver object and start
 target = 200 * 2 * np.pi 
-E = pep_solver(matrices.A, matrices.B, matrices.C, target, nev=2, print_results= True)
+E = eps_solver(matrices.A, matrices.C, target, nev=2, print_results= True)
 
 # Extract eigenvalue and normalized eigenvector 
 omega, p = normalize_eigenvector(mesh, E, 0, degree=degree, which='right')

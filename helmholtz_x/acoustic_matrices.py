@@ -39,6 +39,11 @@ class AcousticMatrices:
         self.b_form = None
         self.c_form = None
 
+        self._A = None
+        self._B = None
+        self._B_adj = None
+        self._C = None
+
         if MPI.COMM_WORLD.rank == 0:
             print("Degree of basis functions: ", self.degree, "\n")
 
@@ -95,23 +100,34 @@ class AcousticMatrices:
                 self.integrals_R.append(integral_C_o)
                 info("- Choked outlet boundary on boundary "+str(boundary))
 
-        self.a_form_eq = -self.c**2* inner(grad(self.phi_i), grad(self.phi_j))*self.dx
-        self.b_form_eq = sum(self.integrals_R)
-        self.c_form_eq = inner(self.phi_i , self.phi_j) * self.dx
-
-        if self.integrals_R:
-            info("- Robin boundaries are modelled.")
-
-        self.a_form = form(self.a_form_eq) 
-        self.b_form = form(self.b_form_eq)
-        self.c_form = form(self.c_form_eq)
-        
-        self._A = None
-        self._B = None
-        self._B_adj = None
-        self._C = None
-
         info("- Passive matrices are assembling..")
+
+        self.a_form = form(-self.c**2* inner(grad(self.phi_i), grad(self.phi_j))*self.dx) 
+        A = assemble_matrix(self.a_form, bcs=self.bcs)
+        A.assemble()
+        info("- Matrix A is assembled.")
+        self._A = A
+        
+        if self.integrals_R:
+
+            self.b_form = form(sum(self.integrals_R))
+            B = assemble_matrix(self.b_form)
+            B.assemble()
+                
+            B_adj = B.copy()
+            B_adj.transpose()
+            B_adj.conjugate()
+
+            info("- Matrix B is assembled.")
+
+            self._B = B
+            self._B_adj = B_adj
+
+        self.c_form = form(inner(self.phi_i , self.phi_j) * self.dx)
+        C = assemble_matrix(self.c_form, self.bcs)
+        C.assemble()
+        info("- Matrix C is assembled.\n")
+        self._C = C
 
     @property
     def A(self):
@@ -129,41 +145,41 @@ class AcousticMatrices:
     def C(self):
         return self._C
 
-    def assemble_A(self):
+    # def assemble_A(self):
         
-        A = assemble_matrix(self.a_form, bcs=self.bcs)
-        A.assemble()
-        info("- Matrix A is assembled.")
-        self._A = A
+    #     A = assemble_matrix(self.a_form, bcs=self.bcs)
+    #     A.assemble()
+    #     info("- Matrix A is assembled.")
+    #     self._A = A
 
-    def assemble_B(self):
+    # def assemble_B(self):
 
-        if self.b_form:
-            B = assemble_matrix(self.b_form)
+    #     if self.b_form:
+    #         B = assemble_matrix(self.b_form)
             
-        else:
-            N = self.V.dofmap.index_map.size_global
-            n = self.V.dofmap.index_map.size_local
-            B = PETSc.Mat().create()
-            B.setSizes([(n, N), (n, N)])
-            B.setFromOptions()
-            B.setUp()
-            info("! Note: It can be faster to use EPS solver.")
+    #     else:
+    #         N = self.V.dofmap.index_map.size_global
+    #         n = self.V.dofmap.index_map.size_local
+    #         B = PETSc.Mat().create()
+    #         B.setSizes([(n, N), (n, N)])
+    #         B.setFromOptions()
+    #         B.setUp()
+    #         info("! Note: It can be faster to use EPS solver.")
         
-        B.assemble()
+    #     B.assemble()
             
-        B_adj = B.copy()
-        B_adj.transpose()
-        B_adj.conjugate()
+    #     B_adj = B.copy()
+    #     B_adj.transpose()
+    #     B_adj.conjugate()
 
-        info("- Matrix B is assembled.")
+    #     info("- Matrix B is assembled.")
 
-        self._B = B
-        self._B_adj = B_adj
+    #     self._B = B
+    #     self._B_adj = B_adj
 
-    def assemble_C(self):
+    # def assemble_C(self):
 
-        C = assemble_matrix(self.c_form, self.bcs)
-        C.assemble()
-        info("- Matrix C is assembled.\n")
-        self._C = C
+    #     C = assemble_matrix(self.c_form, self.bcs)
+    #     C.assemble()
+    #     info("- Matrix C is assembled.\n")
+    #     self._C = C

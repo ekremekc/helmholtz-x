@@ -12,26 +12,26 @@ Degree of basis functions:  1
 - Neumann boundaries on boundary 3
 - Passive matrices are assembling..
 - Matrix A is assembled.
-! Note: It can be faster to use EPS solver.
-- Matrix B is assembled.
 - Matrix C is assembled.
 
-- PEP solver started.
-- PEP solver converged. Eigenvalue computed.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
 
 ******************************
 *** SLEPc Solution Results ***
 ******************************
 
-Number of iterations of the method: 2
-Solution method: toar
+Number of iterations of the method: 1
+Solution method: krylovschur
 Number of requested eigenvalues: 2
-Stopping condition: tol=1e-15, maxit=598
-Number of converged eigenpairs 2
+Stopping condition: tol=1e-15, maxit=299
+Number of converged eigenpairs 4
 
-    1064.547726,        0.000000
-    2128.747642,       -0.000000
+ 1133261.861854,        0.000000
+       0.000000,        0.000000
+ 4531566.521548,        0.000000
+10199159.501664,       -0.000000
 
 Eigenvalue-> 1064.547726+0.000000j | Eigenfrequency-> 169.428033+0.000000j
  
-Total Execution Time:  0:00:00.175650
+Total Execution Time:  0:00:00.168307

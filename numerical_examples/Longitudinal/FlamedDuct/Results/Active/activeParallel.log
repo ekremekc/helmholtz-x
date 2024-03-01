@@ -1,7 +1,7 @@
 
 XDMF Mesh - Cell data loaded.
 XDMF Mesh - Facet data loaded.
-Number of cells:  58,366
+Number of cells:  58,250
 Number of cores:  6 
 
 Degree of basis functions:  1 
@@ -9,7 +9,6 @@ Degree of basis functions:  1
 /\ Temperature function is used for passive flame matrices.
 - Choked inlet boundary on boundary 3
 - Choked outlet boundary on boundary 8
-- Robin boundaries are modelled.
 - Passive matrices are assembling..
 - Matrix A is assembled.
 - Matrix B is assembled.
@@ -26,7 +25,7 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1690.08987607  -28.51162422j,  |domega| = 4.04e+01
++ omega = +1690.27829978  -28.51716099j,  |domega| = 4.04e+01
 
 * iter =  2
 - Direct matrix D is assembling...
@@ -35,7 +34,7 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1651.92308958  -43.46662228j,  |domega| = 4.10e+01
++ omega = +1652.10275901  -43.47704927j,  |domega| = 4.10e+01
 
 * iter =  3
 - Direct matrix D is assembling...
@@ -44,7 +43,7 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1651.92537789  -43.45966867j,  |domega| = 7.32e-03
++ omega = +1652.10504737  -43.47009199j,  |domega| = 7.32e-03
 
 * iter =  4
 - Direct matrix D is assembling...
@@ -53,7 +52,7 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1651.92537823  -43.45966923j,  |domega| = 6.61e-07
++ omega = +1652.10504771  -43.47009256j,  |domega| = 6.62e-07
 
 * iter =  5
 - Direct matrix D is assembling...
@@ -62,8 +61,8 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1651.92537823  -43.45966923j,  |domega| = 8.52e-12
++ omega = +1652.10504771  -43.47009256j,  |domega| = 1.43e-11
 
-Eigenvalue-> 1651.925378-43.459669j | Eigenfrequency-> 262.912090-6.916821j
+Eigenvalue-> 1652.105048-43.470093j | Eigenfrequency-> 262.940685-6.918480j
  
-Total Execution Time:  0:00:26.260236
+Total Execution Time:  0:00:26.692445

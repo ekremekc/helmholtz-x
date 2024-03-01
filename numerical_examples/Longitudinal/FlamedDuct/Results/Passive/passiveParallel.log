@@ -1,7 +1,7 @@
 
 XDMF Mesh - Cell data loaded.
 XDMF Mesh - Facet data loaded.
-Number of cells:  58,366
+Number of cells:  58,250
 Number of cores:  6 
 
 Degree of basis functions:  1 
@@ -9,7 +9,6 @@ Degree of basis functions:  1
 /\ Temperature function is used for passive flame matrices.
 - Choked inlet boundary on boundary 3
 - Choked outlet boundary on boundary 8
-- Robin boundaries are modelled.
 - Passive matrices are assembling..
 - Matrix A is assembled.
 - Matrix B is assembled.
@@ -25,21 +24,21 @@ Degree of basis functions:  1
 Number of iterations of the method: 10
 Solution method: toar
 Number of requested eigenvalues: 10
-Stopping condition: tol=1e-15, maxit=1813
+Stopping condition: tol=1e-15, maxit=1810
 Number of converged eigenpairs 11
 
-    1646.758802,      -11.921284
-       0.000000,        0.000000
-      -0.000000,      -10.581702
-    3819.954841,       -4.843202
-   -1646.758802,      -11.921284
-    5849.939169,       -6.916024
-   -3819.954841,       -4.843202
-    7949.687463,       -6.404955
-   -5849.939169,       -6.916024
-    9221.223723,       -1.816640
-    9221.560084,       -1.810984
+    1646.855155,      -11.920998
+      -0.000000,        0.000000
+       0.000000,      -10.581702
+    3820.064181,       -4.842982
+   -1646.855155,      -11.920998
+    5850.480612,       -6.918239
+   -3820.064181,       -4.842982
+    7949.771868,       -6.407126
+   -5850.480612,       -6.918239
+    9221.195302,       -1.815372
+    9221.740609,       -1.815106
 
-Eigenvalue-> -0.000000-10.581702j | Eigenfrequency-> -0.000000-1.684130j
+Eigenvalue-> 1646.855155-11.920998j | Eigenfrequency-> 262.105138-1.897286j
  
-Total Execution Time:  0:00:02.228841
+Total Execution Time:  0:00:01.427557

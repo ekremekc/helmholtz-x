@@ -50,7 +50,8 @@ def eps_solver(A, C, target, nev, two_sided=False, print_results=False):
     st.setType('sinvert')
     # E.setKrylovSchurPartitions(1) # MPI.COMM_WORLD.Get_size()
 
-    E.setTarget(target)
+    eps_target = target**2 
+    E.setTarget(eps_target)
     E.setWhichEigenpairs(SLEPc.EPS.Which.TARGET_MAGNITUDE)  # TARGET_REAL or TARGET_IMAGINARY
     E.setTwoSided(two_sided)
 
@@ -125,8 +126,8 @@ def fixed_point_iteration_eps(operators, D, target, nev=2, i=0,
                               two_sided=False):
 
     A = operators.A
-    C = operators.C
     B = operators.B
+    C = operators.C
     if problem_type == 'adjoint':
         B = operators.B_adj
 
@@ -251,6 +252,24 @@ def fixed_point_iteration_pep( operators, D,  target, nev=2, i=0,
             ))
 
     return E
+
+def fixed_point_iteration( operators, D,  target, nev=2, i=0,
+                                    tol=1e-8, maxiter=50,
+                                    print_results=False,
+                                    problem_type='direct'):
+    if operators.B:
+        E = fixed_point_iteration_pep( operators, D,  target, nev=nev, i=i,
+                                    tol=tol, maxiter=maxiter,
+                                    print_results=print_results,
+                                    problem_type=problem_type)
+    else:
+        E = fixed_point_iteration_eps( operators, D,  target, nev=nev, i=i,
+                                    tol=tol, maxiter=maxiter,
+                                    print_results=print_results,
+                                    problem_type=problem_type)
+    
+    return E
+
 
 def newton_solver(operators, D, init, nev=2, i=0, tol=1e-3, maxiter=100, print_results=False):
     """
