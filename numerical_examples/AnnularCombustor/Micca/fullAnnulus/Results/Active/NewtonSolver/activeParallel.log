@@ -7,7 +7,6 @@ Number of cores:  8
 Degree of basis functions:  1 
 
 \/ Speed of sound function is used for passive flame matrices.
-- Robin boundaries are modelled.
 - Passive matrices are assembling..
 - Matrix A is assembled.
 - Matrix B is assembled.
@@ -132,4 +131,4 @@ iter = 17,  omega = +3260.856  +454.750j,  |domega| = 1.52e-03
 - EPS solver converged. Eigenvalue computed.
 iter = 18,  omega = +3260.855  +454.750j,  |domega| = 9.11e-04
 Results/Active/NewtonSolver/eigenvalues.txt  is saved.
-Total Execution Time for Direct Modes:  0:01:16.169083
+Total Execution Time for Direct Modes:  0:01:15.158173

@@ -54,7 +54,7 @@ class AcousticMatrices:
             info("/\ Temperature function is used for passive flame matrices.")
         else:
             self.c = parameter
-            self.gamma = self.c.copy()#1.4 # FIXME
+            self.gamma = self.c.copy()
             self.gamma.x.array[:] = 1.4
             info("\/ Speed of sound function is used for passive flame matrices.")
 
@@ -67,6 +67,7 @@ class AcousticMatrices:
                 dofs = locate_dofs_topological(self.V, self.fdim, facets)
                 bc = dirichletbc(u_bc, dofs)
                 self.bcs.append(bc)
+                info("- Dirichlet boundary on boundary "+str(boundary))
 
             if 'Robin' in boundary_conditions[boundary]:
                 R = boundary_conditions[boundary]['Robin']

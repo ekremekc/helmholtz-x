@@ -2,7 +2,7 @@ from mpi4py import MPI
 from petsc4py import PETSc
 from helmholtz_x.flame_matrices import ActiveFlame
 from helmholtz_x.flame_transfer_function import state_space
-from helmholtz_x.eigensolvers import fixed_point_iteration_pep
+from helmholtz_x.eigensolvers import fixed_point_iteration
 from helmholtz_x.acoustic_matrices import AcousticMatrices
 from helmholtz_x.eigenvectors import normalize_eigenvector, velocity_eigenvector
 from helmholtz_x.io_utils import XDMFReader, xdmf_writer, dict_writer
@@ -24,9 +24,6 @@ boundary_conditions = {11: {'Robin':params.R_outlet}}
 # Introduce Passive Flame Matrices
 c = params.c(mesh)
 matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, c, degree=degree)
-matrices.assemble_A()
-matrices.assemble_B()
-matrices.assemble_C()
 
 # Introduce Flame Matrix parameters
 FTF = state_space(params.S1, params.s2, params.s3, params.s4)
@@ -38,7 +35,7 @@ D.assemble_submatrices('direct')
 
 # Introduce direct solver object and start
 target_dir = PETSc.ScalarType(+3225.120  +481.0j)
-E = fixed_point_iteration_pep(matrices, D, target_dir, i=0, nev=4, tol=1e-3)
+E = fixed_point_iteration(matrices, D, target_dir, i=0, nev=4, tol=1e-3)
 
 # Extract direct eigenvalues and normalized eigenvectors 
 omega_1_dir, p_1_dir = normalize_eigenvector(mesh, E, i=0, degree=degree)
@@ -63,7 +60,7 @@ D.assemble_submatrices('adjoint')
 
 # Introduce adjoint solver object and start
 target_adj = PETSc.ScalarType(+3225.120  -481.0j)
-E_adj = fixed_point_iteration_pep(matrices, D, target_adj, i=0, tol=1e-3, problem_type='adjoint',print_results=False)
+E_adj = fixed_point_iteration(matrices, D, target_adj, i=0, tol=1e-3, problem_type='adjoint',print_results=False)
 
 # Extract adjoint eigenvalues and normalized eigenvectors 
 omega_1_adj, p_1_adj = normalize_eigenvector(mesh, E_adj, i=0, degree=degree)

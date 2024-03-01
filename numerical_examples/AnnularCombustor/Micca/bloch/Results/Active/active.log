@@ -17,6 +17,7 @@ Degree of basis functions:  1
 - Neumann boundaries on boundary 8
 - Neumann boundaries on boundary 9
 - Neumann boundaries on boundary 10
+- Dirichlet boundary on boundary 11
 - Passive matrices are assembling..
 - Matrix A is assembled.
 - Matrix C is assembled.
@@ -65,4 +66,4 @@ Degree of basis functions:  1
 
 Eigenvalue-> 3238.605734+451.578684j | Eigenfrequency-> 515.440111+71.870980j
  
-Total Execution Time:  0:00:27.585273
+Total Execution Time:  0:00:27.278604

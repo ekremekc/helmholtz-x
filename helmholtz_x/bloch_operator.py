@@ -68,6 +68,16 @@ class Blochifier:
         self.NB_csr = self._droprows_fancy(NB_csr, dofs_master)
         self._BN = PETSc.Mat().createAIJ(size=self.BN_csr.shape, csr=(self.BN_csr.indptr, self.BN_csr.indices, self.BN_csr.data))
 
+        A = self.blochify(self.passive_matrices.A)
+        self._A = A
+
+        if self.passive_matrices.B:
+            B = self.blochify(self.passive_matrices.B)
+            self._B = B
+
+        C = self.blochify(self.passive_matrices.C)
+        self._C = C    
+    
     @property
     def A(self):
         return self._A
@@ -112,15 +122,3 @@ class Blochifier:
         idx_to_drop = np.unique(idx_to_drop)
         keep = ~np.in1d(np.arange(M.shape[0]), idx_to_drop, assume_unique=True)
         return M[np.where(keep)[0], :]
-
-    def blochify_A(self):
-        A = self.blochify(self.passive_matrices.A)
-        self._A = A
-
-    def blochify_B(self):
-        B = self.blochify(self.passive_matrices.B)
-        self._B = B
-
-    def blochify_C(self):
-        C = self.blochify(self.passive_matrices.C)
-        self._C = C

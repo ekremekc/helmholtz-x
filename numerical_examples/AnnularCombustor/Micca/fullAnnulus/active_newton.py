@@ -4,7 +4,6 @@ from helmholtz_x.flame_matrices import ActiveFlame
 from helmholtz_x.flame_transfer_function import state_space
 from helmholtz_x.eigensolvers import newton_solver
 from helmholtz_x.acoustic_matrices import AcousticMatrices
-from helmholtz_x.eigenvectors import normalize_eigenvector, velocity_eigenvector
 from helmholtz_x.io_utils import XDMFReader, xdmf_writer, dict_writer
 import params
 import datetime
@@ -24,9 +23,6 @@ boundary_conditions = {11: {'Robin':params.R_outlet}}
 # Introduce Passive Flame Matrices
 c = params.c(mesh)
 matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, c, degree=degree)
-matrices.assemble_A()
-matrices.assemble_B()
-matrices.assemble_C()
 
 # Introduce Flame Matrix parameters
 FTF = state_space(params.S1, params.s2, params.s3, params.s4)

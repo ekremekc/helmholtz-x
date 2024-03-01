@@ -2,7 +2,7 @@ from helmholtz_x.acoustic_matrices import AcousticMatrices
 from helmholtz_x.flame_transfer_function import state_space
 from helmholtz_x.bloch_operator import Blochifier
 from helmholtz_x.flame_matrices import ActiveFlame
-from helmholtz_x.eigensolvers import fixed_point_iteration_eps
+from helmholtz_x.eigensolvers import fixed_point_iteration
 from helmholtz_x.eigenvectors import normalize_eigenvector
 from helmholtz_x.io_utils import XDMFReader, xdmf_writer
 from petsc4py import PETSc
@@ -38,14 +38,10 @@ boundary_conditions = {1: 'Neumann',
 # Introduce Passive Flame Matrices
 c = params.c(mesh)
 matrices =  AcousticMatrices(mesh, facet_tags, boundary_conditions,c, degree=degree)
-matrices.assemble_A()
-matrices.assemble_C()
 
 # set the bloch elements
 N = 16 # Bloch number
 bloch_matrices = Blochifier(geometry=micca, boundary_conditions=boundary_conditions, N=N, passive_matrices=matrices)
-bloch_matrices.blochify_A()
-bloch_matrices.blochify_C()
 
 # Introduce Flame Matrix parameters
 FTF = state_space(params.S1, params.s2, params.s3, params.s4)
@@ -56,7 +52,7 @@ D.blochify()
 # Introduce solver object and start
 target_dir = PETSc.ScalarType(3200+500j) #1st mode 
 # target_dir = PETSc.ScalarType(4479+140j) #2nd mode 
-E = fixed_point_iteration_eps(bloch_matrices, D, target_dir**2, nev=3, i=0, tol=1e-3)
+E = fixed_point_iteration(bloch_matrices, D, target_dir, nev=3, i=0, tol=1e-3)
 
 # Extract eigenvalue and normalized eigenvector 
 omega_1_dir, p_1_dir = normalize_eigenvector(mesh, E, i=0, degree=degree, BlochRemapper=bloch_matrices.remapper)

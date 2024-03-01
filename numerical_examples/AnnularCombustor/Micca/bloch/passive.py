@@ -36,18 +36,14 @@ boundary_conditions = {1: 'Neumann',
 # Introduce Passive Flame Matrices
 c = params.c(mesh)
 matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, c, degree=degree)
-matrices.assemble_A()
-matrices.assemble_C()
 
 # set the bloch elements
 N = 16
 bloch_matrices = Blochifier(geometry=micca, boundary_conditions=boundary_conditions, N=N, passive_matrices=matrices)
-bloch_matrices.blochify_A()
-bloch_matrices.blochify_C()
 
 # Introduce solver object and start
 target_dir = PETSc.ScalarType(3000)
-eigensolver = eps_solver(bloch_matrices.A, bloch_matrices.C, target_dir**2,nev = 5, print_results=False)
+eigensolver = eps_solver(bloch_matrices.A, bloch_matrices.C, target_dir, nev = 5, print_results=False)
 
 # Extract eigenvalue and normalized eigenvector 
 BN_petsc = bloch_matrices.remapper
