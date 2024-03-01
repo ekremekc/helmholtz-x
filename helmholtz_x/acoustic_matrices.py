@@ -76,7 +76,6 @@ class AcousticMatrices:
                 self.integrals_R.append(integrals_Impedance)
 
             if 'ChokedInlet' in boundary_conditions[boundary]:
-                # https://www.oscilos.com/download/OSCILOS_Long_Tech_report.pdf
                 A_inlet = MPI.COMM_WORLD.allreduce(assemble_scalar(form(self.AreaConstant * self.ds(boundary))), op=MPI.SUM)
                 gamma_inlet_form = form(self.gamma/A_inlet* self.ds(boundary))
                 gamma_inlet = MPI.COMM_WORLD.allreduce(assemble_scalar(gamma_inlet_form), op=MPI.SUM)
@@ -89,7 +88,6 @@ class AcousticMatrices:
                 info("- Choked inlet boundary on boundary "+str(boundary))
 
             if 'ChokedOutlet' in boundary_conditions[boundary]:
-                # https://www.oscilos.com/download/OSCILOS_Long_Tech_report.pdf
                 A_outlet = MPI.COMM_WORLD.allreduce(assemble_scalar(form(self.AreaConstant * self.ds(boundary))), op=MPI.SUM)
                 gamma_outlet_form = form(self.gamma/A_outlet* self.ds(boundary))
                 gamma_outlet = MPI.COMM_WORLD.allreduce(assemble_scalar(gamma_outlet_form), op=MPI.SUM)
