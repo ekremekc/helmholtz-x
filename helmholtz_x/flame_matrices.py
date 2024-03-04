@@ -106,7 +106,7 @@ class PointwiseFlameMatrix:
 
         # Only add contribution if cell is owned 
         if len(cell) > 0:
-            print(cell)
+
             cell_geometry = self.mesh.geometry.x[self.x_dofs[cell[0]], :self.gdim]
             point_ref = self.mesh.geometry.cmaps[0].pull_back([point[:self.gdim]], cell_geometry)
             dphi = self.coordinate_element.tabulate(1, point_ref)[1:,0,:]
@@ -168,7 +168,7 @@ class PointwiseFlameMatrix:
         row = np.concatenate([row[str(fl)] for fl in range(len(self.x_r))])
         col = np.concatenate([col[str(fl)] for fl in range(len(self.x_r))])
         val = np.concatenate([val[str(fl)] for fl in range(len(self.x_r))])
-
+        
         i = np.argsort(row)
 
         row, col, val = row[i], col[i], val[i]
@@ -228,7 +228,7 @@ class PointwiseFlameMatrix:
             D_kj_adj_bloch = self.bloch_object.blochify(self.adjoint_submatrices)
             self._D_kj_adj = D_kj_adj_bloch
 
-class ActiveFlameDistributed:
+class DistributedFlameMatrix:
 
     def __init__(self, mesh, w, h, rho, T, eta, tau, degree=1, gamma=None, tol=1e-5):
 
