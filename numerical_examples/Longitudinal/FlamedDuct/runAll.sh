@@ -7,5 +7,5 @@ python3 -u passive.py -nopopup |tee Results/Passive/passive.log
 python3 -u active.py -nopopup |tee Results/Active/active.log
 
 # test running in parallel
-mpirun -np 6 python3 -u passive.py -nopopup |tee Results/Passive/passiveParallel.log
-mpirun -np 6 python3 -u active.py -nopopup |tee Results/Active/activeParallel.log
+mpirun -np 8 python3 -u passive.py -nopopup |tee Results/Passive/passiveParallel.log
+mpirun -np 8 python3 -u active.py -nopopup |tee Results/Active/activeParallel.log
