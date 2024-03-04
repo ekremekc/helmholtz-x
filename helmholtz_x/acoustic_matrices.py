@@ -33,7 +33,7 @@ class AcousticMatrices:
         
         self.AreaConstant = Constant(mesh, PETSc.ScalarType(1))
 
-        self.bcs = []
+        self.bcs_Dirichlet = []
         self.integrals_R = []
         self.a_form = None
         self.b_form = None
@@ -66,7 +66,7 @@ class AcousticMatrices:
                 facets = np.array(self.facet_tags.indices[self.facet_tags.values == boundary])
                 dofs = locate_dofs_topological(self.V, self.fdim, facets)
                 bc = dirichletbc(u_bc, dofs)
-                self.bcs.append(bc)
+                self.bcs_Dirichlet.append(bc)
                 info("- Dirichlet boundary on boundary "+str(boundary))
 
             if 'Robin' in boundary_conditions[boundary]:
@@ -102,7 +102,7 @@ class AcousticMatrices:
         info("- Passive matrices are assembling..")
 
         self.a_form = form(-self.c**2* inner(grad(self.phi_i), grad(self.phi_j))*self.dx) 
-        A = assemble_matrix(self.a_form, bcs=self.bcs)
+        A = assemble_matrix(self.a_form, bcs=self.bcs_Dirichlet)
         A.assemble()
         info("- Matrix A is assembled.")
         self._A = A
@@ -123,7 +123,7 @@ class AcousticMatrices:
             self._B_adj = B_adj
 
         self.c_form = form(inner(self.phi_i , self.phi_j) * self.dx)
-        C = assemble_matrix(self.c_form, self.bcs)
+        C = assemble_matrix(self.c_form, self.bcs_Dirichlet)
         C.assemble()
         info("- Matrix C is assembled.\n")
         self._C = C
@@ -143,42 +143,3 @@ class AcousticMatrices:
     @property
     def C(self):
         return self._C
-
-    # def assemble_A(self):
-        
-    #     A = assemble_matrix(self.a_form, bcs=self.bcs)
-    #     A.assemble()
-    #     info("- Matrix A is assembled.")
-    #     self._A = A
-
-    # def assemble_B(self):
-
-    #     if self.b_form:
-    #         B = assemble_matrix(self.b_form)
-            
-    #     else:
-    #         N = self.V.dofmap.index_map.size_global
-    #         n = self.V.dofmap.index_map.size_local
-    #         B = PETSc.Mat().create()
-    #         B.setSizes([(n, N), (n, N)])
-    #         B.setFromOptions()
-    #         B.setUp()
-    #         info("! Note: It can be faster to use EPS solver.")
-        
-    #     B.assemble()
-            
-    #     B_adj = B.copy()
-    #     B_adj.transpose()
-    #     B_adj.conjugate()
-
-    #     info("- Matrix B is assembled.")
-
-    #     self._B = B
-    #     self._B_adj = B_adj
-
-    # def assemble_C(self):
-
-    #     C = assemble_matrix(self.c_form, self.bcs)
-    #     C.assemble()
-    #     info("- Matrix C is assembled.\n")
-    #     self._C = C
