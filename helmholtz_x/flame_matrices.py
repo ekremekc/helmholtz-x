@@ -324,10 +324,10 @@ class ActiveFlameNT:
         self.omega = Constant(self.mesh, PETSc.ScalarType(0))
 
         if gamma: # Constant gamma [PRF paper (2018, Matthew Juniper)] 
-            self.gamma = gamma 
+            pass
         
         else: # Variable gamma [LOTAN]
-            self.gamma = gamma_function(self.T) 
+            gamma = gamma_function(self.T) 
 
         self._a = None
         self._b = None
@@ -340,21 +340,18 @@ class ActiveFlameNT:
         self.dofmaps = self.V.dofmap
         self.dimension = self.mesh.topology.dim
 
-        self.phi_i = TrialFunction(self.V)
-        self.phi_j = TestFunction(self.V)
+        phi_i = TrialFunction(self.V)
+        phi_j = TestFunction(self.V)
 
         self.dx = dx
 
         # left vector
-
-        coefficient = (self.gamma - 1) 
-        self.form_direct = form(coefficient *  self.phi_i  * self.eta * self.h * exp(1j*self.omega*self.tau)  *  self.dx)
-        self.form_adjoint = form(coefficient *  self.phi_i  * self.eta * self.h * conj(exp(1j*self.omega*self.tau)) *  self.dx)
-        self.form_direct_der = form(coefficient *  1j * self.tau * self.phi_i * self.h * self.eta * exp(1j*self.omega*self.tau) * self.dx)
-        self.form_adjoint_der = form(coefficient *  self.tau * self.phi_i * self.h * self.eta * conj( 1j * exp(1j*self.omega*self.tau)) * self.dx)
+        self.form_direct = form((gamma - 1) * eta * phi_i * h * exp(1j*self.omega*tau)  *  dx)
+        self.form_adjoint = form((gamma - 1) * eta *  phi_i * h * conj(exp(1j*self.omega*tau)) *  dx)
+        self.form_direct_der = form((gamma - 1)  *  1j * tau * phi_i * h * eta * exp(1j*self.omega*tau) * dx)
+        self.form_adjoint_der = form((gamma - 1)  *  tau * phi_i * h * eta * conj( 1j * exp(1j*self.omega*tau)) * dx)
 
         # right vector
-
         if self.dimension == 1:
             n_ref = as_vector([1])
         elif self.dimension == 2:
@@ -362,7 +359,7 @@ class ActiveFlameNT:
         else:
             n_ref = as_vector([0,0,1])
 
-        self.gradient_form = form(inner(n_ref,grad(self.phi_j)) / self.rho * self.w * self.dx)
+        self.gradient_form = form(inner(n_ref,grad(phi_j)) / rho * w * dx)
 
     @property
     def submatrices(self):
