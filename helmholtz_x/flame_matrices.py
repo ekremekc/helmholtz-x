@@ -9,16 +9,17 @@ import numpy as np
 import basix
 import dolfinx
 
-class ActiveFlame:
+class PointwiseFlameMatrix:
 
-    def __init__(self, mesh, subdomains, x_r, rho_u, Q, u_b, FTF, degree=1, bloch_object=None, gamma=1.4):
+    def __init__(self, mesh, subdomains, x_r, rho_u, q_0, u_b, FTF, degree=1, bloch_object=None, gamma=1.4, tol=1e-10):
 
         self.mesh = mesh
         self.subdomains = subdomains
         self.x_r = x_r
         self.FTF = FTF
         self.bloch_object = bloch_object
-        self.coeff = (gamma - 1) * Q / (u_b * rho_u)
+        self.coeff = (gamma - 1) * q_0 / (u_b * rho_u)
+        self.tol = tol
 
         self.V = FunctionSpace(mesh, ("Lagrange", degree))
         self.dofmaps = self.V.dofmap
@@ -39,6 +40,19 @@ class ActiveFlame:
         self.coordinate_element = basix.create_element(basix.finite_element.string_to_family(
                 "Lagrange", ct.name), basix.cell.string_to_type(ct.name), 1, basix.LagrangeVariant.equispaced)
 
+        # Data required for pull back of coordinate
+        num_dofs_x = self.mesh.geometry.dofmap[0].size  # NOTE: Assumes same cell geometry in whole mesh
+        t_imap = self.mesh.topology.index_map(self.mesh.topology.dim)
+        num_cells = t_imap.size_local + t_imap.num_ghosts
+        self.x_dofs = self.mesh.geometry.dofmap.reshape(num_cells, num_dofs_x)
+
+        if self.gdim == 1:
+            self.n_ref = np.array([[1]])
+        elif self.gdim == 2:
+            self.n_ref = np.array([[1, 0]]).T
+        else:
+            self.n_ref = np.array([[0, 0, 1]]).T
+
         # Utility objects for flame matrix
         self._a = {}
         self._b = {}
@@ -48,9 +62,10 @@ class ActiveFlame:
         self._D_adj = None
 
         # Starting assembly for the flames
-        for fl, x in enumerate(self.x_r):
-            self._a[str(fl)] = self._assemble_left_vector(fl)
-            self._b[str(fl)] = self._assemble_right_vector(x)
+        for flame, x in enumerate(self.x_r):
+            self._a[str(flame)] = self._assemble_left_vector(flame)
+            self._b[str(flame)] = self._assemble_right_vector(x)
+            info("- Matrix contribution of flame "+str(flame)+" is computed.")
 
     @property
     def matrix(self):
@@ -72,76 +87,27 @@ class ActiveFlame:
         return self._b
 
     def _assemble_left_vector(self, fl):
-        """
-        Assembles \int v(x) \phi_k dV
-        Parameters
-        ----------
-        fl : int
-            flame tag
-        Returns
-        -------
-        v : <class 'list'>
-            includes assembled nonzero elements of a and row indices
-        """
 
         volume_form = form(Constant(self.mesh, PETSc.ScalarType(1))*self.dx(fl))
         V_fl = MPI.COMM_WORLD.allreduce(assemble_scalar(volume_form), op=MPI.SUM)
         gradient_form = form(inner(1/V_fl, self.phi_j)*self.dx(fl))
 
-        left_vector = assemble_vector(gradient_form)
-        left_vector.ghostUpdate(addv=PETSc.InsertMode.ADD_VALUES, mode=PETSc.ScatterMode.REVERSE)
-        left_vector.ghostUpdate(addv=PETSc.InsertMode.INSERT, mode=PETSc.ScatterMode.FORWARD)
-        
-        indices = np.array(np.flatnonzero(left_vector.array),dtype=np.int32)
-        global_indices = self.dofmaps.index_map.local_to_global(indices)
-        packed = list(zip(global_indices, left_vector.array[indices]))
+        left_vector = indices_and_values(self.dofmaps, gradient_form, tol=self.tol)
 
-        return packed
+        return left_vector
 
     def _assemble_right_vector(self, point):
-        """
-        Calculates degree of freedoms and column indices of 
-        right vector of
         
-        \nabla(\phi_j(x_r)) . n
-        
-        which includes gradient value of test function at
-        reference point x_r
-        
-        Parameters
-        ----------
-        x : np.array
-            flame location vector
-        Returns
-        -------
-        np.array
-            Array of degree of freedoms and indices as vector b.
-        """
-        tdim = self.mesh.topology.dim
-
-        n_ref = np.array([[0, 0, 1]]).T
-        if tdim == 1:
-            n_ref = np.array([[1]])
-        elif tdim == 2:
-            n_ref = np.array([[1, 0]]).T
-
         _, _, owning_points, cell = dolfinx.cpp.geometry.determine_point_ownership( self.mesh._cpp_object, point, 1e-10)
 
-        # Data required for pull back of coordinate
-        num_dofs_x = self.mesh.geometry.dofmap[0].size  # NOTE: Assumes same cell geometry in whole mesh
-        t_imap = self.mesh.topology.index_map(tdim)
-        num_cells = t_imap.size_local + t_imap.num_ghosts
-        x_dofs = self.mesh.geometry.dofmap.reshape(num_cells, num_dofs_x)
-        
         point_ref = np.zeros((len(cell), self.mesh.geometry.dim), dtype=self.mesh.geometry.x.dtype)
 
         right_vector = []
 
         # Only add contribution if cell is owned 
         if len(cell) > 0:
-
-            cell = cell[0]
-            cell_geometry = self.mesh.geometry.x[x_dofs[cell], :self.gdim]
+            print(cell)
+            cell_geometry = self.mesh.geometry.x[self.x_dofs[cell[0]], :self.gdim]
             point_ref = self.mesh.geometry.cmaps[0].pull_back([point[:self.gdim]], cell_geometry)
             dphi = self.coordinate_element.tabulate(1, point_ref)[1:,0,:]
             dphi = dphi.reshape((dphi.shape[0], dphi.shape[1]))
@@ -149,33 +115,20 @@ class ActiveFlame:
             J = np.dot(cell_geometry.T, dphi.T)
             Jinv = np.linalg.inv(J)  
 
-            cell_dofs = self.dofmaps.cell_dofs(cell)
+            cell_dofs = self.dofmaps.cell_dofs(cell[0])
             global_dofs = self.dofmaps.index_map.local_to_global(cell_dofs)
             d_dx = (Jinv.T @ dphi).T
-            d_dphi_j = np.dot(d_dx, n_ref)[:, 0]
+            d_dphi_j = np.dot(d_dx, self.n_ref)[:, 0]
             for i in range(len(d_dphi_j)):
                 right_vector.append([global_dofs[i], d_dphi_j[i]])
 
-        right_vector = self.comm.gather(right_vector, root=0)
-        if right_vector:
-            right_vector = [j for i in right_vector for j in i]
-        else:
-            right_vector=[]
-        right_vector = self.comm.bcast(right_vector,root=0)
+        right_vector = broadcast_vector(right_vector)
 
         return right_vector
 
     @staticmethod
     def _csr_matrix(a, b):
-        """ This function gets row, column and values of (row.col) pairs of vector a and b
 
-        Args:
-            a ([type]): [description]
-            b ([type]): [description]
-
-        Returns:
-            [type]: rows columns and values
-        """
         nnz = len(a) * len(b)
         
         row = np.zeros(nnz)
@@ -194,38 +147,23 @@ class ActiveFlame:
         return row, col, val
 
     def assemble_submatrices(self, problem_type='direct'):
-        """
-        This function handles efficient cross product of the 
-        vectors a and b calculated above and generates highly sparse 
-        matrix D_kj which represents active flame matrix without FTF and
-        other constant multiplications.
-        Parameters
-        ----------
-        problem_type : str, optional
-            Specified problem type. The default is 'direct'.
-            Matrix can be obtained by selecting problem type, other
-            option is adjoint.
-        
-        """
 
-        row = dict()
-        col = dict()
-        val = dict()
+        row, col, val = dict(), dict(), dict()
 
         for fl, point_contribution in enumerate(self.x_r):
 
-            u = None
-            v = None
+            a = None
+            b = None
 
             if problem_type == 'direct':
-                u = self._a[str(fl)]
-                v = self._b[str(fl)]
+                a = self._a[str(fl)]
+                b = self._b[str(fl)]
 
             elif problem_type == 'adjoint':
-                u = self._b[str(fl)]
-                v = self._a[str(fl)]
+                a = self._b[str(fl)]
+                b = self._a[str(fl)]
 
-            row[str(fl)], col[str(fl)], val[str(fl)] = self._csr_matrix(u, v)
+            row[str(fl)], col[str(fl)], val[str(fl)] = self._csr_matrix(a, b)
 
         row = np.concatenate([row[str(fl)] for fl in range(len(self.x_r))])
         col = np.concatenate([col[str(fl)] for fl in range(len(self.x_r))])
@@ -234,6 +172,8 @@ class ActiveFlame:
         i = np.argsort(row)
 
         row, col, val = row[i], col[i], val[i]
+
+        info("- Generating matrix D..")
 
         mat = PETSc.Mat().create(PETSc.COMM_WORLD)
         mat.setSizes([(self.local_size, self.global_size), (self.local_size, self.global_size)])
@@ -244,51 +184,35 @@ class ActiveFlame:
         mat.assemblyBegin()
         mat.assemblyEnd()
 
+        info ("- Submatrix D is Assembled.")
+
         if problem_type == 'direct':
             self._D_kj = mat
         elif problem_type == 'adjoint':
             self._D_kj_adj = mat
 
     def assemble_matrix(self, omega, problem_type='direct'):
-        """
-        This function handles the multiplication of the obtained matrix D
-        with Flame Transfer Function and other constants.
-        The operation is
-        
-        D = (gamma - 1) / rho_u * Q / U * D_kj       
-        
-        At the end the matrix D is petsc4py.PETSc.Mat
-        Parameters
-        ----------
-        omega : complex
-            eigenvalue that found by solver
-        problem_type : str, optional
-            Specified problem type. The default is 'direct'.
-            Matrix can be obtained by selecting problem type, other
-            option is adjoint.
-        Returns
-        -------
-        petsc4py.PETSc.Mat
-        """
 
         if problem_type == 'direct':
 
             z = self.FTF(omega)
             self._D = self._D_kj*z*self.coeff
-                        
+            info("- Direct matrix D is assembling...")
+       
         elif problem_type == 'adjoint':
 
             z = np.conj(self.FTF(np.conj(omega)))
             self._D_adj = self.coeff * z * self._D_kj_adj
+            info("- Adjoint matrix D is assembling...")
+        
+        info("- Matrix D is assembled.")
 
     def get_derivative(self, omega):
-
-        """ Derivative of the unsteady heat release (flame) operator D
-        wrt the eigenvalue (complex angular frequency) omega."""
 
         z = self.FTF(omega, k=1)
         dD_domega = z * self._D_kj
         dD_domega = self.coeff * dD_domega
+        info("- Derivative of matrix D is assembled.")
 
         return dD_domega
 
@@ -323,10 +247,7 @@ class ActiveFlameDistributed:
         self.tol = tol
         self.omega = Constant(self.mesh, PETSc.ScalarType(0))
 
-        if gamma: # Constant gamma
-            pass
-        
-        else: # Variable gamma
+        if gamma==None: # Variable gamma
             gamma = gamma_function(self.T) 
 
         self._a = None
@@ -379,47 +300,7 @@ class ActiveFlameDistributed:
     @property
     def b(self):
         return self._b
-
-    def _indices_and_values(self, form):
-
-        temp = assemble_vector(form)
-        temp.ghostUpdate(addv=PETSc.InsertMode.ADD_VALUES, mode=PETSc.ScatterMode.REVERSE)
-        temp.ghostUpdate(addv=PETSc.InsertMode.INSERT, mode=PETSc.ScatterMode.FORWARD)
-        packed = temp.array
-        packed.real[abs(packed.real) < self.tol] = 0.0
-        packed.imag[abs(packed.imag) < self.tol] = 0.0
-
-        indices = np.array(np.flatnonzero(packed),dtype=np.int32)
-        global_indices = self.dofmaps.index_map.local_to_global(indices)
-        packed = list(zip(global_indices, packed[indices]))
-        return packed
-
-    def _distribute_vector_as_chunks(self, vector):
-        
-        vector = self.comm.gather(vector, root=0)
-        if self.rank == 0:
-            vector = [j for i in vector for j in i]
-            chunks = [[] for _ in range(self.size)]
-            for i, chunk in enumerate(vector):
-                chunks[i % self.size].append(chunk)
-        else:
-            vector = None
-            chunks = None
-        vector = self.comm.scatter(chunks, root=0)
-        
-        return vector
     
-    def _broadcast_vector(self, vector):
-        
-        vector = self.comm.gather(vector, root=0)
-        if vector:
-            vector = [j for i in vector for j in i]
-        else:
-            vector=[]
-        vector = self.comm.bcast(vector,root=0)
-
-        return vector
-
     def _assemble_left_vector(self, Derivative=False, problem_type='direct'):
 
         if Derivative == False:
@@ -433,23 +314,23 @@ class ActiveFlameDistributed:
             elif problem_type == 'adjoint':
                 form_to_assemble = self.left_form_adjoint_der
 
-        left_vector = self._indices_and_values(form_to_assemble)
+        left_vector = indices_and_values(self.dofmaps, form_to_assemble, tol=self.tol)
         
         if problem_type == 'direct':
-            left_vector = self._distribute_vector_as_chunks(left_vector)
+            left_vector = distribute_vector_as_chunks(left_vector)
         elif problem_type == 'adjoint':
-            left_vector = self._broadcast_vector(left_vector)
+            left_vector = broadcast_vector(left_vector)
 
         return left_vector
 
     def _assemble_right_vector(self, problem_type='direct'):
 
-        right_vector = self._indices_and_values(self.right_form)
+        right_vector = indices_and_values(self.dofmaps, self.right_form, tol=self.tol)
 
         if problem_type == 'direct':
-            right_vector = self._broadcast_vector(right_vector)
+            right_vector = broadcast_vector(right_vector)
         elif problem_type == 'adjoint':
-            right_vector = self._distribute_vector_as_chunks(right_vector)
+            right_vector = distribute_vector_as_chunks(right_vector)
         
         return right_vector
 
@@ -531,3 +412,43 @@ class ActiveFlameDistributed:
 
             D_kj_adj_bloch = self.bloch_object.blochify(self.adjoint_submatrices)
             self._D_kj_adj = D_kj_adj_bloch
+
+def distribute_vector_as_chunks(vector):
+    
+    vector = MPI.COMM_WORLD.gather(vector, root=0)
+    if MPI.COMM_WORLD.Get_rank() == 0:
+        vector = [j for i in vector for j in i]
+        chunks = [[] for _ in range(MPI.COMM_WORLD.Get_size())]
+        for i, chunk in enumerate(vector):
+            chunks[i % MPI.COMM_WORLD.Get_size()].append(chunk)
+    else:
+        vector = None
+        chunks = None
+    vector = MPI.COMM_WORLD.scatter(chunks, root=0)
+    
+    return vector
+
+def broadcast_vector(vector):
+    
+    vector = MPI.COMM_WORLD.gather(vector, root=0)
+    if vector:
+        vector = [j for i in vector for j in i]
+    else:
+        vector=[]
+    vector = MPI.COMM_WORLD.bcast(vector,root=0)
+
+    return vector
+
+def indices_and_values(dofmaps, form, tol=1e-5):
+
+    temp = assemble_vector(form)
+    temp.ghostUpdate(addv=PETSc.InsertMode.ADD_VALUES, mode=PETSc.ScatterMode.REVERSE)
+    temp.ghostUpdate(addv=PETSc.InsertMode.INSERT, mode=PETSc.ScatterMode.FORWARD)
+    packed = temp.array
+    packed.real[abs(packed.real) < tol] = 0.0
+    packed.imag[abs(packed.imag) < tol] = 0.0
+
+    indices = np.array(np.flatnonzero(packed),dtype=np.int32)
+    global_indices = dofmaps.index_map.local_to_global(indices)
+    packed = list(zip(global_indices, packed[indices]))
+    return packed

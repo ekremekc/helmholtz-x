@@ -1,7 +1,7 @@
 from helmholtz_x.acoustic_matrices import AcousticMatrices
 from helmholtz_x.flame_transfer_function import state_space
 from helmholtz_x.bloch_operator import Blochifier
-from helmholtz_x.flame_matrices import ActiveFlame
+from helmholtz_x.flame_matrices import PointwiseFlameMatrix
 from helmholtz_x.eigensolvers import fixed_point_iteration
 from helmholtz_x.eigenvectors import normalize_eigenvector
 from helmholtz_x.io_utils import XDMFReader, xdmf_writer
@@ -45,7 +45,7 @@ bloch_matrices = Blochifier(geometry=micca, boundary_conditions=boundary_conditi
 
 # Introduce Flame Matrix parameters
 FTF = state_space(params.S1, params.s2, params.s3, params.s4)
-D = ActiveFlame(mesh, subdomains, params.x_r, params.rho_amb, params.Q_tot, params.U_bulk, FTF, degree=degree, bloch_object=bloch_matrices)
+D = PointwiseFlameMatrix(mesh, subdomains, params.x_r, params.rho_amb, params.Q_tot, params.U_bulk, FTF, degree=degree, bloch_object=bloch_matrices)
 D.assemble_submatrices('direct')
 D.blochify()
 

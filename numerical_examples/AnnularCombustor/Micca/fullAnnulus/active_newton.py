@@ -1,6 +1,6 @@
 from mpi4py import MPI
 from petsc4py import PETSc
-from helmholtz_x.flame_matrices import ActiveFlame
+from helmholtz_x.flame_matrices import PointwiseFlameMatrix
 from helmholtz_x.flame_transfer_function import state_space
 from helmholtz_x.eigensolvers import newton_solver
 from helmholtz_x.acoustic_matrices import AcousticMatrices
@@ -26,7 +26,7 @@ matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, c, degree=deg
 
 # Introduce Flame Matrix parameters
 FTF = state_space(params.S1, params.s2, params.s3, params.s4)
-D = ActiveFlame(mesh, subdomains, params.x_r, params.rho_amb, params.Q_tot, params.U_bulk, FTF, degree=degree)
+D = PointwiseFlameMatrix(mesh, subdomains, params.x_r, params.rho_amb, params.Q_tot, params.U_bulk, FTF, degree=degree)
 D.assemble_submatrices('direct')
 
 # Introduce newton solver object and extract eigenvalues and normalized eigenvectors 

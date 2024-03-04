@@ -3,11 +3,11 @@
 <Xdmf Version="3.0" xmlns:xi="https://www.w3.org/2001/XInclude">
   <Domain>
     <Grid Name="Grid" GridType="Uniform">
-      <Topology TopologyType="Tetrahedron" NumberOfElements="55067" NodesPerElement="4">
-        <DataItem Dimensions="55067 4" NumberType="Int" Format="HDF">h.h5:/Mesh/Grid/topology</DataItem>
+      <Topology TopologyType="Tetrahedron" NumberOfElements="55014" NodesPerElement="4">
+        <DataItem Dimensions="55014 4" NumberType="Int" Format="HDF">h.h5:/Mesh/Grid/topology</DataItem>
       </Topology>
       <Geometry GeometryType="XYZ">
-        <DataItem Dimensions="11323 3" Format="HDF">h.h5:/Mesh/Grid/geometry</DataItem>
+        <DataItem Dimensions="11316 3" Format="HDF">h.h5:/Mesh/Grid/geometry</DataItem>
       </Geometry>
     </Grid>
     <Grid Name="f" GridType="Collection" CollectionType="Temporal">
@@ -15,10 +15,10 @@
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
         <Time Value="0" />
         <Attribute Name="real_f" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="11323 1" Format="HDF">h.h5:/Function/real_f/0</DataItem>
+          <DataItem Dimensions="11316 1" Format="HDF">h.h5:/Function/real_f/0</DataItem>
         </Attribute>
         <Attribute Name="imag_f" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="11323 1" Format="HDF">h.h5:/Function/imag_f/0</DataItem>
+          <DataItem Dimensions="11316 1" Format="HDF">h.h5:/Function/imag_f/0</DataItem>
         </Attribute>
       </Grid>
     </Grid>
