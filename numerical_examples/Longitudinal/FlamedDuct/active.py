@@ -1,6 +1,6 @@
 from helmholtz_x.eigensolvers import fixed_point_iteration
 from helmholtz_x.acoustic_matrices import AcousticMatrices
-from helmholtz_x.flame_matrices import ActiveFlameNT
+from helmholtz_x.flame_matrices import ActiveFlameDistributed
 from helmholtz_x.eigenvectors import normalize_eigenvector, velocity_eigenvector
 from helmholtz_x.io_utils import XDMFReader, xdmf_writer
 from helmholtz_x.dolfinx_utils import absolute, phase
@@ -31,7 +31,7 @@ matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, T, degree=deg
 rho = rho_ideal(mesh, T, params.p_gas, params.r_gas)
 w = gaussianFunction(mesh, params.x_ref, params.a_ref)
 h= halfGaussianFunction(mesh, params.x_flame, params.a_flame)
-D = ActiveFlameNT(mesh, w, h, rho, T, params.eta, params.tau, degree=1)
+D = ActiveFlameDistributed(mesh, w, h, rho, T, params.eta, params.tau, degree=1)
 
 # Introduce solver object and start
 target_dir = 250 * 2 * np.pi

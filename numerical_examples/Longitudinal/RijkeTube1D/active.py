@@ -1,10 +1,10 @@
-from helmholtz_x.eigensolvers import fixed_point_iteration
-from helmholtz_x.acoustic_matrices import AcousticMatrices
-from helmholtz_x.flame_matrices import ActiveFlameNT
-from helmholtz_x.eigenvectors import normalize_eigenvector, velocity_eigenvector
 from helmholtz_x.dolfinx_utils import OneDimensionalSetup
-from helmholtz_x.io_utils import xdmf_writer
 from helmholtz_x.parameters_utils import temperature_step, gaussianFunction, rho_step
+from helmholtz_x.acoustic_matrices import AcousticMatrices
+from helmholtz_x.eigensolvers import fixed_point_iteration
+from helmholtz_x.flame_matrices import ActiveFlameDistributed
+from helmholtz_x.eigenvectors import normalize_eigenvector, velocity_eigenvector
+from helmholtz_x.io_utils import xdmf_writer
 from helmholtz_x.solver_utils import start_time, execution_time
 import numpy as np
 import params as params
@@ -31,7 +31,7 @@ matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, T, degree=deg
 rho = rho_step(mesh, params.x_f, params.a_f, params.rho_d, params.rho_u)
 w = gaussianFunction(mesh, params.x_r, params.a_r)
 h = gaussianFunction(mesh, params.x_f, params.a_f)
-D = ActiveFlameNT(mesh, w, h, rho, T, params.eta, params.tau, degree=degree)
+D = ActiveFlameDistributed(mesh, w, h, rho, T, params.eta, params.tau, degree=degree)
 
 # Introduce solver object and start
 target = 200 * 2 * np.pi

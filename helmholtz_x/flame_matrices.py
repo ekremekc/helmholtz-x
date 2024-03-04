@@ -304,7 +304,7 @@ class ActiveFlame:
             D_kj_adj_bloch = self.bloch_object.blochify(self.adjoint_submatrices)
             self._D_kj_adj = D_kj_adj_bloch
 
-class ActiveFlameNT:
+class ActiveFlameDistributed:
 
     def __init__(self, mesh, w, h, rho, T, eta, tau, degree=1, gamma=None, tol=1e-5):
 
@@ -323,10 +323,10 @@ class ActiveFlameNT:
         self.tol = tol
         self.omega = Constant(self.mesh, PETSc.ScalarType(0))
 
-        if gamma: # Constant gamma [PRF paper (2018, Matthew Juniper)] 
+        if gamma: # Constant gamma
             pass
         
-        else: # Variable gamma [LOTAN]
+        else: # Variable gamma
             gamma = gamma_function(self.T) 
 
         self._a = None
@@ -346,10 +346,10 @@ class ActiveFlameNT:
         self.dx = dx
 
         # left vector
-        self.form_direct = form((gamma - 1) * eta * phi_i * h * exp(1j*self.omega*tau)  *  dx)
-        self.form_adjoint = form((gamma - 1) * eta *  phi_i * h * conj(exp(1j*self.omega*tau)) *  dx)
-        self.form_direct_der = form((gamma - 1)  *  1j * tau * phi_i * h * eta * exp(1j*self.omega*tau) * dx)
-        self.form_adjoint_der = form((gamma - 1)  *  tau * phi_i * h * eta * conj( 1j * exp(1j*self.omega*tau)) * dx)
+        self.left_form_direct = form((gamma - 1) * eta * phi_i * h * exp(1j*self.omega*tau)  *  dx)
+        self.left_form_adjoint = form((gamma - 1) * eta *  phi_i * h * conj(exp(1j*self.omega*tau)) *  dx)
+        self.left_form_direct_der = form((gamma - 1)  *  1j * tau * phi_i * h * eta * exp(1j*self.omega*tau) * dx)
+        self.left_form_adjoint_der = form((gamma - 1)  *  tau * phi_i * h * eta * conj( 1j * exp(1j*self.omega*tau)) * dx)
 
         # right vector
         if self.dimension == 1:
@@ -359,7 +359,7 @@ class ActiveFlameNT:
         else:
             n_ref = as_vector([0,0,1])
 
-        self.gradient_form = form(inner(n_ref,grad(phi_j)) / rho * w * dx)
+        self.right_form = form(inner(n_ref,grad(phi_j)) / rho * w * dx)
 
     @property
     def submatrices(self):
@@ -424,14 +424,14 @@ class ActiveFlameNT:
 
         if Derivative == False:
             if problem_type == 'direct':
-                form_to_assemble = self.form_direct
+                form_to_assemble = self.left_form_direct
             elif problem_type == 'adjoint':
-                form_to_assemble =  self.form_adjoint
+                form_to_assemble =  self.left_form_adjoint
         else:
             if problem_type == 'direct':
-                form_to_assemble = self.form_direct_der
+                form_to_assemble = self.left_form_direct_der
             elif problem_type == 'adjoint':
-                form_to_assemble = self.form_adjoint_der
+                form_to_assemble = self.left_form_adjoint_der
 
         left_vector = self._indices_and_values(form_to_assemble)
         
@@ -444,7 +444,7 @@ class ActiveFlameNT:
 
     def _assemble_right_vector(self, problem_type='direct'):
 
-        right_vector = self._indices_and_values(self.gradient_form)
+        right_vector = self._indices_and_values(self.right_form)
 
         if problem_type == 'direct':
             right_vector = self._broadcast_vector(right_vector)
@@ -512,10 +512,22 @@ class ActiveFlameNT:
         self.assemble_submatrices(problem_type)
         info("- Matrix D is assembled.")
 
-    def get_derivative(self, omega, problem_type='direct'):
+    def get_derivative(self, problem_type='direct'):
 
         self._a = self._assemble_left_vector(Derivative=True,problem_type=problem_type)
         self._b = self._assemble_right_vector(problem_type=problem_type)
         self.assemble_submatrices(problem_type)
         info("- Derivative of matrix D is assembled.")
         return self._D
+    
+    def blochify(self, problem_type='direct'):
+
+        if problem_type == 'direct':
+
+            D_kj_bloch = self.bloch_object.blochify(self.submatrices)
+            self._D_kj = D_kj_bloch
+
+        elif problem_type == 'adjoint':
+
+            D_kj_adj_bloch = self.bloch_object.blochify(self.adjoint_submatrices)
+            self._D_kj_adj = D_kj_adj_bloch
