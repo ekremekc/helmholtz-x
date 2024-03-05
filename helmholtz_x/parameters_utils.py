@@ -114,8 +114,7 @@ def rho_step(mesh, x_f, a_f, rho_d, rho_u, degree=1):
         rho.interpolate(lambda x: density_step(x[2], x_f, a_f, rho_d, rho_u))
     return rho
 
-def rho_ideal(mesh, temperature, P_amb, R, degree=1):
-    # V = FunctionSpace(mesh, ("CG", degree))
+def rho_ideal(temperature, P_amb, R):
     density = Function(temperature.function_space)
     density.x.array[:] =  P_amb /(R * temperature.x.array)
     density.x.scatter_forward()
@@ -205,21 +204,32 @@ def Q_volumetric(mesh, subdomains, Q_total, flame_tag=0, degree=0):
     V_flame = MPI.COMM_WORLD.allreduce(assemble_scalar(volume_form), op=MPI.SUM)
     q_tot = Q_total/V_flame
 
-    cells_holes = subdomains.find(flame_tag)
-    dofs_holes = locate_dofs_topological(V, mesh.topology.dim, cells_holes)
-    hole_array = unroll_dofmap(dofs_holes, V.dofmap.bs)
+    cells_flame = subdomains.find(flame_tag)
+    dofs_flame = locate_dofs_topological(V, mesh.topology.dim, cells_flame)
+    flame_array = unroll_dofmap(dofs_flame, V.dofmap.bs)
 
-    q.x.array[hole_array] = q_tot
+    q.x.array[flame_array] = q_tot
     q.x.scatter_forward()
 
     return q
 
-def Q_uniform(mesh, subdomains, Q_total, flame_tag=0, degree=1):
+def Q_multiple(mesh, subdomains, N_sector, degree=0):
 
+    V = FunctionSpace(mesh, ("DG", degree))
+    q = Function(V)
     dx = Measure("dx", subdomain_data=subdomains)
-    volume_form = form(Constant(mesh, PETSc.ScalarType(1))*dx(flame_tag))
-    V_flame = MPI.COMM_WORLD.allreduce(assemble_scalar(volume_form), op=MPI.SUM)
-    q_uniform = Constant(mesh, PETSc.ScalarType(Q_total/V_flame))
 
-    print(assemble_scalar(form(q_uniform*dx(0))))
-    return q_uniform
+    for flame in range(N_sector):
+        volume_form = form(Constant(mesh, PETSc.ScalarType(1))*dx(flame))
+        V_flame = MPI.COMM_WORLD.allreduce(assemble_scalar(volume_form), op=MPI.SUM)
+        q_tot = 1/V_flame
+
+        cells_flame = subdomains.find(flame)
+        dofs_flame = locate_dofs_topological(V, mesh.topology.dim, cells_flame)
+        flame_array = unroll_dofmap(dofs_flame, V.dofmap.bs)
+
+        q.x.array[flame_array] = q_tot
+
+    q.x.scatter_forward()
+
+    return q

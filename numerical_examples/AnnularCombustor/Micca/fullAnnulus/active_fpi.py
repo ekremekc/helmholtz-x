@@ -6,6 +6,7 @@ from helmholtz_x.eigensolvers import fixed_point_iteration
 from helmholtz_x.acoustic_matrices import AcousticMatrices
 from helmholtz_x.eigenvectors import normalize_eigenvector, velocity_eigenvector
 from helmholtz_x.io_utils import XDMFReader, xdmf_writer, dict_writer
+from helmholtz_x.parameters_utils import Q_multiple
 import params
 import datetime
 start_time = datetime.datetime.now()
@@ -27,7 +28,8 @@ matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, c, degree=deg
 
 # Introduce Flame Matrix parameters
 FTF = state_space(params.S1, params.s2, params.s3, params.s4)
-D = PointwiseFlameMatrix(mesh, subdomains, params.x_r, params.rho_amb, params.Q_tot, params.U_bulk, FTF, degree=degree)
+h = Q_multiple(mesh, subdomains, params.N_sector)
+D = PointwiseFlameMatrix(mesh, subdomains, params.x_r, h, params.rho_amb, params.Q_tot, params.U_bulk, FTF, degree=degree)
 
 ## Solving direct problem
 

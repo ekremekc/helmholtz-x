@@ -10,9 +10,12 @@ import basix
 import dolfinx
 
 class FlameMatrix:
-    def  __init__(self, mesh, degree, bloch_object=None, tol=1e-5):
+    def  __init__(self, mesh, h, q_0, u_b, degree, bloch_object=None, tol=1e-5):
 
         self.mesh = mesh
+        self.h = h
+        self.q_0 = q_0 
+        self.u_b = u_b
         self.degree = degree
         self.bloch_object=bloch_object
         self.tol = tol
@@ -44,8 +47,8 @@ class FlameMatrix:
         # Utility objects for flame matrix
         self._a = {}
         self._b = {}
-        self._D_kj = None
-        self._D_kj_adj = None
+        self._D_ij = None
+        self._D_ij_adj = None
         self._D = None
         self._D_adj = None
 
@@ -54,10 +57,10 @@ class FlameMatrix:
         return self._D
     @property
     def submatrices(self):
-        return self._D_kj
+        return self._D_ij
     @property
     def adjoint_submatrices(self):
-        return self._D_kj_adj
+        return self._D_ij_adj
     @property
     def adjoint_matrix(self):
         return self._D_adj
@@ -83,25 +86,47 @@ class FlameMatrix:
         packed = list(zip(global_indices, packed[indices]))
         return packed
 
+    @staticmethod
+    def get_sparse_matrix_data(left, right, problem_type='direct'):
+        if problem_type=='direct':
+            row = [item[0] for item in left]
+            col = [item[0] for item in right]
+
+            row_vals = [item[1] for item in left]
+            col_vals = [item[1] for item in right]
+        
+        elif problem_type=='adjoint':
+            row = [item[0] for item in right]
+            col = [item[0] for item in left]
+
+            row_vals = [item[1] for item in right]
+            col_vals = [item[1] for item in left]
+
+        product = np.outer(row_vals,col_vals)
+        val = product.flatten()
+
+        return row, col, val
+
     def blochify(self, problem_type='direct'):
 
         if problem_type == 'direct':
-            D_kj_bloch = self.bloch_object.blochify(self.submatrices)
-            self._D_kj = D_kj_bloch
+            D_ij_bloch = self.bloch_object.blochify(self.submatrices)
+            self._D_ij = D_ij_bloch
 
         elif problem_type == 'adjoint':
-            D_kj_adj_bloch = self.bloch_object.blochify(self.adjoint_submatrices)
-            self._D_kj_adj = D_kj_adj_bloch
+            D_ij_adj_bloch = self.bloch_object.blochify(self.adjoint_submatrices)
+            self._D_ij_adj = D_ij_adj_bloch
 
 class PointwiseFlameMatrix(FlameMatrix):
 
-    def __init__(self, mesh, subdomains, x_r, rho_u, q_0, u_b, FTF, degree=1, bloch_object=None, gamma=1.4, tol=1e-10):
+    def __init__(self, mesh, subdomains, x_r, h, rho_u, q_0, u_b, FTF, degree=1, bloch_object=None, gamma=1.4, tol=1e-10):
 
-        super().__init__(mesh, degree, bloch_object, tol)
+        super().__init__(mesh, h, q_0, u_b, degree, bloch_object, tol)
         self.subdomains = subdomains
         self.x_r = x_r
         self.FTF = FTF
-        self.coeff = (gamma - 1) * q_0 / (u_b * rho_u)
+        self.rho_u = rho_u
+        self.gamma = gamma
         self.dx = Measure("dx", subdomain_data=self.subdomains)
         
         # Reference cell data required for evaluation of derivative
@@ -115,18 +140,10 @@ class PointwiseFlameMatrix(FlameMatrix):
         num_cells = t_imap.size_local + t_imap.num_ghosts
         self.x_dofs = self.mesh.geometry.dofmap.reshape(num_cells, num_dofs_x)
 
-        # Starting assembly for the flames
-        for flame, x in enumerate(self.x_r):
-            self._a[str(flame)] = self._assemble_left_vector(flame)
-            self._b[str(flame)] = self._assemble_right_vector(x)
-            info("- Matrix contribution of flame "+str(flame)+" is computed.")
-
     def _assemble_left_vector(self, fl):
 
-        volume_form = form(Constant(self.mesh, PETSc.ScalarType(1))*self.dx(fl))
-        V_fl = MPI.COMM_WORLD.allreduce(assemble_scalar(volume_form), op=MPI.SUM)
-        gradient_form = form(inner(1/V_fl, self.phi_j)*self.dx(fl))
-        left_vector = self.indices_and_values(self.dofmaps, gradient_form, tol=self.tol)
+        left_form = form((self.gamma - 1) * self.q_0 / self.u_b * inner(self.h, self.phi_j)*self.dx(fl))
+        left_vector = self.indices_and_values(self.dofmaps, left_form, tol=self.tol)
 
         return left_vector
 
@@ -149,7 +166,7 @@ class PointwiseFlameMatrix(FlameMatrix):
             cell_dofs = self.dofmaps.cell_dofs(cell[0])
             global_dofs = self.dofmaps.index_map.local_to_global(cell_dofs)
             d_dx = (Jinv.T @ dphi).T
-            d_dphi_j = np.dot(d_dx, np.array(self.n_ref_pointwise))[:, 0]
+            d_dphi_j = np.dot(d_dx, np.array(self.n_ref_pointwise))[:, 0] / self.rho_u
             for i in range(len(d_dphi_j)):
                 right_vector.append([global_dofs[i], d_dphi_j[i]])
 
@@ -157,52 +174,7 @@ class PointwiseFlameMatrix(FlameMatrix):
 
         return right_vector
 
-    @staticmethod
-    def _csr_matrix(a, b):
-
-        nnz = len(a) * len(b)
-        
-        row = np.zeros(nnz)
-        col = np.zeros(nnz)
-        val = np.zeros(nnz, dtype=np.complex128)
-
-        for i, c in enumerate(a):
-            for j, d in enumerate(b):
-                row[i * len(b) + j] = c[0]
-                col[i * len(b) + j] = d[0]
-                val[i * len(b) + j] = c[1] * d[1]
-
-        row = row.astype(dtype='int32')
-        col = col.astype(dtype='int32')
-
-        return row, col, val
-
     def assemble_submatrices(self, problem_type='direct'):
-
-        row, col, val = dict(), dict(), dict()
-
-        for fl, point_contribution in enumerate(self.x_r):
-
-            a = None
-            b = None
-
-            if problem_type == 'direct':
-                a = self._a[str(fl)]
-                b = self._b[str(fl)]
-
-            elif problem_type == 'adjoint':
-                a = self._b[str(fl)]
-                b = self._a[str(fl)]
-
-            row[str(fl)], col[str(fl)], val[str(fl)] = self._csr_matrix(a, b)
-
-        row = np.concatenate([row[str(fl)] for fl in range(len(self.x_r))])
-        col = np.concatenate([col[str(fl)] for fl in range(len(self.x_r))])
-        val = np.concatenate([val[str(fl)] for fl in range(len(self.x_r))])
-        
-        i = np.argsort(row)
-
-        row, col, val = row[i], col[i], val[i]
 
         info("- Generating matrix D..")
 
@@ -210,30 +182,36 @@ class PointwiseFlameMatrix(FlameMatrix):
         mat.setSizes([(self.local_size, self.global_size), (self.local_size, self.global_size)])
         mat.setType('aij') 
         mat.setUp()
-        for i in range(len(row)):
-            mat.setValue(row[i],col[i],val[i], addv=PETSc.InsertMode.ADD_VALUES)
+
+        for flame, point_contribution in enumerate(self.x_r):
+            
+            left = self._assemble_left_vector(flame)
+            right = self._assemble_right_vector(point_contribution)
+            row,col,val = self.get_sparse_matrix_data(left, right, problem_type=problem_type)
+
+            mat.setValues(row,col,val, addv=PETSc.InsertMode.ADD_VALUES)
+            info("- Matrix contribution of flame "+str(flame)+" is computed.")
+
         mat.assemblyBegin()
         mat.assemblyEnd()
 
         info ("- Submatrix D is Assembled.")
 
         if problem_type == 'direct':
-            self._D_kj = mat
+            self._D_ij = mat
         elif problem_type == 'adjoint':
-            self._D_kj_adj = mat
+            self._D_ij_adj = mat
 
     def assemble_matrix(self, omega, problem_type='direct'):
 
         if problem_type == 'direct':
 
-            z = self.FTF(omega)
-            self._D = self._D_kj*z*self.coeff
+            self._D = self._D_ij*self.FTF(omega)
             info("- Direct matrix D is assembling...")
        
         elif problem_type == 'adjoint':
 
-            z = np.conj(self.FTF(np.conj(omega)))
-            self._D_adj = self.coeff * z * self._D_kj_adj
+            self._D_adj = self._D_ij_adj * np.conj(self.FTF(np.conj(omega)))
             info("- Adjoint matrix D is assembling...")
         
         info("- Matrix D is assembled.")
@@ -241,32 +219,28 @@ class PointwiseFlameMatrix(FlameMatrix):
     def get_derivative(self, omega):
 
         z = self.FTF(omega, k=1)
-        dD_domega = z * self.coeff * self._D_kj
+        dD_domega = z * self._D_ij
         info("- Derivative of matrix D is assembled.")
 
         return dD_domega
 
 class DistributedFlameMatrix(FlameMatrix):
 
-    def __init__(self, mesh, w, h, rho, T, eta, tau, degree=1, bloch_object=None, gamma=None, tol=1e-5):
-
-        super().__init__(mesh, degree, bloch_object, tol)
+    def __init__(self, mesh, w, h, rho, T, q_0, u_b, FTF, degree=1, bloch_object=None, gamma=None, tol=1e-5):
+        super().__init__(mesh, h, q_0, u_b, degree, bloch_object, tol)
         self.w = w
         self.h = h
-        self.rho = rho
         self.T = T
-        self.eta = eta
-        self.tau = tau
-
         self.omega = Constant(self.mesh, PETSc.ScalarType(0))
+        self.FTF = form(FTF)#n * exp(1j*self.omega*tau)
 
         if gamma==None: # Variable gamma depends on temperature
             gamma = gamma_function(self.T) 
 
-        self.left_form_direct = form((gamma - 1) * eta * self.phi_i * h * exp(1j*self.omega*tau)  *  dx)
-        self.left_form_adjoint = form((gamma - 1) * eta *  self.phi_i * h * conj(exp(1j*self.omega*tau)) *  dx)
-        self.left_form_direct_der = form((gamma - 1)  *  1j * tau * self.phi_i * h * eta * exp(1j*self.omega*tau) * dx)
-        self.left_form_adjoint_der = form((gamma - 1)  *  tau * self.phi_i * h * eta * conj( 1j * exp(1j*self.omega*tau)) * dx)
+        self.left_form_direct = form((gamma - 1) * q_0 / u_b * self.phi_i * h * self.FTF(self.omega)  *  dx)
+        self.left_form_adjoint = form((gamma - 1) * q_0 / u_b *  self.phi_i * h * conj(self.FTF(self.omega)) *  dx)
+        self.left_form_direct_der = form((gamma - 1) * q_0 / u_b *  self.phi_i * h * self.FTF.derivative(self.omega) * dx)
+        self.left_form_adjoint_der = form((gamma - 1) * q_0 / u_b  * self.phi_i * h * conj(self.FTF.derivative(self.omega)) * dx)
         
         self.right_form = form(inner(self.n_ref_dist,grad(self.phi_j)) / rho * w * dx)
     
@@ -296,31 +270,18 @@ class DistributedFlameMatrix(FlameMatrix):
             right_vector = distribute_vector_as_chunks(right_vector)
         return right_vector
 
-    def assemble_submatrices(self, problem_type='direct'):
-
-        if problem_type=='direct':
-            row = [item[0] for item in self._a]
-            col = [item[0] for item in self._b]
-
-            row_vals = [item[1] for item in self._a]
-            col_vals = [item[1] for item in self._b]
-        
-        elif problem_type=='adjoint':
-            row = [item[0] for item in self._b]
-            col = [item[0] for item in self._a]
-
-            row_vals = [item[1] for item in self._b]
-            col_vals = [item[1] for item in self._a]
-
-        product = np.outer(row_vals,col_vals)
-        val = product.flatten()
-
-        info("- Generating matrix D..")
+    def assemble_submatrices(self, problem_type='direct', Derivative=False):
 
         mat = PETSc.Mat().create(PETSc.COMM_WORLD)
         mat.setSizes([(self.local_size, self.global_size), (self.local_size, self.global_size)])
         mat.setType('mpiaij')
-        
+
+        left = self._assemble_left_vector(Derivative=Derivative, problem_type=problem_type)
+        right = self._assemble_right_vector(problem_type=problem_type)
+        row,col,val = self.get_sparse_matrix_data(left, right, problem_type=problem_type)
+
+        info("- Generating matrix D..")
+
         ONNZ = len(col)*np.ones(self.local_size,dtype=np.int32)
         mat.setPreallocationNNZ([ONNZ, ONNZ])
 
@@ -345,17 +306,13 @@ class DistributedFlameMatrix(FlameMatrix):
         elif problem_type == 'adjoint':
             self.omega.value = omega.conjugate()
             info("- Adjoint matrix D is assembling...")
-        
-        self._a = self._assemble_left_vector(problem_type=problem_type)
-        self._b = self._assemble_right_vector(problem_type=problem_type)
+       
         self.assemble_submatrices(problem_type)
         info("- Matrix D is assembled.")
 
     def get_derivative(self, problem_type='direct'):
 
-        self._a = self._assemble_left_vector(Derivative=True,problem_type=problem_type)
-        self._b = self._assemble_right_vector(problem_type=problem_type)
-        self.assemble_submatrices(problem_type)
+        self.assemble_submatrices(problem_type, Derivative=True)
         info("- Derivative of matrix D is assembled.")
         return self._D
 

@@ -22,17 +22,16 @@ T_d = c_d**2/(gamma*r_gas)
 
 # Flame transfer function
 
-FTF_mag =  0.1  # [/]
-Q_tot = -27.008910380099735 # [W]
-U_bulk = 0.10066660027273297
+n =  0.1  # [/]
+q_0 = -27.008910380099735 # [W]
+u_b = 0.10066660027273297
 
-eta = FTF_mag * Q_tot / U_bulk
 tau = 0.0015
 
 # For dimensional consistency
 d_tube = 0.047
 S_c = np.pi * d_tube **2 / 4
-eta /=  S_c
+n /=  S_c
 
 x_f = np.array([0.25, 0., 0.])  # [m]
 a_f = 0.025  # [m]

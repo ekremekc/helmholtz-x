@@ -23,16 +23,14 @@ T_d = c_d**2/(gamma*r_gas)
 
 # Flame transfer function
 
-FTF_mag =  0.1  # [/]
-Q_tot = -27.008910380099735 # [W]
-U_bulk = 0.10066660027273297 # [m/s]
-
-eta = FTF_mag * Q_tot / U_bulk
+n =  0.1  # [/]
+q_0 = -27.008910380099735 # [W]
+u_b = 0.10066660027273297 # [m/s]
 
 # For dimensional consistency
 d_tube = 0.047
 S_c = np.pi * d_tube / 4
-eta /=  S_c
+n /=  S_c
 
 tau = 0.0015
 

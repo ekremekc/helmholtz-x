@@ -66,3 +66,16 @@ def c(mesh):
             c.vector.setValueLocal(i, sqrt(gamma * r * 1200.))
     # c.x.scatter_forward()
     return c
+
+if __name__ == '__main__':
+
+    from helmholtz_x.io_utils import XDMFReader,xdmf_writer
+    from helmholtz_x.parameters_utils import Q_multiple
+    from dolfinx.fem import assemble_scalar, form
+    from ufl import Measure
+    MICCA = XDMFReader("MeshDir/mesh")
+    mesh, subdomains, facet_tags = MICCA.getAll()
+    dx = Measure("dx", subdomain_data=subdomains)
+    h = Q_multiple(mesh, subdomains, N_sector)
+    xdmf_writer("InputFunctions/Q", mesh, h)
+    print(assemble_scalar(form(Q_tot * h * dx)))
