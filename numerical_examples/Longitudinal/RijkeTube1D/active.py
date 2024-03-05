@@ -34,6 +34,7 @@ w = gaussianFunction(mesh, params.x_r, params.a_r)
 h = gaussianFunction(mesh, params.x_f, params.a_f)
 FTF = nTau(params.n, params.tau)
 D = DistributedFlameMatrix(mesh, w, h, rho, T, params.q_0, params.u_b, FTF, degree=degree)
+D.assemble_submatrices()
 
 # Introduce solver object and start
 target = 200 * 2 * np.pi

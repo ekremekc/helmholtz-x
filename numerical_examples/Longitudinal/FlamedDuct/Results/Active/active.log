@@ -1,7 +1,7 @@
 
 XDMF Mesh - Cell data loaded.
 XDMF Mesh - Facet data loaded.
-Number of cells:  55,066
+Number of cells:  55,121
 Number of cores:  1 
 
 Degree of basis functions:  1 
@@ -14,55 +14,47 @@ Degree of basis functions:  1
 - Matrix B is assembled.
 - Matrix C is assembled.
 
+- Generating matrix D..
+- Submatrix D is Assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
 -> Fixed point iteration started.
 
 * iter =  1
 - Direct matrix D is assembling...
-- Generating matrix D..
-- Submatrix D is Assembled.
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1690.30152325  -28.51706747j,  |domega| = 4.04e+01
++ omega = +1690.32957158  -28.49383255j,  |domega| = 4.03e+01
 
 * iter =  2
 - Direct matrix D is assembling...
-- Generating matrix D..
-- Submatrix D is Assembled.
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1652.12808493  -43.47661273j,  |domega| = 4.10e+01
++ omega = +1652.21829691  -43.43415605j,  |domega| = 4.09e+01
 
 * iter =  3
 - Direct matrix D is assembling...
-- Generating matrix D..
-- Submatrix D is Assembled.
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1652.13037270  -43.46965614j,  |domega| = 7.32e-03
++ omega = +1652.22057249  -43.42722961j,  |domega| = 7.29e-03
 
 * iter =  4
 - Direct matrix D is assembling...
-- Generating matrix D..
-- Submatrix D is Assembled.
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1652.13037304  -43.46965671j,  |domega| = 6.61e-07
++ omega = +1652.22057283  -43.42723018j,  |domega| = 6.57e-07
 
 * iter =  5
 - Direct matrix D is assembling...
-- Generating matrix D..
-- Submatrix D is Assembled.
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1652.13037304  -43.46965671j,  |domega| = 4.76e-12
++ omega = +1652.22057283  -43.42723018j,  |domega| = 3.20e-12
 
-Eigenvalue-> 1652.130373-43.469657j | Eigenfrequency-> 262.944716-6.918411j
+Eigenvalue-> 1652.220573-43.427230j | Eigenfrequency-> 262.959071-6.911658j
  
-Total Execution Time:  0:00:42.193883
+Total Execution Time:  0:00:38.380374

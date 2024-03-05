@@ -1,6 +1,6 @@
-from dolfinx.fem  import FunctionSpace, Constant, form, assemble_scalar
+from dolfinx.fem  import FunctionSpace, form
 from dolfinx.fem.petsc import assemble_vector
-from ufl import Measure, TestFunction, TrialFunction, inner, as_vector, grad, dx, exp, conj
+from ufl import Measure, TestFunction, TrialFunction, inner, as_vector, grad, dx
 from .parameters_utils import gamma_function
 from .solver_utils import info
 from petsc4py import PETSc
@@ -10,12 +10,13 @@ import basix
 import dolfinx
 
 class FlameMatrix:
-    def  __init__(self, mesh, h, q_0, u_b, degree, bloch_object=None, tol=1e-5):
+    def  __init__(self, mesh, h, q_0, u_b, FTF, degree, bloch_object=None, tol=1e-5):
 
         self.mesh = mesh
         self.h = h
         self.q_0 = q_0 
         self.u_b = u_b
+        self.FTF = FTF
         self.degree = degree
         self.bloch_object=bloch_object
         self.tol = tol
@@ -26,10 +27,7 @@ class FlameMatrix:
         self.phi_j = TestFunction(self.V)
         self.gdim = self.mesh.geometry.dim
 
-        # PETSc matrix utils
-        self.comm = MPI.COMM_WORLD
-        self.rank = self.comm.Get_rank()
-        self.size = self.comm.Get_size()
+        # Matrix utils
         self.global_size = self.V.dofmap.index_map.size_global
         self.local_size = self.V.dofmap.index_map.size_local
 
@@ -45,8 +43,6 @@ class FlameMatrix:
             self.n_ref_pointwise = np.array([[0, 0, 1]]).T
 
         # Utility objects for flame matrix
-        self._a = {}
-        self._b = {}
         self._D_ij = None
         self._D_ij_adj = None
         self._D = None
@@ -59,18 +55,12 @@ class FlameMatrix:
     def submatrices(self):
         return self._D_ij
     @property
-    def adjoint_submatrices(self):
-        return self._D_ij_adj
-    @property
     def adjoint_matrix(self):
         return self._D_adj
     @property
-    def a(self):
-        return self._a
-    @property
-    def b(self):
-        return self._b
-
+    def adjoint_submatrices(self):
+        return self._D_ij_adj
+    
     @staticmethod
     def indices_and_values(dofmaps, form, tol):
 
@@ -106,6 +96,25 @@ class FlameMatrix:
         val = product.flatten()
 
         return row, col, val
+    
+    def assemble_matrix(self, omega, problem_type='direct'):
+
+        if problem_type == 'direct':
+            self._D = self._D_ij*self.FTF(omega)
+            info("- Direct matrix D is assembling...")
+       
+        elif problem_type == 'adjoint':
+            self._D_adj = self._D_ij_adj * np.conj(self.FTF(np.conj(omega)))
+            info("- Adjoint matrix D is assembling...")
+        
+        info("- Matrix D is assembled.")
+    
+    def get_derivative(self, omega):
+
+        dD_domega = self.FTF.derivative(omega) * self._D_ij
+        info("- Derivative of matrix D is assembled.")
+
+        return dD_domega
 
     def blochify(self, problem_type='direct'):
 
@@ -116,15 +125,14 @@ class FlameMatrix:
         elif problem_type == 'adjoint':
             D_ij_adj_bloch = self.bloch_object.blochify(self.adjoint_submatrices)
             self._D_ij_adj = D_ij_adj_bloch
-
+    
 class PointwiseFlameMatrix(FlameMatrix):
 
     def __init__(self, mesh, subdomains, x_r, h, rho_u, q_0, u_b, FTF, degree=1, bloch_object=None, gamma=1.4, tol=1e-10):
 
-        super().__init__(mesh, h, q_0, u_b, degree, bloch_object, tol)
+        super().__init__(mesh, h, q_0, u_b, FTF, degree, bloch_object, tol)
         self.subdomains = subdomains
         self.x_r = x_r
-        self.FTF = FTF
         self.rho_u = rho_u
         self.gamma = gamma
         self.dx = Measure("dx", subdomain_data=self.subdomains)
@@ -202,60 +210,30 @@ class PointwiseFlameMatrix(FlameMatrix):
         elif problem_type == 'adjoint':
             self._D_ij_adj = mat
 
-    def assemble_matrix(self, omega, problem_type='direct'):
-
-        if problem_type == 'direct':
-
-            self._D = self._D_ij*self.FTF(omega)
-            info("- Direct matrix D is assembling...")
-       
-        elif problem_type == 'adjoint':
-
-            self._D_adj = self._D_ij_adj * np.conj(self.FTF(np.conj(omega)))
-            info("- Adjoint matrix D is assembling...")
-        
-        info("- Matrix D is assembled.")
-
-    def get_derivative(self, omega):
-
-        z = self.FTF(omega, k=1)
-        dD_domega = z * self._D_ij
-        info("- Derivative of matrix D is assembled.")
-
-        return dD_domega
-
 class DistributedFlameMatrix(FlameMatrix):
 
     def __init__(self, mesh, w, h, rho, T, q_0, u_b, FTF, degree=1, bloch_object=None, gamma=None, tol=1e-5):
-        super().__init__(mesh, h, q_0, u_b, degree, bloch_object, tol)
+        super().__init__(mesh, h, q_0, u_b, FTF, degree, bloch_object, tol)
         self.w = w
         self.h = h
         self.T = T
-        self.omega = Constant(self.mesh, PETSc.ScalarType(0))
-        self.FTF = form(FTF)#n * exp(1j*self.omega*tau)
 
         if gamma==None: # Variable gamma depends on temperature
             gamma = gamma_function(self.T) 
 
-        self.left_form_direct = form((gamma - 1) * q_0 / u_b * self.phi_i * h * self.FTF(self.omega)  *  dx)
-        self.left_form_adjoint = form((gamma - 1) * q_0 / u_b *  self.phi_i * h * conj(self.FTF(self.omega)) *  dx)
-        self.left_form_direct_der = form((gamma - 1) * q_0 / u_b *  self.phi_i * h * self.FTF.derivative(self.omega) * dx)
-        self.left_form_adjoint_der = form((gamma - 1) * q_0 / u_b  * self.phi_i * h * conj(self.FTF.derivative(self.omega)) * dx)
+        self.left_form_direct = form((gamma - 1) * q_0 / u_b * self.phi_i * h *  dx)
+        self.left_form_adjoint = form((gamma - 1) * q_0 / u_b *  self.phi_i * h * dx)
         
         self.right_form = form(inner(self.n_ref_dist,grad(self.phi_j)) / rho * w * dx)
     
-    def _assemble_left_vector(self, Derivative=False, problem_type='direct'):
-        if Derivative == False:
-            if problem_type == 'direct':
-                form_to_assemble = self.left_form_direct
-            elif problem_type == 'adjoint':
-                form_to_assemble =  self.left_form_adjoint
-        else:
-            if problem_type == 'direct':
-                form_to_assemble = self.left_form_direct_der
-            elif problem_type == 'adjoint':
-                form_to_assemble = self.left_form_adjoint_der
+    def _assemble_left_vector(self, problem_type='direct'):
+        if problem_type == 'direct':
+            form_to_assemble = self.left_form_direct
+        elif problem_type == 'adjoint':
+            form_to_assemble =  self.left_form_adjoint
+       
         left_vector = self.indices_and_values(self.dofmaps, form_to_assemble, self.tol)
+
         if problem_type == 'direct':
             left_vector = distribute_vector_as_chunks(left_vector)
         elif problem_type == 'adjoint':
@@ -270,13 +248,13 @@ class DistributedFlameMatrix(FlameMatrix):
             right_vector = distribute_vector_as_chunks(right_vector)
         return right_vector
 
-    def assemble_submatrices(self, problem_type='direct', Derivative=False):
+    def assemble_submatrices(self, problem_type='direct'):
 
         mat = PETSc.Mat().create(PETSc.COMM_WORLD)
         mat.setSizes([(self.local_size, self.global_size), (self.local_size, self.global_size)])
         mat.setType('mpiaij')
 
-        left = self._assemble_left_vector(Derivative=Derivative, problem_type=problem_type)
+        left = self._assemble_left_vector(problem_type=problem_type)
         right = self._assemble_right_vector(problem_type=problem_type)
         row,col,val = self.get_sparse_matrix_data(left, right, problem_type=problem_type)
 
@@ -294,27 +272,9 @@ class DistributedFlameMatrix(FlameMatrix):
         info ("- Submatrix D is Assembled.")
 
         if problem_type == 'direct':
-            self._D = mat
+            self._D_ij = mat
         elif problem_type == 'adjoint':
-            self._D_adj = mat
-
-    def assemble_matrix(self, omega, problem_type='direct'):
-        
-        if problem_type == 'direct':
-            self.omega.value = omega
-            info("- Direct matrix D is assembling...")
-        elif problem_type == 'adjoint':
-            self.omega.value = omega.conjugate()
-            info("- Adjoint matrix D is assembling...")
-       
-        self.assemble_submatrices(problem_type)
-        info("- Matrix D is assembled.")
-
-    def get_derivative(self, problem_type='direct'):
-
-        self.assemble_submatrices(problem_type, Derivative=True)
-        info("- Derivative of matrix D is assembled.")
-        return self._D
+            self._D_ij_adj = mat
 
 def distribute_vector_as_chunks(vector):
     vector = MPI.COMM_WORLD.gather(vector, root=0)

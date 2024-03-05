@@ -14,6 +14,8 @@ Degree of basis functions:  1
 - Matrix A is assembled.
 - Matrix C is assembled.
 
+- Generating matrix D..
+- Submatrix D is Assembled.
 --> Fixed point iteration started.
 
 - EPS solver started.
@@ -23,40 +25,32 @@ Degree of basis functions:  1
  
 * iter =  1
 - Direct matrix D is assembling...
-- Generating matrix D..
-- Submatrix D is Assembled.
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1248.78795053  +3.42946913j,  |domega| = 3.61e+00
++ omega = +1248.78784704  +3.42956819j,  |domega| = 3.61e+00
 
 * iter =  2
 - Direct matrix D is assembling...
-- Generating matrix D..
-- Submatrix D is Assembled.
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1247.70091091  +6.79767184j,  |domega| = 3.54e+00
++ omega = +1247.70071094  +6.79786693j,  |domega| = 3.54e+00
 
 * iter =  3
 - Direct matrix D is assembling...
-- Generating matrix D..
-- Submatrix D is Assembled.
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1247.70075389  +6.79778179j,  |domega| = 1.92e-04
++ omega = +1247.70054429  +6.79797695j,  |domega| = 2.00e-04
 
 * iter =  4
 - Direct matrix D is assembling...
-- Generating matrix D..
-- Submatrix D is Assembled.
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1247.70075388  +6.79778179j,  |domega| = 5.84e-09
++ omega = +1247.70054428  +6.79797695j,  |domega| = 5.55e-09
 
-Eigenvalue-> 1247.700754+6.797782j | Eigenfrequency-> 198.577742+1.081901j
+Eigenvalue-> 1247.700544+6.797977j | Eigenfrequency-> 198.577709+1.081932j
  
-Total Execution Time:  0:00:01.478949
+Total Execution Time:  0:00:01.641611

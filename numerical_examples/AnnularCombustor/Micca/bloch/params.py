@@ -29,8 +29,8 @@ T_a = 1521.  # [K] at z = 0
 T_b = 1200.  # [K] at z = l_cc
 
 # Experimental flame transfer function data
-Q_tot = 2080.  # [W] **per burner**
-U_bulk = 0.66  # [m/s]
+q_0 = 2080.  # [W] **per burner**
+u_b = 0.66  # [m/s]
 mat = loadmat('ftf.mat')
 S1 = mat['A']
 s2 = mat['b']

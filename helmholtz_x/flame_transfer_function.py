@@ -7,11 +7,10 @@
 
 import numpy as np
 from ufl import exp
-from dolfinx.fem import form
 
 def n_tau(n, tau):
     """
-    :param N3: non-dimensional interaction index
+    :param n: non-dimensional interaction index
     :param tau: time delay [s]
     :return: function
     """
@@ -39,6 +38,34 @@ def time_delay(tau):
     def inner_func(omega, derivative_deg=0):
         return (1j * tau)**derivative_deg * exp(1j * omega * tau)
     return inner_func
+
+class stateSpace:
+    def __init__(self, A, b, c, d):
+        self.A = A
+        self.b = b
+        self.c = c
+        self.d = d
+    
+        self.Id = np.eye(*A.shape)
+
+    def __call__(self, omega):
+        k = 0
+        omega = np.conj(omega)
+        Mat = (- 1j) ** k * np.math.factorial(k) * \
+            np.linalg.matrix_power(1j * omega * self.Id - self.A, - (k + 1))
+        row = np.dot(self.c, Mat)
+        H = np.dot(row, self.b)
+        H += self.d
+        return np.conj(H[0][0])
+    
+    def derivative(self, omega):
+        k = 1
+        omega = np.conj(omega)
+        Mat = (- 1j) ** k * np.math.factorial(k) * \
+            np.linalg.matrix_power(1j * omega * self.Id - self.A, - (k + 1))
+        row = np.dot(self.c, Mat)
+        H = np.dot(row, self.b)
+        return np.conj(H[0][0])
 
 def state_space(A, b, c, d):
     """

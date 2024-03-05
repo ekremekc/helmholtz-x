@@ -15,12 +15,10 @@ x_ref   = np.array([0., 0., 0.35]) #m
 a_ref   = 0.025
 
 # Flame transfer function data
-FTF_mag = 1
+n = 1
 tau = 0.2E-3
-Q_tot = -57015.232012607579  # W
-U_bulk = 11.485465769828917 # m/s
-
-eta = FTF_mag * Q_tot / U_bulk
+q_0 = -57015.232012607579  # W
+u_b = 11.485465769828917 # m/s
 
 # Choked boundary condition data
 M0 = 9.2224960671405849E-003
@@ -50,5 +48,5 @@ if __name__ == '__main__':
     h_half = halfGaussianFunction(mesh, x_flame, a_flame)
     xdmf_writer("InputFunctions/h_half",mesh, h_half)
 
-    rho = rho_ideal(mesh, temp, p_gas, r_gas)
+    rho = rho_ideal(temp, p_gas, r_gas)
     xdmf_writer("InputFunctions/rho",mesh, rho)

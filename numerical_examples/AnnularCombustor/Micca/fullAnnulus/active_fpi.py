@@ -1,7 +1,7 @@
 from mpi4py import MPI
 from petsc4py import PETSc
 from helmholtz_x.flame_matrices import PointwiseFlameMatrix
-from helmholtz_x.flame_transfer_function import state_space
+from helmholtz_x.flame_transfer_function import stateSpace
 from helmholtz_x.eigensolvers import fixed_point_iteration
 from helmholtz_x.acoustic_matrices import AcousticMatrices
 from helmholtz_x.eigenvectors import normalize_eigenvector, velocity_eigenvector
@@ -27,9 +27,9 @@ c = params.c(mesh)
 matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, c, degree=degree)
 
 # Introduce Flame Matrix parameters
-FTF = state_space(params.S1, params.s2, params.s3, params.s4)
+FTF = stateSpace(params.S1, params.s2, params.s3, params.s4)
 h = Q_multiple(mesh, subdomains, params.N_sector)
-D = PointwiseFlameMatrix(mesh, subdomains, params.x_r, h, params.rho_amb, params.Q_tot, params.U_bulk, FTF, degree=degree)
+D = PointwiseFlameMatrix(mesh, subdomains, params.x_r, h, params.rho_amb, params.q_0, params.u_b, FTF, degree=degree)
 
 ## Solving direct problem
 
