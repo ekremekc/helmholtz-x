@@ -100,3 +100,15 @@ Then **helmholtz-x** can be installed within this conda environment by typing.
 pip3 install -e .
 ```
 in the **helmholtz-x** directory.
+
+## How to use helmholtz-x?
+
+You just need to navigate the test case you like in /numerical_examples folder and type 
+
+```
+python3 -u file.py
+```
+in the terminal. The flowchart and duties of the components within helholtz-x are visualized below;
+
+![alt text](https://github.com/ekremekc/helmholtz-x/blob/main/docs/flowchart.svg?raw=true)
+
