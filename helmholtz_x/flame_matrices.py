@@ -1,13 +1,13 @@
 from ufl import Measure, TestFunction, TrialFunction, inner, as_vector, grad, dx
 from dolfinx.cpp.geometry import determine_point_ownership
 from dolfinx.fem.petsc import assemble_vector
-from dolfinx.fem  import FunctionSpace, form
+from dolfinx.fem  import FunctionSpace, Expression, form
 from .parameters_utils import gamma_function
+from .dolfinx_utils import distribute_vector_as_chunks, broadcast_vector
 from .solver_utils import info
 from petsc4py import PETSc
 from mpi4py import MPI
 import numpy as np
-import basix
 
 class FlameMatrix:
     def  __init__(self, mesh, h, q_0, u_b, FTF, degree, bloch_object=None, tol=1e-5):
@@ -33,14 +33,11 @@ class FlameMatrix:
 
         # Vector for reference direction
         if self.gdim == 1:
-            self.n_ref_dist = as_vector([1])
-            self.n_ref_pointwise = np.array([[1]])
+            self.n_ref = as_vector([1])
         elif self.gdim == 2:
-            self.n_ref_dist = as_vector([1,0])
-            self.n_ref_pointwise = np.array([[1, 0]]).T
+            self.n_ref = as_vector([1,0])
         else:
-            self.n_ref_dist = as_vector([0,0,1])
-            self.n_ref_pointwise = np.array([[0, 0, 1]]).T
+            self.n_ref = as_vector([0,0,1])
 
         # Utility objects for flame matrix
         self._D_ij = None
@@ -135,11 +132,6 @@ class PointwiseFlameMatrix(FlameMatrix):
         self.rho_u = rho_u
         self.gamma = gamma
         self.dx = Measure("dx", subdomain_data=subdomains)
-        
-        # Reference cell data required for evaluation of derivative
-        ct = self.mesh.basix_cell()
-        self.coordinate_element = basix.create_element(basix.finite_element.string_to_family(
-                "Lagrange", ct.name), basix.cell.string_to_type(ct.name), 1, basix.LagrangeVariant.equispaced)
 
         # Data required for pull back of coordinate
         num_dofs_x = self.mesh.geometry.dofmap[0].size  # NOTE: Assumes same cell geometry in whole mesh
@@ -153,27 +145,21 @@ class PointwiseFlameMatrix(FlameMatrix):
         left_vector = self.indices_and_values(self.dofmaps, left_form, tol=self.tol)
 
         _, _, owning_points, cell = determine_point_ownership( self.mesh._cpp_object, point, 1e-10)
-        point_ref = np.zeros((len(cell), self.mesh.geometry.dim), dtype=self.mesh.geometry.x.dtype)
         right_vector = []
 
         if len(cell) > 0: # Only add contribution if cell is owned 
-
             cell_geometry = self.mesh.geometry.x[self.x_dofs[cell[0]], :self.gdim]
-            point_ref = self.mesh.geometry.cmaps[0].pull_back([point[:self.gdim]], cell_geometry)
-            dphi = self.coordinate_element.tabulate(1, point_ref)[1:,0,:]
-            dphi = dphi.reshape((dphi.shape[0], dphi.shape[1]))
-            
-            J = np.dot(cell_geometry.T, dphi.T)
-            Jinv = np.linalg.inv(J)  
+            point_ref = self.mesh.geometry.cmaps[0].pull_back([point], cell_geometry)
 
+            right_form = Expression(inner(grad(TestFunction(self.V)), self.n_ref), point_ref, comm=MPI.COMM_SELF)
+            dphij_x_rs = right_form.eval(self.mesh, cell)[0] / self.rho_u            
+            
             cell_dofs = self.dofmaps.cell_dofs(cell[0])
             global_dofs = self.dofmaps.index_map.local_to_global(cell_dofs)
-            d_dx = (Jinv.T @ dphi).T
-            d_dphi_j = np.dot(d_dx, np.array(self.n_ref_pointwise))[:, 0] / self.rho_u
-            for i in range(len(d_dphi_j)):
-                right_vector.append([global_dofs[i], d_dphi_j[i]])
+            for global_dof, dphij_x_r in zip(global_dofs, dphij_x_rs):
+                right_vector.append([global_dof, dphij_x_r])
 
-        right_vector = broadcast_vector(right_vector)
+            right_vector = broadcast_vector(right_vector)
 
         return left_vector, right_vector
 
@@ -213,7 +199,7 @@ class DistributedFlameMatrix(FlameMatrix):
             gamma = gamma_function(T) 
 
         self.left_form = form((gamma - 1) * q_0 / u_b * self.phi_i * h *  dx)
-        self.right_form = form(inner(self.n_ref_dist,grad(self.phi_j)) / rho * w * dx)
+        self.right_form = form(inner(self.n_ref,grad(self.phi_j)) / rho * w * dx)
     
     def _assemble_vectors(self, problem_type='direct'):
        
@@ -254,25 +240,3 @@ class DistributedFlameMatrix(FlameMatrix):
             self._D_ij = mat
         elif problem_type == 'adjoint':
             self._D_ij_adj = mat
-
-def distribute_vector_as_chunks(vector):
-    vector = MPI.COMM_WORLD.gather(vector, root=0)
-    if MPI.COMM_WORLD.Get_rank() == 0:
-        vector = [j for i in vector for j in i]
-        chunks = [[] for _ in range(MPI.COMM_WORLD.Get_size())]
-        for i, chunk in enumerate(vector):
-            chunks[i % MPI.COMM_WORLD.Get_size()].append(chunk)
-    else:
-        vector = None
-        chunks = None
-    vector = MPI.COMM_WORLD.scatter(chunks, root=0)
-    return vector
-
-def broadcast_vector(vector):
-    vector = MPI.COMM_WORLD.gather(vector, root=0)
-    if vector:
-        vector = [j for i in vector for j in i]
-    else:
-        vector=[]
-    vector = MPI.COMM_WORLD.bcast(vector,root=0)
-    return vector

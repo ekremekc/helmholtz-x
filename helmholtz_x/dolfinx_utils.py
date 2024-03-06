@@ -228,3 +228,25 @@ def SquareSetup(n_elem, x_f = 0.25, a_f = 0.025,):
     facet_tags = meshtags(mesh, fdim, facet_indices[sorted_facets], facet_markers[sorted_facets])
 
     return mesh, subdomains, facet_tags
+
+def distribute_vector_as_chunks(vector):
+    vector = MPI.COMM_WORLD.gather(vector, root=0)
+    if MPI.COMM_WORLD.Get_rank() == 0:
+        vector = [j for i in vector for j in i]
+        chunks = [[] for _ in range(MPI.COMM_WORLD.Get_size())]
+        for i, chunk in enumerate(vector):
+            chunks[i % MPI.COMM_WORLD.Get_size()].append(chunk)
+    else:
+        vector = None
+        chunks = None
+    vector = MPI.COMM_WORLD.scatter(chunks, root=0)
+    return vector
+
+def broadcast_vector(vector):
+    vector = MPI.COMM_WORLD.gather(vector, root=0)
+    if vector:
+        vector = [j for i in vector for j in i]
+    else:
+        vector=[]
+    vector = MPI.COMM_WORLD.bcast(vector,root=0)
+    return vector
