@@ -1,13 +1,13 @@
-from dolfinx.fem  import FunctionSpace, form
-from dolfinx.fem.petsc import assemble_vector
 from ufl import Measure, TestFunction, TrialFunction, inner, as_vector, grad, dx
+from dolfinx.cpp.geometry import determine_point_ownership
+from dolfinx.fem.petsc import assemble_vector
+from dolfinx.fem  import FunctionSpace, form
 from .parameters_utils import gamma_function
 from .solver_utils import info
 from petsc4py import PETSc
 from mpi4py import MPI
 import numpy as np
 import basix
-import dolfinx
 
 class FlameMatrix:
     def  __init__(self, mesh, h, q_0, u_b, FTF, degree, bloch_object=None, tol=1e-5):
@@ -131,11 +131,10 @@ class PointwiseFlameMatrix(FlameMatrix):
     def __init__(self, mesh, subdomains, x_r, h, rho_u, q_0, u_b, FTF, degree=1, bloch_object=None, gamma=1.4, tol=1e-10):
 
         super().__init__(mesh, h, q_0, u_b, FTF, degree, bloch_object, tol)
-        self.subdomains = subdomains
         self.x_r = x_r
         self.rho_u = rho_u
         self.gamma = gamma
-        self.dx = Measure("dx", subdomain_data=self.subdomains)
+        self.dx = Measure("dx", subdomain_data=subdomains)
         
         # Reference cell data required for evaluation of derivative
         ct = self.mesh.basix_cell()
@@ -156,8 +155,8 @@ class PointwiseFlameMatrix(FlameMatrix):
         return left_vector
 
     def _assemble_right_vector(self, point):
-        
-        _, _, owning_points, cell = dolfinx.cpp.geometry.determine_point_ownership( self.mesh._cpp_object, point, 1e-10)
+
+        _, _, owning_points, cell = determine_point_ownership( self.mesh._cpp_object, point, 1e-10)
         point_ref = np.zeros((len(cell), self.mesh.geometry.dim), dtype=self.mesh.geometry.x.dtype)
         right_vector = []
 
@@ -214,12 +213,9 @@ class DistributedFlameMatrix(FlameMatrix):
 
     def __init__(self, mesh, w, h, rho, T, q_0, u_b, FTF, degree=1, bloch_object=None, gamma=None, tol=1e-5):
         super().__init__(mesh, h, q_0, u_b, FTF, degree, bloch_object, tol)
-        self.w = w
-        self.h = h
-        self.T = T
 
         if gamma==None: # Variable gamma depends on temperature
-            gamma = gamma_function(self.T) 
+            gamma = gamma_function(T) 
 
         self.left_form_direct = form((gamma - 1) * q_0 / u_b * self.phi_i * h *  dx)
         self.left_form_adjoint = form((gamma - 1) * q_0 / u_b *  self.phi_i * h * dx)
@@ -262,7 +258,6 @@ class DistributedFlameMatrix(FlameMatrix):
 
         ONNZ = len(col)*np.ones(self.local_size,dtype=np.int32)
         mat.setPreallocationNNZ([ONNZ, ONNZ])
-
         mat.setOption(PETSc.Mat.Option.NEW_NONZERO_ALLOCATION_ERR, False)
         mat.setUp()
         mat.setValues(row, col, val, addv=PETSc.InsertMode.ADD_VALUES)
