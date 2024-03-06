@@ -103,12 +103,18 @@ in the **helmholtz-x** directory.
 
 ## How to use helmholtz-x?
 
-You just need to navigate the test case you like in /numerical_examples folder and type 
+You just need to navigate the example case you like in /numerical_examples folder and type 
 
 ```
 python3 -u file.py
 ```
-in the terminal. The flowchart and duties of the components within helholtz-x are visualized below;
+in the terminal. Each example case includes `runAll.sh`, which includes the example commands for running files in serial as well as in parallel. It can be executed with;
+```
+source runAll.sh
+```
+to perform testing for serial and parallel runs and writes the log.
+
+The flowchart and duties of the components within **helmholtz-x** are visualized below;
 
 ![alt text](https://github.com/ekremekc/helmholtz-x/blob/main/docs/flowchart.svg?raw=true)
 
