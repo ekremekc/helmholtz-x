@@ -217,32 +217,22 @@ class DistributedFlameMatrix(FlameMatrix):
         if gamma==None: # Variable gamma depends on temperature
             gamma = gamma_function(T) 
 
-        self.left_form_direct = form((gamma - 1) * q_0 / u_b * self.phi_i * h *  dx)
-        self.left_form_adjoint = form((gamma - 1) * q_0 / u_b *  self.phi_i * h * dx)
-        
+        self.left_form = form((gamma - 1) * q_0 / u_b * self.phi_i * h *  dx)
         self.right_form = form(inner(self.n_ref_dist,grad(self.phi_j)) / rho * w * dx)
     
-    def _assemble_left_vector(self, problem_type='direct'):
-        if problem_type == 'direct':
-            form_to_assemble = self.left_form_direct
-        elif problem_type == 'adjoint':
-            form_to_assemble =  self.left_form_adjoint
+    def _assemble_vectors(self, problem_type='direct'):
        
-        left_vector = self.indices_and_values(self.dofmaps, form_to_assemble, self.tol)
+        left_vector = self.indices_and_values(self.dofmaps, self.left_form, self.tol)
+        right_vector = self.indices_and_values(self.dofmaps, self.right_form, self.tol)
 
         if problem_type == 'direct':
             left_vector = distribute_vector_as_chunks(left_vector)
-        elif problem_type == 'adjoint':
-            left_vector = broadcast_vector(left_vector)
-        return left_vector
-
-    def _assemble_right_vector(self, problem_type='direct'):
-        right_vector = self.indices_and_values(self.dofmaps, self.right_form, self.tol)
-        if problem_type == 'direct':
             right_vector = broadcast_vector(right_vector)
         elif problem_type == 'adjoint':
             right_vector = distribute_vector_as_chunks(right_vector)
-        return right_vector
+            left_vector = broadcast_vector(left_vector)
+
+        return left_vector, right_vector
 
     def assemble_submatrices(self, problem_type='direct'):
 
@@ -250,8 +240,7 @@ class DistributedFlameMatrix(FlameMatrix):
         mat.setSizes([(self.local_size, self.global_size), (self.local_size, self.global_size)])
         mat.setType('mpiaij')
 
-        left = self._assemble_left_vector(problem_type=problem_type)
-        right = self._assemble_right_vector(problem_type=problem_type)
+        left, right = self._assemble_vectors(problem_type=problem_type)
         row,col,val = self.get_sparse_matrix_data(left, right, problem_type=problem_type)
 
         info("- Generating matrix D..")

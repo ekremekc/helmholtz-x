@@ -1,5 +1,6 @@
 # generate mesh
 python3 generateMesh.py -nopopup
+python3 params.py -nopopup
 
 # test running in serial
 python3 -u active_fpi.py -nopopup |tee Results/Active/FPI/active.log

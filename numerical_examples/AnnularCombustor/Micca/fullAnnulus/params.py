@@ -78,4 +78,4 @@ if __name__ == '__main__':
     dx = Measure("dx", subdomain_data=subdomains)
     h = Q_multiple(mesh, subdomains, N_sector)
     xdmf_writer("InputFunctions/Q", mesh, h)
-    print(assemble_scalar(form(Q_tot * h * dx)))
+    print(assemble_scalar(form(q_0 * h * dx)))
