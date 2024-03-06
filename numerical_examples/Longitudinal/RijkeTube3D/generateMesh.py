@@ -13,7 +13,8 @@ def threeDimRijke(file="MeshDir/mesh", fltk=True):
     gmsh.model.add(__name__)
 
     a_f = params.a_f
-    z_f = params.x_f[2]
+    x_f = params.x_f[0]
+    z_f = x_f[2]
     d_pipe = params.d_tube
     l_pipe = 1.0
 

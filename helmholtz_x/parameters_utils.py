@@ -17,9 +17,11 @@ def gaussian(x, x_ref, sigma, n):
     Returns:
         _type_: numpy array of gaussian function
     """
-    
+    if len(x_ref)==1:
+        x_ref = x_ref[0]
+
     if   n==1:
-        spatial = (x[0]-x_ref[0])**2
+        spatial = (x[0]-float(x_ref[0]))**2
     elif n==2:
         spatial = (x[0]-x_ref[0])**2 + (x[1]-x_ref[1])**2
     elif n==3:
@@ -108,8 +110,10 @@ def rho_step(mesh, x_f, a_f, rho_d, rho_u, degree=1):
     # x = V.tabulate_dof_coordinates()   
     if mesh.geometry.dim == 1 or mesh.geometry.dim == 2:
         x_f = x_f[0]
+        x_f = x_f[0]
         rho.interpolate(lambda x: density_step(x[0], x_f, a_f, rho_d, rho_u))
     elif mesh.geometry.dim == 3:
+        x_f = x_f[0]
         x_f = x_f[2]
         rho.interpolate(lambda x: density_step(x[2], x_f, a_f, rho_d, rho_u))
     return rho
@@ -127,11 +131,14 @@ def c_step(mesh, x_f, c_u, c_d):
     x = V.tabulate_dof_coordinates()
     if mesh.geometry.dim == 1:
         x_f = x_f[0]
+        x_f = x_f[0]
         axis = 0
     elif mesh.geometry.dim == 2:
         x_f = x_f[0]
+        x_f = x_f[0]
         axis = 0
     elif mesh.geometry.dim == 3:
+        x_f = x_f[0]
         x_f = x_f[2]
         axis = 2
     for i in range(x.shape[0]):
@@ -180,11 +187,14 @@ def temperature_step(mesh, x_f, T_u, T_d, degree=1):
     x = V.tabulate_dof_coordinates()
     if mesh.geometry.dim == 1:
         x_f = x_f[0]
+        x_f = x_f[0]
         axis = 0
     elif mesh.geometry.dim == 2:
         x_f = x_f[0]
+        x_f = x_f[0]
         axis = 0
     elif mesh.geometry.dim == 3:
+        x_f = x_f[0]
         x_f = x_f[2]
         axis = 2
     for i in range(x.shape[0]):

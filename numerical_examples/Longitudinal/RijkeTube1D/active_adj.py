@@ -62,7 +62,7 @@ xdmf_writer("Results/Active/p_adj", mesh, p_adjoint)
 # We plot eigenvectors when running in serial
 from mpi4py import MPI
 size = MPI.COMM_WORLD.Get_size()
-if size ==1:
+if size==1 and degree==1:
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots(4, figsize=(12, 12))
     x_coords = mesh.geometry.x[:,0]

@@ -10,6 +10,7 @@ def twoDimRijke(file="MeshDir/mesh", fltk=True):
 
     a_f = params.a_f
     x_f = params.x_f[0]
+    x_f = x_f[0]
     d_pipe = params.d_tube
     l_pipe = 1.0
 

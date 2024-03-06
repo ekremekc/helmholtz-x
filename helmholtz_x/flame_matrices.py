@@ -147,14 +147,10 @@ class PointwiseFlameMatrix(FlameMatrix):
         num_cells = t_imap.size_local + t_imap.num_ghosts
         self.x_dofs = self.mesh.geometry.dofmap.reshape(num_cells, num_dofs_x)
 
-    def _assemble_left_vector(self, fl):
-
-        left_form = form((self.gamma - 1) * self.q_0 / self.u_b * inner(self.h, self.phi_j)*self.dx(fl))
+    def _assemble_vectors(self, flame, point):
+        
+        left_form = form((self.gamma - 1) * self.q_0 / self.u_b * inner(self.h, self.phi_j)*self.dx(flame))
         left_vector = self.indices_and_values(self.dofmaps, left_form, tol=self.tol)
-
-        return left_vector
-
-    def _assemble_right_vector(self, point):
 
         _, _, owning_points, cell = determine_point_ownership( self.mesh._cpp_object, point, 1e-10)
         point_ref = np.zeros((len(cell), self.mesh.geometry.dim), dtype=self.mesh.geometry.x.dtype)
@@ -179,7 +175,7 @@ class PointwiseFlameMatrix(FlameMatrix):
 
         right_vector = broadcast_vector(right_vector)
 
-        return right_vector
+        return left_vector, right_vector
 
     def assemble_submatrices(self, problem_type='direct'):
 
@@ -190,10 +186,9 @@ class PointwiseFlameMatrix(FlameMatrix):
         mat.setType('aij') 
         mat.setUp()
 
-        for flame, point_contribution in enumerate(self.x_r):
+        for flame, point in enumerate(self.x_r):
             
-            left = self._assemble_left_vector(flame)
-            right = self._assemble_right_vector(point_contribution)
+            left, right = self._assemble_vectors(flame, point)
             row,col,val = self.get_sparse_matrix_data(left, right, problem_type=problem_type)
 
             mat.setValues(row,col,val, addv=PETSc.InsertMode.ADD_VALUES)

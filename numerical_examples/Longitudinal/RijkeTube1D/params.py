@@ -33,10 +33,10 @@ d_tube = 0.047
 S_c = np.pi * d_tube **2 / 4
 n /=  S_c
 
-x_f = np.array([0.25, 0., 0.])  # [m]
+x_f = np.array([[0.25, 0., 0.]])  # [m]
 a_f = 0.025  # [m]
 
-x_r = np.array([0.20, 0., 0.])  # [m]
+x_r = np.array([[0.20, 0., 0.]])  # [m]
 a_r = 0.025
 
 if __name__ == '__main__':
