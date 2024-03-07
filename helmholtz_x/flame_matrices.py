@@ -33,11 +33,11 @@ class FlameMatrix:
 
         # Vector for reference direction
         if self.gdim == 1:
-            self.n_ref = as_vector([1])
+            self.n_r = as_vector([1])
         elif self.gdim == 2:
-            self.n_ref = as_vector([1,0])
+            self.n_r = as_vector([1,0])
         else:
-            self.n_ref = as_vector([0,0,1])
+            self.n_r = as_vector([0,0,1])
 
         # Utility objects for flame matrix
         self._D_ij = None
@@ -144,7 +144,7 @@ class PointwiseFlameMatrix(FlameMatrix):
         if len(cell) > 0: # Only add contribution if cell is owned 
             cell_geometry = self.mesh.geometry.x[self.mesh.geometry.dofmap[cell[0]], :self.gdim]
             point_ref = self.mesh.geometry.cmaps[0].pull_back([point], cell_geometry)
-            right_form = Expression(inner(grad(TestFunction(self.V)), self.n_ref), point_ref, comm=MPI.COMM_SELF)
+            right_form = Expression(inner(grad(TestFunction(self.V)), self.n_r), point_ref, comm=MPI.COMM_SELF)
             dphij_x_rs = right_form.eval(self.mesh, cell)[0]           
             right_values = dphij_x_rs / self.rho_u
             global_dofs = self.dofmaps.index_map.local_to_global(self.dofmaps.cell_dofs(cell[0]))
@@ -191,7 +191,7 @@ class DistributedFlameMatrix(FlameMatrix):
             gamma = gamma_function(T) 
 
         self.left_form = form((gamma - 1) * q_0 / u_b * self.phi_i * h *  dx)
-        self.right_form = form(inner(self.n_ref,grad(self.phi_j)) / rho * w * dx)
+        self.right_form = form(inner(self.n_r,grad(self.phi_j)) / rho * w * dx)
     
     def _assemble_vectors(self, problem_type='direct'):
        
