@@ -1,10 +1,7 @@
-from dolfinx.fem import Function, FunctionSpace, dirichletbc, form, locate_dofs_topological, Constant
+from dolfinx.fem import Function, FunctionSpace, dirichletbc, form, locate_dofs_topological, Constant, assemble_scalar
 from dolfinx.fem.petsc import assemble_matrix
-from dolfinx.fem.assemble import assemble_scalar
-from helmholtz_x.solver_utils import info
 from helmholtz_x.parameters_utils import sound_speed_variable_gamma, gamma_function
-from dolfinx.fem import FunctionSpace, form, Constant
-from dolfinx.fem.petsc import assemble_matrix
+from helmholtz_x.solver_utils import info
 from ufl import Measure, TestFunction, TrialFunction, grad, inner
 from petsc4py import PETSc
 from mpi4py import MPI
@@ -17,12 +14,11 @@ class AcousticMatrices:
 
         self.mesh = mesh
         self.facet_tags = facet_tags
-        self.fdim = self.mesh.topology.dim - 1
         self.boundary_conditions = boundary_conditions
         self.parameter = parameter
         self.degree = degree
-        self.omega = None
         self.dimension = self.mesh.topology.dim
+        self.fdim = self.mesh.topology.dim - 1
         self.dx = Measure('dx', domain=mesh)
         self.ds = Measure('ds', domain=mesh, subdomain_data=facet_tags)
 
@@ -49,8 +45,8 @@ class AcousticMatrices:
 
         if self.parameter.name =="temperature":
             self.c = sound_speed_variable_gamma(self.mesh, parameter, degree=degree)
-            self.gamma = gamma_function(self.parameter)
             self.T = self.parameter
+            self.gamma = gamma_function(self.T)
             info("/\ Temperature function is used for passive flame matrices.")
         else:
             self.c = parameter
@@ -108,7 +104,6 @@ class AcousticMatrices:
         self._A = A
         
         if self.integrals_R:
-
             self.b_form = form(sum(self.integrals_R))
             B = assemble_matrix(self.b_form)
             B.assemble()
@@ -131,15 +126,12 @@ class AcousticMatrices:
     @property
     def A(self):
         return self._A
-
     @property
     def B(self):
         return self._B
-
     @property
     def B_adj(self):
         return self._B_adj
-
     @property
     def C(self):
         return self._C

@@ -133,12 +133,6 @@ class PointwiseFlameMatrix(FlameMatrix):
         self.gamma = gamma
         self.dx = Measure("dx", subdomain_data=subdomains)
 
-        # Data required for pull back of coordinate
-        num_dofs_x = self.mesh.geometry.dofmap[0].size  # NOTE: Assumes same cell geometry in whole mesh
-        t_imap = self.mesh.topology.index_map(self.mesh.topology.dim)
-        num_cells = t_imap.size_local + t_imap.num_ghosts
-        self.x_dofs = self.mesh.geometry.dofmap.reshape(num_cells, num_dofs_x)
-
     def _assemble_vectors(self, flame, point):
         
         left_form = form((self.gamma - 1) * self.q_0 / self.u_b * inner(self.h, self.phi_j)*self.dx(flame))
@@ -148,18 +142,16 @@ class PointwiseFlameMatrix(FlameMatrix):
         right_vector = []
 
         if len(cell) > 0: # Only add contribution if cell is owned 
-            cell_geometry = self.mesh.geometry.x[self.x_dofs[cell[0]], :self.gdim]
+            cell_geometry = self.mesh.geometry.x[self.mesh.geometry.dofmap[cell[0]], :self.gdim]
             point_ref = self.mesh.geometry.cmaps[0].pull_back([point], cell_geometry)
-
             right_form = Expression(inner(grad(TestFunction(self.V)), self.n_ref), point_ref, comm=MPI.COMM_SELF)
-            dphij_x_rs = right_form.eval(self.mesh, cell)[0] / self.rho_u            
-            
-            cell_dofs = self.dofmaps.cell_dofs(cell[0])
-            global_dofs = self.dofmaps.index_map.local_to_global(cell_dofs)
-            for global_dof, dphij_x_r in zip(global_dofs, dphij_x_rs):
-                right_vector.append([global_dof, dphij_x_r])
+            dphij_x_rs = right_form.eval(self.mesh, cell)[0]           
+            right_values = dphij_x_rs / self.rho_u
+            global_dofs = self.dofmaps.index_map.local_to_global(self.dofmaps.cell_dofs(cell[0]))
+            for global_dof, right_value in zip(global_dofs, right_values):
+                right_vector.append([global_dof, right_value ])
 
-            right_vector = broadcast_vector(right_vector)
+        right_vector = broadcast_vector(right_vector)
 
         return left_vector, right_vector
 
