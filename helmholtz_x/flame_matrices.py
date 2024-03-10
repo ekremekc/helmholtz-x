@@ -58,18 +58,17 @@ class FlameMatrix:
     def adjoint_submatrices(self):
         return self._D_ij_adj
     
-    @staticmethod
-    def indices_and_values(dofmaps, form, tol):
+    def indices_and_values(self, form):
 
         temp = assemble_vector(form)
         temp.ghostUpdate(addv=PETSc.InsertMode.ADD_VALUES, mode=PETSc.ScatterMode.REVERSE)
         temp.ghostUpdate(addv=PETSc.InsertMode.INSERT, mode=PETSc.ScatterMode.FORWARD)
         packed = temp.array
-        packed.real[abs(packed.real) < tol] = 0.0
-        packed.imag[abs(packed.imag) < tol] = 0.0
+        packed.real[abs(packed.real) < self.tol] = 0.0
+        packed.imag[abs(packed.imag) < self.tol] = 0.0
 
         indices = np.array(np.flatnonzero(packed),dtype=np.int32)
-        global_indices = dofmaps.index_map.local_to_global(indices)
+        global_indices = self.dofmaps.index_map.local_to_global(indices)
         packed = list(zip(global_indices, packed[indices]))
         return packed
 
@@ -136,7 +135,7 @@ class PointwiseFlameMatrix(FlameMatrix):
     def _assemble_vectors(self, flame, point):
         
         left_form = form((self.gamma - 1) * self.q_0 / self.u_b * inner(self.h, self.phi_j)*self.dx(flame))
-        left_vector = self.indices_and_values(self.dofmaps, left_form, tol=self.tol)
+        left_vector = self.indices_and_values(left_form)
 
         _, _, owning_points, cell = determine_point_ownership( self.mesh._cpp_object, point, 1e-10)
         right_vector = []
@@ -195,8 +194,8 @@ class DistributedFlameMatrix(FlameMatrix):
     
     def _assemble_vectors(self, problem_type='direct'):
        
-        left_vector = self.indices_and_values(self.dofmaps, self.left_form, self.tol)
-        right_vector = self.indices_and_values(self.dofmaps, self.right_form, self.tol)
+        left_vector = self.indices_and_values(self.left_form)
+        right_vector = self.indices_and_values(self.right_form)
 
         if problem_type == 'direct':
             left_vector = distribute_vector_as_chunks(left_vector)
