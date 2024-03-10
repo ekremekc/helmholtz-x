@@ -25,6 +25,8 @@ T_amb = 300.  # [K
 rho_amb = p_amb/(r*T_amb)  # [kg/m^3]
 c_amb = sqrt(gamma*p_amb/rho_amb)  # [m/s]
 
+rho_xr = rho_amb 
+
 T_a = 1521.  # [K] at z = 0
 T_b = 1200.  # [K] at z = l_cc
 

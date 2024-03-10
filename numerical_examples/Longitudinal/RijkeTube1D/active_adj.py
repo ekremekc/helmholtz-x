@@ -29,10 +29,10 @@ T = temperature_step(mesh, params.x_f, params.T_u, params.T_d)
 matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, T, degree=degree)
 
 # Introduce Flame Matrix parameters
+FTF = nTau(params.n, params.tau)
 rho = rho_step(mesh, params.x_f, params.a_f, params.rho_d, params.rho_u)
 w = gaussianFunction(mesh, params.x_r, params.a_r)
 h = gaussianFunction(mesh, params.x_f, params.a_f)
-FTF = nTau(params.n, params.tau)
 D = DistributedFlameMatrix(mesh, w, h, rho, T, params.q_0, params.u_b, FTF, degree=degree)
 D.assemble_submatrices()
 

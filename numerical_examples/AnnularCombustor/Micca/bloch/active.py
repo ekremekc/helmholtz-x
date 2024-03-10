@@ -38,11 +38,11 @@ boundary_conditions = {1: 'Neumann',
 
 # Introduce Passive Flame Matrices
 c = params.c(mesh)
-matrices =  AcousticMatrices(mesh, facet_tags, boundary_conditions,c, degree=degree)
+acoustic_matrices =  AcousticMatrices(mesh, facet_tags, boundary_conditions,c, degree=degree)
 
 # set the bloch elements
 N = 16 # Bloch number
-bloch_matrices = Blochifier(geometry=micca, boundary_conditions=boundary_conditions, N=N, passive_matrices=matrices)
+bloch_matrices = Blochifier(geometry=micca, boundary_conditions=boundary_conditions, N=N, passive_matrices=acoustic_matrices)
 
 # Introduce Flame Matrix parameters
 FTF = stateSpace(params.S1, params.s2, params.s3, params.s4)

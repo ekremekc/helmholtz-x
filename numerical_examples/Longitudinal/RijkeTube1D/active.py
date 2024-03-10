@@ -29,10 +29,10 @@ T = temperature_step(mesh, params.x_f, params.T_u, params.T_d)
 matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, T, degree=degree)
 
 # Introduce Flame Matrix parameters
+FTF = nTau(params.n, params.tau)
 rho = rho_step(mesh, params.x_f, params.a_f, params.rho_d, params.rho_u)
 w = gaussianFunction(mesh, params.x_r, params.a_r)
 h = gaussianFunction(mesh, params.x_f, params.a_f)
-FTF = nTau(params.n, params.tau)
 D = DistributedFlameMatrix(mesh, w, h, rho, T, params.q_0, params.u_b, FTF, degree=degree)
 D.assemble_submatrices()
 
@@ -41,7 +41,7 @@ target = 200 * 2 * np.pi
 E = fixed_point_iteration(matrices, D, target, nev=2, i=0, print_results= False)
 
 # Extract eigenvalue and normalized eigenvector 
-omega, p_active = normalize_eigenvector(mesh, E, 0, degree=degree, which='right')
+omega, p_active = normalize_eigenvector(mesh, E, i=0, degree=degree, which='right')
 v = velocity_eigenvector(mesh, p_active, omega, rho, degree=degree)
 
 # Save Eigenvector

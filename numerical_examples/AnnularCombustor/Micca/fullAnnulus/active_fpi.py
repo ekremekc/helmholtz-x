@@ -29,7 +29,7 @@ matrices = AcousticMatrices(mesh, facet_tags, boundary_conditions, c, degree=deg
 # Introduce Flame Matrix parameters
 FTF = stateSpace(params.S1, params.s2, params.s3, params.s4)
 h = Q_multiple(mesh, subdomains, params.N_sector)
-D = PointwiseFlameMatrix(mesh, subdomains, params.x_r, h, params.rho_amb, params.q_0, params.u_b, FTF, degree=degree)
+D = PointwiseFlameMatrix(mesh, subdomains, params.x_r, h, params.rho_xr, params.q_0, params.u_b, FTF, degree=degree)
 
 ## Solving direct problem
 

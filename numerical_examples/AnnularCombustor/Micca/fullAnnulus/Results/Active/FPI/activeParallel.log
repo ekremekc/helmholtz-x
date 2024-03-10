@@ -88,7 +88,7 @@ Eigenvalue-> 3250.697492+465.643915j | Eigenfrequency-> 517.364574+74.109531j
 Eigenvalue-> 3250.642234+435.378057j | Eigenfrequency-> 517.355780+69.292570j
  
 Results/Active/FPI/eigenvalues_dir.txt  is saved.
-Total Execution Time for Direct Modes:  0:00:16.785466 
+Total Execution Time for Direct Modes:  0:00:16.048979 
 
 - Generating matrix D..
 - Matrix contribution of flame 0 is computed.
@@ -166,4 +166,4 @@ Eigenvalue-> 3250.697492-465.643915j | Eigenfrequency-> 517.364574-74.109531j
 Eigenvalue-> 3250.642234-435.378057j | Eigenfrequency-> 517.355780-69.292570j
  
 Results/Active/FPI/eigenvalues_adj.txt  is saved.
-Total Execution Time:  0:00:28.547696
+Total Execution Time:  0:00:27.278934
