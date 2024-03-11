@@ -14,7 +14,7 @@ def twoDimRijke(file="MeshDir/mesh", fltk=True):
     d_pipe = params.d_tube
     l_pipe = 1.0
 
-    x_start, y_start = 0, 0
+    x_start, y_start = 0, -d_pipe/2
 
     dx_start = x_f-a_f
     dy_start = d_pipe

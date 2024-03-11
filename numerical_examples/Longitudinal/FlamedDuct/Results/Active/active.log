@@ -1,7 +1,7 @@
 
 XDMF Mesh - Cell data loaded.
 XDMF Mesh - Facet data loaded.
-Number of cells:  55,121
+Number of cells:  177,737
 Number of cores:  1 
 
 Degree of basis functions:  1 
@@ -25,36 +25,36 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1690.32957158  -28.49383255j,  |domega| = 4.03e+01
++ omega = +1687.67805148  -28.39277741j,  |domega| = 4.02e+01
 
 * iter =  2
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1652.21829691  -43.43415605j,  |domega| = 4.09e+01
++ omega = +1649.70949194  -43.24182081j,  |domega| = 4.08e+01
 
 * iter =  3
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1652.22057249  -43.42722961j,  |domega| = 7.29e-03
++ omega = +1649.71175894  -43.23499871j,  |domega| = 7.19e-03
 
 * iter =  4
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1652.22057283  -43.42723018j,  |domega| = 6.57e-07
++ omega = +1649.71175927  -43.23499926j,  |domega| = 6.41e-07
 
 * iter =  5
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1652.22057283  -43.42723018j,  |domega| = 3.20e-12
++ omega = +1649.71175927  -43.23499926j,  |domega| = 5.84e-12
 
-Eigenvalue-> 1652.220573-43.427230j | Eigenfrequency-> 262.959071-6.911658j
+Eigenvalue-> 1649.711759-43.234999j | Eigenfrequency-> 262.559781-6.881064j
  
-Total Execution Time:  0:00:38.380374
+Total Execution Time:  0:08:46.424540

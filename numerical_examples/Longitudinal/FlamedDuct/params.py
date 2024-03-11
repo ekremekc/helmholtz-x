@@ -9,9 +9,9 @@ T_passive = 1000 # K
 # Active Flame Data
 T_flame = 1500 #K
 
-x_flame = np.array([0., 0., 0.50]) #m
+x_flame = np.array([[0., 0., 0.50]]) #m
 a_flame = 0.025 
-x_ref   = np.array([0., 0., 0.35]) #m
+x_ref   = np.array([[0., 0., 0.35]]) #m
 a_ref   = 0.025
 
 # Flame transfer function data

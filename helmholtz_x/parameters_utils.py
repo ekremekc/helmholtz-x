@@ -1,3 +1,4 @@
+from xml.etree.ElementTree import XML
 from dolfinx.fem import FunctionSpace, Function, VectorFunctionSpace, form, Constant, assemble_scalar, locate_dofs_topological
 from .dolfinx_utils import normalize, unroll_dofmap
 from petsc4py import PETSc
@@ -45,6 +46,8 @@ def gaussianFunction(mesh, x_r, a_r, degree=1):
 def halfGaussianFunction(mesh,x_flame,a_flame,degree=1):
     V = FunctionSpace(mesh, ("CG", degree))
     h = gaussianFunction(mesh, x_flame, a_flame, degree=degree)
+    if len(x_flame)==1:
+        x_flame = x_flame[0]
     x_tab = V.tabulate_dof_coordinates()
     for i in range(x_tab.shape[0]):
         midpoint = x_tab[i,:]
@@ -118,9 +121,9 @@ def rho_step(mesh, x_f, a_f, rho_d, rho_u, degree=1):
         rho.interpolate(lambda x: density_step(x[2], x_f, a_f, rho_d, rho_u))
     return rho
 
-def rho_ideal(temperature, P_amb, R):
+def rho_ideal(temperature, p_0, r_gas):
     density = Function(temperature.function_space)
-    density.x.array[:] =  P_amb /(R * temperature.x.array)
+    density.x.array[:] =  p_0 /(r_gas * temperature.x.array)
     density.x.scatter_forward()
     return density
 

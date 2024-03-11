@@ -22,7 +22,7 @@ gmsh.model.occ.importShapes(os.path.join(path, geomDirName+filename+'.step'))
 gmsh.model.occ.removeAllDuplicates()
 gmsh.model.occ.synchronize()
 
-lc = 0.015
+lc = 0.010
 
 gmsh.option.setNumber("Mesh.MeshSizeMax", lc)
 gmsh.option.setNumber("Mesh.Algorithm", 6)

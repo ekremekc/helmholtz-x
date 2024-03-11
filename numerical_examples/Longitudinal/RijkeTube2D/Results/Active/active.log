@@ -29,29 +29,29 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1243.61625899  +3.36349115j,  |domega| = 3.53e+00
++ omega = +1243.61685192  +3.36394756j,  |domega| = 3.53e+00
 
 * iter =  2
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1242.57717310  +6.66764922j,  |domega| = 3.46e+00
++ omega = +1242.57833264  +6.66852411j,  |domega| = 3.46e+00
 
 * iter =  3
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1242.57701928  +6.66775587j,  |domega| = 1.87e-04
++ omega = +1242.57817889  +6.66863098j,  |domega| = 1.87e-04
 
 * iter =  4
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1242.57701927  +6.66775586j,  |domega| = 4.99e-09
++ omega = +1242.57817889  +6.66863098j,  |domega| = 4.97e-09
 
-Eigenvalue-> 1242.577019+6.667756j | Eigenfrequency-> 197.762275+1.061206j
+Eigenvalue-> 1242.578179+6.668631j | Eigenfrequency-> 197.762459+1.061346j
  
-Total Execution Time:  0:00:00.165754
+Total Execution Time:  0:00:00.179082
