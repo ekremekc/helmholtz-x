@@ -52,20 +52,26 @@ from mpi4py import MPI
 size = MPI.COMM_WORLD.Get_size()
 if size ==1 and degree==1:
     import matplotlib.pyplot as plt
-    fig, ax = plt.subplots(4, figsize=(12, 12))
+    fig, ax = plt.subplots(4, figsize=(6, 8))
     x_coords = mesh.geometry.x[:,0]
     ax[0].plot(x_coords, p_active.x.array.real)
-    ax[0].set_ylabel(r"$P_r$")
+    ax[0].set_ylabel(r"$real(\hat{p}_1)$")
     ax[1].plot(x_coords, p_active.x.array.imag)
-    ax[1].set_ylabel(r"$P_i$")
+    ax[1].set_ylabel(r"$imag(\hat{p}_1)$")
 
     ax[2].plot(x_coords, v.x.array.real)
-    ax[2].set_ylabel(r"$U_r$")
+    ax[2].set_ylabel(r"$real(\hat{u}_1)$")
     ax[3].plot(x_coords, v.x.array.imag)
+    ax[3].set_ylabel(r"$imag(\hat{u}_1)$")
     ax[3].set_xlabel(r"$x$")
-    ax[3].set_ylabel(r"$U_i$")
 
-    plt.savefig("Results/Active/"+"Active"+".png", dpi=600)
+    ax[0].grid()
+    ax[1].grid()
+    ax[2].grid()
+    ax[3].grid()
+    fig.tight_layout()
+
+    plt.savefig("Results/Active/"+"Active"+".pdf")
 
     if '-nopopup' not in sys.argv:
         plt.show()
