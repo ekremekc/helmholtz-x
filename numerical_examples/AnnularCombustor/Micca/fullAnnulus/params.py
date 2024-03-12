@@ -71,13 +71,54 @@ def c(mesh):
 
 if __name__ == '__main__':
 
+    from helmholtz_x.flame_transfer_function import stateSpace
     from helmholtz_x.io_utils import XDMFReader,xdmf_writer
     from helmholtz_x.parameters_utils import Q_multiple
-    from dolfinx.fem import assemble_scalar, form
+    import matplotlib.pyplot as plt
+    from scipy.io import loadmat
     from ufl import Measure
+    import sys
+
     MICCA = XDMFReader("MeshDir/mesh")
     mesh, subdomains, facet_tags = MICCA.getAll()
     dx = Measure("dx", subdomain_data=subdomains)
+
     h = Q_multiple(mesh, subdomains, N_sector)
     xdmf_writer("InputFunctions/Q", mesh, h)
-    print(assemble_scalar(form(q_0 * h * dx)))
+
+    speedOfSound = c(mesh)
+    xdmf_writer("InputFunctions/c", mesh, speedOfSound)
+
+    mat = loadmat('ftf.mat')
+    freq = mat['freq'][0]
+    f = mat['f'][0]
+    fit = mat['fit'][0]
+
+    A_ = mat['A']
+    b_ = mat['b']
+    c_ = mat['c']
+    d_ = mat['d']
+
+    ftf = stateSpace(A_, b_, c_, d_)
+
+    f_ = np.linspace(0, 1060, 1061)
+    omega_ = 2 * np.pi * f_
+
+    z = np.zeros_like(omega_, dtype=np.complex128)
+    for i in range(1061):
+        z[i] = ftf(omega_[i])
+
+    fig, ax = plt.subplots(2, figsize=(6, 4))
+    ax[0].plot(freq, np.abs(f), 's', f_, np.abs(z))
+    ax[0].set_ylabel("abs(FTF)")
+    ax[1].plot(freq, np.angle(f), 's', f_, -np.angle(z))
+    ax[1].set_ylabel("angle(FTF)")
+    ax[1].set_xlabel("frequency [1/s]")
+    ax[1].set_yticks(np.arange(-pi, pi+pi/2, step=(pi/2)), [r"$\pi$",r"$-\pi$/2",'0',r"$\pi$/2",r"$\pi$"])
+    ax[0].grid()
+    ax[1].grid()
+    fig.tight_layout()
+    plt.savefig("InputFunctions/ftf.pdf")
+
+    if '-nopopup' not in sys.argv:
+        plt.show()

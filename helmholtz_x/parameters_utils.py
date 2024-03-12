@@ -1,5 +1,4 @@
-from xml.etree.ElementTree import XML
-from dolfinx.fem import FunctionSpace, Function, VectorFunctionSpace, form, Constant, assemble_scalar, locate_dofs_topological
+from dolfinx.fem import FunctionSpace, Function, form, Constant, assemble_scalar, locate_dofs_topological
 from .dolfinx_utils import normalize, unroll_dofmap
 from petsc4py import PETSc
 from mpi4py import MPI

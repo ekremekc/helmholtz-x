@@ -1,0 +1,83 @@
+
+XDMF Mesh - Cell data loaded.
+XDMF Mesh - Facet data loaded.
+Number of cells:  167,401
+Number of cores:  8 
+
+Degree of basis functions:  1 
+
+\/ Speed of sound function is used for passive flame matrices.
+- Passive matrices are assembling..
+- Matrix A is assembled.
+- Matrix B is assembled.
+- Matrix C is assembled.
+
+- Generating matrix D..
+- Matrix contribution of flame 0 is computed.
+- Matrix contribution of flame 1 is computed.
+- Matrix contribution of flame 2 is computed.
+- Matrix contribution of flame 3 is computed.
+- Matrix contribution of flame 4 is computed.
+- Matrix contribution of flame 5 is computed.
+- Matrix contribution of flame 6 is computed.
+- Matrix contribution of flame 7 is computed.
+- Matrix contribution of flame 8 is computed.
+- Matrix contribution of flame 9 is computed.
+- Matrix contribution of flame 10 is computed.
+- Matrix contribution of flame 11 is computed.
+- Matrix contribution of flame 12 is computed.
+- Matrix contribution of flame 13 is computed.
+- Matrix contribution of flame 14 is computed.
+- Matrix contribution of flame 15 is computed.
+- Submatrix D is Assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
+-> Fixed point iteration started.
+
+* iter =  1
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +648.609  -34.957j,  |domega| = 6.50e+02
+
+* iter =  2
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1000.148  -584.198j,  |domega| = 6.52e+02
+
+* iter =  3
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +930.887  -527.275j,  |domega| = 8.97e+01
+
+* iter =  4
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +937.015  -534.054j,  |domega| = 9.14e+00
+
+* iter =  5
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +937.143  -534.155j,  |domega| = 1.64e-01
+
+* iter =  6
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +937.143  -534.155j,  |domega| = 3.29e-04
+
+Eigenvalue-> 937.142801-534.155369j | Eigenfrequency-> 149.150909-85.013467j
+ 
+Results/Active/Modes/eigenvalues_937Hz.txt  is saved.
+Total Execution Time for Direct Modes:  0:00:13.707797 
+

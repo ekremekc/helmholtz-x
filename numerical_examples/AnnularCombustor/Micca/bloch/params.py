@@ -64,5 +64,4 @@ def c(mesh):
             c.vector.setValueLocal(i, sqrt(gamma * r * ((1200. - 1521.) * (midpoint[2]/l_cc)**2 + 1521.)))
         else:
             c.vector.setValueLocal(i, sqrt(gamma * r * 1200.))
-    # c.x.scatter_forward()
     return c

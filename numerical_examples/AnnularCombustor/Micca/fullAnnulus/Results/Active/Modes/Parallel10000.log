@@ -1,0 +1,62 @@
+
+XDMF Mesh - Cell data loaded.
+XDMF Mesh - Facet data loaded.
+Number of cells:  167,401
+Number of cores:  8 
+
+Degree of basis functions:  1 
+
+\/ Speed of sound function is used for passive flame matrices.
+- Passive matrices are assembling..
+- Matrix A is assembled.
+- Matrix B is assembled.
+- Matrix C is assembled.
+
+- Generating matrix D..
+- Matrix contribution of flame 0 is computed.
+- Matrix contribution of flame 1 is computed.
+- Matrix contribution of flame 2 is computed.
+- Matrix contribution of flame 3 is computed.
+- Matrix contribution of flame 4 is computed.
+- Matrix contribution of flame 5 is computed.
+- Matrix contribution of flame 6 is computed.
+- Matrix contribution of flame 7 is computed.
+- Matrix contribution of flame 8 is computed.
+- Matrix contribution of flame 9 is computed.
+- Matrix contribution of flame 10 is computed.
+- Matrix contribution of flame 11 is computed.
+- Matrix contribution of flame 12 is computed.
+- Matrix contribution of flame 13 is computed.
+- Matrix contribution of flame 14 is computed.
+- Matrix contribution of flame 15 is computed.
+- Submatrix D is Assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
+-> Fixed point iteration started.
+
+* iter =  1
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +10171.253  -11.023j,  |domega| = 1.28e+01
+
+* iter =  2
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +10164.622  -22.147j,  |domega| = 1.30e+01
+
+* iter =  3
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +10164.621  -22.148j,  |domega| = 5.90e-04
+
+Eigenvalue-> 10164.621370-22.147899j | Eigenfrequency-> 1617.749736-3.524948j
+ 
+Results/Active/Modes/eigenvalues_10164Hz.txt  is saved.
+Total Execution Time for Direct Modes:  0:00:08.416304 
+
