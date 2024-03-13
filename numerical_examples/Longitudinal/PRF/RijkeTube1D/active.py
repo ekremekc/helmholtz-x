@@ -46,7 +46,20 @@ omega, p_active = normalize_eigenvector(mesh, E, i=0, degree=degree, which='righ
 v = velocity_eigenvector(mesh, p_active, omega, rho, degree=degree)
 
 # Save Eigenvector
-xdmf_writer("Results/Active/p", mesh, p_active)
+xdmf_writer("Results/Active/p_dir", mesh, p_active)
+
+# Introduce adjoints
+D.assemble_submatrices('adjoint')
+
+# Introduce solver object and start
+target = np.pi
+E = fixed_point_iteration(matrices, D, target, nev=2, i=0, problem_type='adjoint', print_results= False)
+
+# Extract eigenvalue and normalized eigenvector 
+omega_adj, p_adjoint = normalize_eigenvector(mesh, E, 0, degree=degree, which='right')
+
+# Save Eigenvector
+xdmf_writer("Results/Active/p_adj", mesh, p_adjoint)
 
 # We plot eigenvectors when running in serial
 from mpi4py import MPI
@@ -60,10 +73,10 @@ if size ==1 and degree==1:
     ax[1].plot(x_coords, p_active.x.array.imag)
     ax[1].set_ylabel(r"$imag(\hat{p}_1)$")
 
-    ax[2].plot(x_coords, v.x.array.real)
-    ax[2].set_ylabel(r"$real(\hat{u}_1)$")
-    ax[3].plot(x_coords, v.x.array.imag)
-    ax[3].set_ylabel(r"$imag(\hat{u}_1)$")
+    ax[2].plot(x_coords, p_adjoint.x.array.real)
+    ax[2].set_ylabel(r"$real(\hat{p}_1)$")
+    ax[3].plot(x_coords, p_adjoint.x.array.imag)
+    ax[3].set_ylabel(r"$imag(\hat{p}_1)$")
     ax[3].set_xlabel(r"$x$")
 
     ax[0].grid()

@@ -49,4 +49,40 @@ Degree of basis functions:  1
 
 Eigenvalue-> 3.420690+0.002667j | Eigenfrequency-> 0.544420+0.000424j
  
-Total Execution Time:  0:00:01.690792
+- Generating matrix D..
+- Submatrix D is Assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
+-> Fixed point iteration started.
+
+* iter =  1
+- Adjoint matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +3.42289567  +0.01207818j,  |domega| = 1.54e-02
+
+* iter =  2
+- Adjoint matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +3.42069054  -0.00266521j,  |domega| = 1.49e-02
+
+* iter =  3
+- Adjoint matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +3.42068985  -0.00266684j,  |domega| = 1.77e-06
+
+* iter =  4
+- Adjoint matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +3.42068985  -0.00266684j,  |domega| = 1.03e-10
+
+Eigenvalue-> 3.420690-0.002667j | Eigenfrequency-> 0.544420-0.000424j
+ 
+Total Execution Time:  0:00:02.947830

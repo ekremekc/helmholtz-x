@@ -71,6 +71,6 @@ Degree of basis functions:  1
 
 Eigenvalue-> 10814.174498+333.430921j | Eigenfrequency-> 1721.129327+53.067179j
  
-Results/Active/Modes/eigenvalues_10814Hz.txt  is saved.
-Total Execution Time for Direct Modes:  0:00:11.098370 
+Results/Active/Modes/eigenvalues_1721Hz.txt  is saved.
+Total Execution Time for Direct Modes:  0:00:11.908830 
 

@@ -48,4 +48,17 @@ omega, uh = normalize_eigenvector(mesh, E, 0, degree=degree, which='right')
 # Save Eigenvector
 xdmf_writer("Results/Active/p", mesh, uh)
 
+# Introduce adjoints
+D.assemble_submatrices('adjoint')
+
+# Introduce solver object and start
+target = np.pi
+E = fixed_point_iteration(matrices, D, target, nev=2, i=0, problem_type='adjoint', print_results= False)
+
+# Extract eigenvalue and normalized eigenvector 
+omega_adj, p_adjoint = normalize_eigenvector(mesh, E, 0, degree=degree, which='right')
+
+# Save Eigenvector
+xdmf_writer("Results/Active/p_adj", mesh, p_adjoint)
+
 execution_time(start)

@@ -47,7 +47,7 @@ u_1_dir = velocity_eigenvector(mesh, p_1_dir, omega_1_dir, params.rho_amb)
 
 # Calculate absolute eigenfunctions
 p_1_dir = absolute(p_1_dir)
-p_2_dir = absolute()
+p_2_dir = absolute(p_2_dir)
 
 # Save eigenvectors
 xdmf_writer("Results/Active/FPI/p_1_dir", mesh, p_1_dir)

@@ -3,12 +3,13 @@ from helmholtz_x.flame_matrices import PointwiseFlameMatrix
 from helmholtz_x.flame_transfer_function import stateSpace
 from helmholtz_x.eigensolvers import fixed_point_iteration
 from helmholtz_x.acoustic_matrices import AcousticMatrices
-from helmholtz_x.eigenvectors import normalize_eigenvector, velocity_eigenvector
+from helmholtz_x.eigenvectors import normalize_eigenvector
 from helmholtz_x.io_utils import XDMFReader, xdmf_writer, dict_writer
 from helmholtz_x.parameters_utils import Q_multiple
 from helmholtz_x.dolfinx_utils import absolute
 from petsc4py import PETSc
 import params
+from math import pi
 import datetime
 import sys
 start_time = datetime.datetime.now()
@@ -53,11 +54,11 @@ omega, p = normalize_eigenvector(mesh, E, i=0, degree=degree)
 p = absolute(p)
 
 # Save eigenvectors
-xdmf_writer("Results/Active/Modes/p_abs_"+str(int(omega.real))+"Hz", mesh, p)
+xdmf_writer("Results/Active/Modes/p_abs_"+str(int(omega.real/2/pi))+"Hz", mesh, p)
 
 # Save eigenvalues
-omega_dict = {'direct':omega}      
-dict_writer("Results/Active/Modes/eigenvalues_"+str(int(omega.real))+"Hz", omega_dict)
+omega_dict = {'direct':omega/2/pi}      
+dict_writer("Results/Active/Modes/eigenvalues_"+str(int(omega.real/2/pi))+"Hz", omega_dict)
 
 if MPI.COMM_WORLD.rank == 0:
     print("Total Execution Time for Direct Modes: ", datetime.datetime.now()-start_time, "\n")
