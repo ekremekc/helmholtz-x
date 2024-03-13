@@ -4,15 +4,7 @@
 
 In **helmholtz-x**, the nonlinear eigenvalue problem is determined using [PETSc](https://petsc.org/release/overview/), [SLEPc](https://slepc.upv.es/) and [FEniCSx](https://github.com/FEniCS) libraries. 
 
-We specifically address thermoacoustic Helmholtz equation within **helmholtz-x**. In its submodules, **helmholtz-x** exploits extensive parallelization with handled preallocations for the generation of nonlinear part of the thermoacoustic Helmlholtz equation.
-
-## Citation
-
-We are currently writing a journal paper to describe internal mechanics of **helmholtz-x**, and the .bibtex will be available here after publication.
-
-## Thermoacoustic Helmholtz equation
-
-The thermoacoustic Helmholtz equation reads;
+We specifically address thermoacoustic Helmholtz equation within **helmholtz-x**. In its submodules, **helmholtz-x** exploits extensive parallelization with handled preallocations for the generation of nonlinear part of the thermoacoustic Helmlholtz equation. The thermoacoustic Helmholtz equation reads;
 
 $$ \nabla\cdot\left( c^2 \nabla  \hat{p}_1 \right) + \omega^2\hat{p}_1  = i\omega (\gamma-1)\hat{q}_1  $$
 
@@ -20,19 +12,11 @@ In matrix form;
 
 $$ \textbf{A}\textbf{P} + \omega \textbf{B}\textbf{P} + \omega^2 \textbf{C} \textbf{P} = \textbf{D}(\omega)\textbf{P} $$
 
-where 
+and we solve this matrix system with **helmholtz-x**.
 
-$\textbf{P}$ is the eigenvector or eigenfunction, $\omega$ is the eigenvalue ( $f$ = $\omega$ / $2\pi$ is eigenfrequency) and the discretized matrices are;
+## Citation
 
-$$ \mathbf{A_{jk}} = -\int_\Omega c^2\nabla \phi_j \cdot\nabla \phi_k dx $$
-
-$$ \mathbf{B_{jk}} = \int_{\partial \Omega} \left( \frac{  ic}{Z}\right)  \phi_j\phi_k d{\sigma}   $$
-
-$$ \mathbf{C_{jk}} = \int_\Omega\phi_j\phi_k\ dx   $$
-
-$$ \mathbf{D_{jk}} = (\gamma-1) \text{|FTF|}\frac{ q_{tot}  }{ U_{bulk}} \int_{\Omega} \phi_i h(\textbf{x}) e^{i \omega \tau(\textbf{x})} d\textbf{x}  \int_{\Omega} \frac{w(\chi)}{\rho_0 (\chi)}  \nabla{\phi_j} \cdot \textbf{n}_{ref} d\chi $$
-
-We solve this matrix system with **helmholtz-x**.
+We are currently writing a journal paper to describe internal mechanics of **helmholtz-x**, and the .bibtex will be available here after publication.
 
 ## Installation
 
