@@ -10,7 +10,7 @@ We specifically address thermoacoustic Helmholtz equation within **helmholtz-x**
 
 The thermoacoustic Helmholtz equation reads;
 
-$$ \nabla\cdot\left( c^2 \nabla  \hat{p}_1 \right) + \omega^2\hat{p}_1  = -i\omega (\gamma-1)\hat{q}_1  $$
+$$ \nabla\cdot\left( c^2 \nabla  \hat{p}_1 \right) + \omega^2\hat{p}_1  = i\omega (\gamma-1)\hat{q}_1  $$
 
 In matrix form;
 
