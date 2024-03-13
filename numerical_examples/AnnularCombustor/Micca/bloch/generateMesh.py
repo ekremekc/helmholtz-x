@@ -62,7 +62,7 @@ def add_elementary_entities(**kwargs):
               'R_in_cc': .15,
               'R_out_cc': .2,
               'l_cc': .2,
-              'l_ec': 0.041,
+              'l_ec': 0.0,
               'lc_1': 5e-3,
               'lc_2': 5e-3
               }

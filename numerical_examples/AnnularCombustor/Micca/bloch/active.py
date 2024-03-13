@@ -32,7 +32,7 @@ boundary_conditions = {1: 'Neumann',
                        8: 'Neumann',
                        9: 'Neumann',
                        10: 'Neumann',
-                       11: 'Dirichlet',
+                       11: {'Robin':params.R_outlet},
                        12: 'Master',
                        13: 'Slave'}
 
