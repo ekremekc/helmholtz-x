@@ -1,14 +1,11 @@
 from dolfinx.fem import Function, FunctionSpace
-from dolfinx.mesh import meshtags,locate_entities,create_unit_interval, create_unit_square
 from dolfinx.io import XDMFFile, VTKFile
 from .solver_utils import info
 from mpi4py import MPI
-import numpy as np
 import meshio
 import os
 import json
 import ast
-
 
 def dict_writer(filename, dictionary, extension = ".txt"):
     """Writes dictionary object into a text file.
@@ -157,11 +154,6 @@ def load_xdmf_mesh(name):
     with XDMFFile(MPI.COMM_WORLD, tag_loader_name, "r") as xdmf:
         facet_tags = xdmf.read_meshtags(mesh, name="Grid")
     
-    mesh.topology.create_connectivity(tdim-2, tdim-1)
-    # edgetag_loader_name = name + "_edgetags.xdmf"
-    # with XDMFFile(MPI.COMM_WORLD, edgetag_loader_name, "r") as xdmf:
-    #     edge_tags = xdmf.read_meshtags(mesh, name="Grid")
-    
     if MPI.COMM_WORLD.rank == 0:
         print("XDMF Mesh is loaded.")
     return mesh, cell_tags, facet_tags
@@ -222,80 +214,3 @@ class XDMFReader:
             print("Number of cells:  {:,}".format(total_num_cells))
             print("Number of cores: ", MPI.COMM_WORLD.Get_size(), "\n")
         return total_num_cells
-
-def OneDimensionalSetup(n_elem, x_f = 0.25, a_f = 0.025, tag=0):
-    """ This function builds one dimensional setup.
-        For boundaries, Tag 1 specifies left end and Tag 2 specifies right end. 
-    Args:
-        n_elem (int): Number of elements for 1D setup
-        x_f (float): Specifies the position of the flame. Default is 0.25
-    Returns:
-        mesh, subdomains, facet_tags
-    """
-    
-    mesh = create_unit_interval(MPI.COMM_WORLD, n_elem)
-
-    def fl_subdomain_func(x, x_f=x_f, a_f=a_f, eps=1e-16):
-        x = x[0]
-        return np.logical_and(x_f - a_f - eps <= x, x <= x_f + a_f + eps)
-    tdim = mesh.topology.dim
-    marked_cells = locate_entities(mesh, tdim, fl_subdomain_func)
-    fl = tag
-    subdomains = meshtags(mesh, tdim, marked_cells, np.full(len(marked_cells), fl, dtype=np.int32))
-
-    boundaries = [(1, lambda x: np.isclose(x[0], 0)),
-                (2, lambda x: np.isclose(x[0], 1))]
-
-    facet_indices, facet_markers = [], []
-    fdim = mesh.topology.dim - 1
-    for (marker, locator) in boundaries:
-        facets = locate_entities(mesh, fdim, locator)
-        facet_indices.append(facets)
-        facet_markers.append(np.full(len(facets), marker))
-    facet_indices = np.array(np.hstack(facet_indices), dtype=np.int32)
-    facet_markers = np.array(np.hstack(facet_markers), dtype=np.int32)
-    sorted_facets = np.argsort(facet_indices)
-    facet_tags = meshtags(mesh, fdim, facet_indices[sorted_facets], facet_markers[sorted_facets])
-
-    return mesh, subdomains, facet_tags
-
-def SquareSetup(n_elem, x_f = 0.25, a_f = 0.025,):
-    """ This function builds two dimensional setup.
-        For boundaries, Tag 1 specifies left boundary, 
-                        Tag 2 specifies right boundary,
-                        Tag 3 specifies bottom boundary,
-                        Tag 4 specifies top boundary.  
-    Args:
-        n_elem (int): Number of elements for 2D setup
-        x_f (float): Specifies the position of the flame. Default is 0.25
-    Returns:
-        mesh, subdomains, facet_tags
-    """
-    
-    mesh = create_unit_square(MPI.COMM_WORLD, n_elem, n_elem)
-
-    def fl_subdomain_func(x, x_f=x_f,a_f = a_f, eps=1e-16):
-        x = x[0]
-        return np.logical_and(x_f - a_f - eps <= x, x <= x_f + a_f + eps)
-    tdim = mesh.topology.dim
-    marked_cells = locate_entities(mesh, tdim, fl_subdomain_func)
-    fl = 0
-    subdomains = meshtags(mesh, tdim, marked_cells, np.full(len(marked_cells), fl, dtype=np.int32))
-
-    boundaries = [(1, lambda x: np.isclose(x[0], 0)), # Left
-                  (2, lambda x: np.isclose(x[0], 1)), # Right
-                  (3, lambda x: np.isclose(x[1], 0)), # Bottom
-                  (4, lambda x: np.isclose(x[1], 1))] # Top
-
-    facet_indices, facet_markers = [], []
-    fdim = mesh.topology.dim - 1
-    for (marker, locator) in boundaries:
-        facets = locate_entities(mesh, fdim, locator)
-        facet_indices.append(facets)
-        facet_markers.append(np.full(len(facets), marker))
-    facet_indices = np.array(np.hstack(facet_indices), dtype=np.int32)
-    facet_markers = np.array(np.hstack(facet_markers), dtype=np.int32)
-    sorted_facets = np.argsort(facet_indices)
-    facet_tags = meshtags(mesh, fdim, facet_indices[sorted_facets], facet_markers[sorted_facets])
-
-    return mesh, subdomains, facet_tags

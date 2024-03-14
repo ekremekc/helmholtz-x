@@ -1,9 +1,9 @@
-from slepc4py import SLEPc
-from mpi4py import MPI
-import numpy as np
 from .eigenvectors import normalize_eigenvector
 from .petsc4py_utils import vector_matrix_vector
 from .solver_utils import info
+from slepc4py import SLEPc
+from mpi4py import MPI
+import numpy as np
 
 def results(E):
     if MPI.COMM_WORLD.Get_rank()==0:

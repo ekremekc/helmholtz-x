@@ -40,13 +40,13 @@ def time_delay(tau):
     return inner_func
 
 class stateSpace:
-    def __init__(self, A, b, c, d):
-        self.A = A
-        self.b = b
-        self.c = c
-        self.d = d
+    def __init__(self, S1, s2, s3, s4):
+        self.A = S1
+        self.b = s2
+        self.c = s3
+        self.d = s4
     
-        self.Id = np.eye(*A.shape)
+        self.Id = np.eye(*S1.shape)
 
     def __call__(self, omega):
         k = 0

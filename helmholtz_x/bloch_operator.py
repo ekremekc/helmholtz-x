@@ -1,8 +1,7 @@
 from dolfinx.fem import locate_dofs_topological
 from scipy.sparse import csr_matrix
-import numpy as np
 from petsc4py import PETSc
-
+import numpy as np
 
 class Blochifier:
     def __init__(self, geometry, boundary_conditions, N, passive_matrices,  active_matrix=None):

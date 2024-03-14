@@ -1,76 +1,8 @@
 from dolfinx.fem import locate_dofs_topological, VectorFunctionSpace,Function
-from geomdl.helpers import basis_function_one
+from .dolfinx_utils import unroll_dofmap
 from math import comb
 import numpy as np
 import gmsh
-
-import numba
-@numba.njit
-def unroll_dofmap(dofs, bs):
-    dofs_unrolled = np.zeros(bs*len(dofs), dtype=np.int32)
-    for i, dof in enumerate(dofs):
-        for b in range(bs):
-            dofs_unrolled[i*bs+b] = dof*bs+b
-
-    return dofs_unrolled
-
-def calculate_displacement_field(gmsh_model, mesh, facet_tags, elementary_facet_tag, physical_facet_tag, span_u, span_v, knots_array_u, knots_array_v, deg):
-    
-    gmsh.model = gmsh_model
-
-    Q = VectorFunctionSpace(mesh, ("CG", 1))
-
-    facets = facet_tags.find(physical_facet_tag)
-    fdim = mesh.topology.dim-1 
-    indices = locate_dofs_topological(Q, fdim, facets)
-    x0 = mesh.geometry.x
-
-    
-
-    dofs_Q = unroll_dofmap(indices, Q.dofmap.bs)
-
-    surface_coordinates = x0[indices]
-
-    node_tags, coords, t_coords = gmsh.model.mesh.getNodes(2, elementary_facet_tag, includeBoundary=True)
-    gmsh.model.occ.synchronize()
-
-    norm = gmsh.model.getNormal(elementary_facet_tag,t_coords)
-    norm = norm.reshape(-1,3)
-    coords = coords.reshape(-1, 3) 
-    t_coords = t_coords.reshape(-1,2) 
-    us_dolfinx = t_coords[:,0]
-    vs_dolfinx = t_coords[:,1]
-
-    if span_u==0 or span_u==8:
-        V_u_0 = [basis_function_one(deg, knots_array_u, 0, knot_u) for knot_u in us_dolfinx]
-        V_u_8 = [basis_function_one(deg, knots_array_u, 8, knot_u) for knot_u in us_dolfinx]
-        V_u = [u_0 + u_8 for u_0, u_8 in zip(V_u_0, V_u_8)]
-    else:
-        V_u = [basis_function_one(deg, knots_array_u, span_u, knot_u) for knot_u in us_dolfinx]
-    
-    V_v = [basis_function_one(deg, knots_array_v, span_v, knot_v) for knot_v in vs_dolfinx]
-    
-    V_func = Function(Q)
-
-    tolerance = 1e-6
-    counter = 0
-
-    dofs_Q_array = dofs_Q.reshape(-1,3)
-
-    for dofs_node, node in zip(dofs_Q_array, surface_coordinates):
-        itemindex = np.where(np.isclose(coords, node, atol=tolerance).all(axis=1))[0]
-        if len(itemindex) != 0 : 
-            u_val = V_u[itemindex[0]]
-            v_val = V_v[itemindex[0]]
-            xyz_val = norm[itemindex[0]] * u_val*v_val 
-            V_func.x.array[dofs_node] = xyz_val
-            counter +=1
-
-    V_func.x.scatter_forward()
-
-    print(counter, len(coords), len(surface_coordinates))
-
-    return V_func
 
 def calculate_perpendicular_displacement_field(gmsh_model, mesh, facet_tags, elementary_facet_tag, physical_facet_tag):
     

@@ -1,18 +1,13 @@
-from dolfinx.fem import Constant, VectorFunctionSpace, Function, dirichletbc, locate_dofs_topological, set_bc, form
-from helmholtz_x.petsc4py_utils import conjugate_function
 from helmholtz_x.shape_derivatives_utils import calculate_displacement_field
+from helmholtz_x.petsc4py_utils import conjugate_function
 from dolfinx.fem.assemble import assemble_scalar
-from ufl import  FacetNormal, grad, dot, inner, Measure, div, variable
-from ufl.operators import Dn #Dn(f) := dot(grad(f), n).
+from dolfinx.fem import Constant, form
+from ufl import  FacetNormal, grad, dot, inner, Measure, div
+from ufl.operators import Dn
 from petsc4py import PETSc
 from mpi4py import MPI
-from geomdl import BSpline, utilities, helpers
-
 import numpy as np
 import scipy.linalg
-import os
-
-
 
 def _shape_gradient_Dirichlet(c, p_dir, p_adj_conj):
     # Equation 4.34 in thesis
@@ -241,95 +236,3 @@ def ShapeDerivativesLocal2D(geometry, boundary_conditions, omega, p_dir, p_adj, 
         results[tag] = MPI.COMM_WORLD.allreduce(assemble_scalar(C * G * ds(tag)), op=MPI.SUM)
             
     return results
-
-class ShapeDerivativesRijke2D:
-
-    def __init__(self,geometry, boundary_conditions, omega, p_dir, p_adj, c):
-        
-        self.geometry = geometry
-        self.mesh = geometry.mesh    
-        self.facet_tags = geometry.facet_tags
-        self.c = c
-        self.n = FacetNormal(self.mesh)
-        self.ds = Measure('ds', domain = self.mesh, subdomain_data = self.facet_tags)
-
-        self.boundary_conditions = boundary_conditions
-        self.omega = omega
-
-        self.p_dir = p_dir
-        self.p_adj = p_adj
-        self.p_adj_conj = conjugate_function(p_adj)
-        self.results = {}
-        
-
-    def _shape_gradient_Dirichlet(self):
-        # Equation 4.34 in thesis
-        return - self.c**2 * Dn(self.p_adj_conj) * Dn (self.p_dir)
-
-    def _shape_gradient_Neumann(self):
-        # Equation 4.35 in thesis
-        return  div(self.p_adj_conj * self.c**2 * grad(self.p_dir))
-
-    def _shape_gradient_Neumann2(self):
-        # Equation 4.36 in thesis
-        return self.c**2 * dot(grad(self.p_adj_conj), grad(self.p_dir)) - self.omega**2 * self.p_adj_conj * self.p_dir  
-
-    def _shape_gradient_Robin(self, index):
-
-        # FIX ME FOR PARAMETRIC 3D
-        if self.geometry.mesh.topology.dim == 2:
-            curvature = self.geometry.get_curvature_field(index)
-        else:
-            curvature = 0
-
-        # Equation 4.33 in thesis
-        return -self.p_adj_conj * (curvature * self.c ** 2 + self.c * Dn(self.c)*Dn(self.p_dir)) + \
-            self._shape_gradient_Neumann() + \
-            2 * self._shape_gradient_Dirichlet()
-
-    def calculate(self):
-
-        boundary_conditions = self.boundary_conditions
-        geometry = self.geometry
-        n = self.n
-        ds = self.ds
-
-        for tag, value in boundary_conditions.items():
-
-            if tag in geometry.ctrl_pts:
-                
-                derivatives = np.zeros((len(geometry.ctrl_pts[tag]),2), dtype=complex)
-
-                for j in range(len(geometry.ctrl_pts[tag])):
-            
-                    V_x, V_y = self.geometry.get_displacement_field(tag, j) 
-
-                    if value ==  "Dirichlet" :
-
-                        G_dir = self._shape_gradient_Dirichlet()
-                        # print(assemble_scalar(G_dir*ds(i)))
-
-                        gradient_x = assemble_scalar( inner(V_x, n) * G_dir * ds(tag) )
-                        gradient_y = assemble_scalar( inner(V_y, n) * G_dir * ds(tag) )
-
-                    elif value == "Neumann":
-
-                        G_neu = self._shape_gradient_Neumann()
-
-                        gradient_x = assemble_scalar( inner(V_x, n) * G_neu * ds(tag) )
-                        gradient_y = assemble_scalar( inner(V_y, n) * G_neu * ds(tag) )
-
-                    elif "Robin" in self.boundary_conditions[tag]:
-
-                        G_rob = self.get_Robin()
-
-                        gradient_x = assemble_scalar( inner(V_x, n) * G_rob * ds(tag) )
-                        gradient_y = assemble_scalar( inner(V_y, n) * G_rob * ds(tag) )
-
-                    # MPI.COMM_WORLD.allreduce(gradient_x , op=MPI.SUM) # For parallel executions
-                    # MPI.COMM_WORLD.allreduce(gradient_y , op=MPI.SUM) # For parallel executions
-
-                    derivatives[j][0] = gradient_x
-                    derivatives[j][1] = gradient_y
-                    
-                self.results[tag] = derivatives

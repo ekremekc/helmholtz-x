@@ -70,6 +70,7 @@ class AcousticMatrices:
                 Z = (1+R)/(1-R)
                 integrals_Impedance = 1j * self.c / Z * inner(self.phi_i, self.phi_j) * self.ds(boundary)
                 self.integrals_R.append(integrals_Impedance)
+                info("- Robin boundary on boundary "+str(boundary))
 
             if 'ChokedInlet' in boundary_conditions[boundary]:
                 A_inlet = MPI.COMM_WORLD.allreduce(assemble_scalar(form(self.AreaConstant * self.ds(boundary))), op=MPI.SUM)

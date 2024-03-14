@@ -1,6 +1,5 @@
-import numpy as np
 from petsc4py import PETSc
-from mpi4py import MPI
+import numpy as np
 
 def multiply(x0, z):
     """

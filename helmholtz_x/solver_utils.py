@@ -1,5 +1,5 @@
-import datetime
 from mpi4py import MPI
+import datetime
 
 def start_time():
     return datetime.datetime.now()
