@@ -1,90 +1,8 @@
-from dolfinx.fem import locate_dofs_topological, VectorFunctionSpace,Function
-from .dolfinx_utils import unroll_dofmap
+from .dolfinx_utils import cart2cyl, cyl2cart
+from pyevtk.hl import pointsToVTK
 from math import comb
 import numpy as np
 import gmsh
-
-def calculate_perpendicular_displacement_field(gmsh_model, mesh, facet_tags, elementary_facet_tag, physical_facet_tag):
-    
-    gmsh.model = gmsh_model
-
-    Q = VectorFunctionSpace(mesh, ("CG", 1))
-
-    facets = facet_tags.find(physical_facet_tag)
-    fdim = mesh.topology.dim-1 
-    indices = locate_dofs_topological(Q, fdim, facets)
-    x0 = mesh.geometry.x
-
-    dofs_Q = unroll_dofmap(indices, Q.dofmap.bs)
-
-    surface_coordinates = x0[indices]
-
-    node_tags, coords, t_coords = gmsh.model.mesh.getNodes(2, elementary_facet_tag, includeBoundary=True)
-    gmsh.model.occ.synchronize()
-
-    norm = gmsh.model.getNormal(elementary_facet_tag,t_coords)
-    norm = norm.reshape(-1,3)
-    coords = coords.reshape(-1, 3) 
-    V_func = Function(Q)
-
-    tolerance = 1e-6
-    counter = 0
-
-    dofs_Q_array = dofs_Q.reshape(-1,3)
-
-    for dofs_node, node in zip(dofs_Q_array, surface_coordinates):
-        itemindex = np.where(np.isclose(coords, node, atol=tolerance).all(axis=1))[0]
-        if len(itemindex) != 0 : 
-            xyz_val = norm[itemindex[0]]
-            V_func.x.array[dofs_node] = xyz_val
-            counter +=1
-
-    V_func.x.scatter_forward()
-
-    print(counter, len(coords), len(surface_coordinates))
-
-    return V_func
-
-def ffd_displacement_vector(geometry, FFDLattice, surface_physical_tag, i, j, k,
-                            includeBoundary=True, returnParametricCoord=True, tol=1e-6, deg=1):
-
-    mesh, _, facet_tags = geometry.getAll()
-    
-    Q = VectorFunctionSpace(mesh, ("CG", deg))
-
-    facets = facet_tags.find(surface_physical_tag)
-    indices = locate_dofs_topological(Q, mesh.topology.dim-1 , facets)
-    surface_coordinates = mesh.geometry.x[indices]
-    
-    surface_elementary_tag = gmsh.model.getEntitiesForPhysicalGroup(2,surface_physical_tag)
-    node_tags, coords, t_coords = gmsh.model.mesh.getNodes(2, int(surface_elementary_tag), includeBoundary=includeBoundary, returnParametricCoord=returnParametricCoord)
-
-    norm = gmsh.model.getNormal(int(surface_elementary_tag),t_coords)
-
-    V_func = Function(Q)
-    dofs_Q = unroll_dofmap(indices, Q.dofmap.bs)
-    dofs_Q = dofs_Q.reshape(-1,3)
-
-    s,t,u = FFDLattice.calcSTU(coords)
-    value = comb(FFDLattice.l-1,i)*np.power(1-s, FFDLattice.l-1-i)*np.power(s,i) * \
-            comb(FFDLattice.m-1,j)*np.power(1-t, FFDLattice.m-1-j)*np.power(t,j) * \
-            comb(FFDLattice.n-1,k)*np.power(1-u, FFDLattice.n-1-k)*np.power(u,k)
-
-    coords = coords.reshape(-1, 3) 
-    norm = norm.reshape(-1,3)
-
-    for dofs_node, node in zip(dofs_Q, surface_coordinates):
-        itemindex = np.where(np.isclose(coords, node, atol=tol).all(axis=1))[0]
-        if len(itemindex) == 1: 
-            V_func.x.array[dofs_node] = value[itemindex]*norm[itemindex][0]
-        elif len(itemindex) == 2 :
-            V_func.x.array[dofs_node] = value[itemindex][0]*norm[itemindex][0]
-        else:
-            print(value[itemindex])
-   
-    V_func.x.scatter_forward()     
-
-    return V_func    
 
 def derivatives_normalize(shape_derivatives):
     """Normalizes shape derivative dictionary
@@ -171,3 +89,230 @@ def nonaxisymmetric_derivatives_normalize(shape_derivatives):
             normalized_derivatives[key_v][key_u] =  value_u.real/max_value_real + 1j*value_u.imag/max_value_imag
 
     return normalized_derivatives
+
+class FFDCylindrical:
+    def __init__(self, gmsh_model, l, m , n, dim, tag=-1, includeBoundary=False, parametric=True):
+        """This class generates a cylindrical FFD Lattice 
+
+        Args:
+            gmsh_model (gmsh.model): gmsh model (after meshing) 
+            l (int): number of points in the x direction
+            m (int): number of points in the y direction
+            n (int): number of points in the z direction
+            dim (int): dimension of gmsh entity - 2 or 3
+            tag (int, optional): physical tag of the entity, -1 returns all tags. Defaults to -1.
+        """
+        self.l = l
+        self.m = m
+        self.n = n
+
+        self.Px = np.zeros((l,m,n))
+        self.Py = np.zeros((l,m,n))
+        self.Pz = np.zeros((l,m,n))
+
+        self.Pr = np.zeros((l,m,n))
+        self.Pphi = np.zeros((l,m,n))
+        self.Pz = np.zeros((l,m,n))
+        
+        if tag==-1:
+            elementary_tag = -1
+        else:
+            elementary_tag = gmsh.model.getEntitiesForPhysicalGroup(dim,tag)
+        
+        nodes, coords, param = gmsh_model.mesh.getNodes(dim, int(elementary_tag), includeBoundary, parametric)
+
+        xs = coords[0::3]
+        ys = coords[1::3]
+        zs = coords[2::3]
+
+        rhos, phis, zetas = cart2cyl(xs, ys, zs)
+
+        self.dr = max(rhos)-min(rhos)
+        self.dphi = 2*np.pi
+        self.dz = max(zetas)-min(zetas)
+
+        for i in range(l):
+            for j in range(m):
+                for k in range(n):
+                    self.Pr[i, j, k] = min(rhos)  + self.dr * i / (l - 1)
+                    self.Pphi[i, j, k] = min(phis)  + self.dphi * j / (m -1)
+                    self.Pz[i, j, k] = min(zetas)  + self.dz * k / (n -1)
+
+        self.P0 = np.array([self.Pr[0, 0, 0], self.Pphi[0, 0, 0], self.Pz[0, 0, 0]])
+
+        full_nodes, full_coords, full_param = gmsh_model.mesh.getNodes(dim, -1, True, True)
+        
+        xs_base = full_coords[0::3]
+        ys_base = full_coords[1::3]
+        zs_base = full_coords[2::3]
+
+        rhos_base, phis_base, zetas_base = cart2cyl(xs_base, ys_base, zs_base)
+
+
+        self.dr_base = max(rhos_base)-min(rhos_base)
+        self.dphi_base = 2*np.pi
+        self.dz_base = max(zetas_base)-min(zetas_base)
+
+    def write_ffd_points(self, name="MeshDir/FFD"):
+        """writes the FFD points as a vtu file (readable using ParaView).
+        """
+        
+        r_ffd = self.Pr.flatten()
+        phi_ffd = self.Pphi.flatten()
+        z_ffd = self.Pz.flatten()
+        x_ffd, y_ffd, z_ffd = cyl2cart(r_ffd, phi_ffd, z_ffd)
+        pointsToVTK(name, x_ffd, y_ffd, z_ffd)
+        print("FFD points are saved as "+name+".vtu")
+    
+    def calcSTU(self, coords):
+        """Calculates parametric coordinates for cylindrical lattice
+
+        Args:
+            coords (_type_): cartesian coordinates
+
+        Returns:
+            _type_: _description_
+        """
+
+        xs = coords[0::3]
+        ys = coords[1::3]
+        zs = coords[2::3]
+
+        rhos, phis, zetas = cart2cyl(xs, ys, zs)
+
+        s = (rhos - self.P0[0])/self.dr
+        t = (phis - self.P0[1])/self.dphi
+        u = (zetas - self.P0[2])/self.dz
+
+        return s,t,u 
+
+def getMeshdata(gmsh_model):
+    """ Calculates the current mesh data which inputs the deformation function.
+
+    Args:
+        gmsh_model (_type_): gmsh.model
+
+    Returns:
+        dictionary: mesh data
+    """
+    mesh_data = {}
+    for e in gmsh_model.getEntities():
+        mesh_data[e] = (gmsh_model.getBoundary([e]),
+                gmsh_model.mesh.getNodes(e[0], e[1]),
+                gmsh_model.mesh.getElements(e[0], e[1]))
+    return mesh_data
+
+def getLocalMeshdata(gmsh_model, dim, tag):
+    """ Calculates the current mesh data which inputs the deformation function.
+
+    Args:
+        gmsh_model (_type_): gmsh.model
+        tag: physical tag of the entity
+
+    Returns:
+        dictionary: mesh data
+    """
+    elementary_tag = gmsh.model.getEntitiesForPhysicalGroup(dim,tag)
+    xmin, ymin, zmin, xmax, ymax, zmax = gmsh.model.getBoundingBox(dim,int(elementary_tag))
+    
+    mesh_data = {}
+    for e in gmsh.model.getEntitiesInBoundingBox(xmin, ymin, zmin, xmax, ymax, zmax):
+        mesh_data[e] = (gmsh_model.getBoundary([e]),
+                gmsh_model.mesh.getNodes(e[0], e[1]),
+                gmsh_model.mesh.getElements(e[0], e[1]))
+    return mesh_data
+
+def getNonLocalMeshdata(gmsh_model, dim, tag):
+    """ Calculates the current nonlocal mesh data which inputs the deformation function.
+
+    Args:
+        gmsh_model (_type_): gmsh.model
+        tag: physical tag of the entity
+
+    Returns:
+        dictionary: mesh data
+    """
+    elementary_tag = gmsh.model.getEntitiesForPhysicalGroup(dim,tag)
+    xmin, ymin, zmin, xmax, ymax, zmax = gmsh.model.getBoundingBox(dim,int(elementary_tag))
+    local_entities = gmsh.model.getEntitiesInBoundingBox(xmin, ymin, zmin, xmax, ymax, zmax)
+    global_entities = gmsh.model.getEntities()
+    non_local_entities = list(set(global_entities) - set(local_entities))
+
+    mesh_data = {}
+    for e in non_local_entities:
+        mesh_data[e] = (gmsh_model.getBoundary([e]),
+                gmsh_model.mesh.getNodes(e[0], e[1]),
+                gmsh_model.mesh.getElements(e[0], e[1]))
+    return mesh_data
+
+def calcSTU(coords, P0, dx, dy, dz):
+    """
+    Calc STU (parametric) coordinates in cartesian grid
+    """
+    xs = coords[0::3]
+    ys = coords[1::3]
+    zs = coords[2::3]
+
+    s = (xs - P0[0])/dx
+    t = (ys - P0[1])/dy
+    u = (zs - P0[2])/dz
+
+    return s,t,u
+
+def deformCylindricalFFD(gmsh_model, mesh_data, CylindricalLattice):
+
+    l,m,n = CylindricalLattice.l,CylindricalLattice.m, CylindricalLattice.n
+    for e in mesh_data:
+
+        if len(mesh_data[e][1][1])==3:
+
+            old_coord = mesh_data[e][1][1]
+            s,t,u = CylindricalLattice.calcSTU(old_coord)
+            Xdef = np.zeros((1,3))
+
+        else:
+            old_coords = mesh_data[e][1][1]
+            s,t,u = CylindricalLattice.calcSTU(old_coords)
+            Xdef = np.zeros((int(len(old_coords)/3),3))
+        for point, param_s in enumerate(s):
+            for i in range(l):
+                for j in range(m):
+                    for k in range(n):
+                        Xdef[point] +=  comb(l-1,i)*np.power(1-s[point], l-1-i)*np.power(s[point],i) * \
+                                        comb(m-1,j)*np.power(1-t[point], m-1-j)*np.power(t[point],j) * \
+                                        comb(n-1,k)*np.power(1-u[point], n-1-k)*np.power(u[point],k) * \
+                                        np.asarray([CylindricalLattice.Pr[i,j,k], 
+                                                    CylindricalLattice.Pphi[i,j,k],
+                                                    CylindricalLattice.Pz[i,j,k]])
+
+        Xdef_3d_cart = Xdef.copy()
+        Xdef_3d_cart[:,0], Xdef_3d_cart[:,1],Xdef_3d_cart[:,2] = cyl2cart(Xdef[:,0], Xdef[:,1], Xdef[:,2]) 
+        new_coord = Xdef_3d_cart.flatten()
+        
+        gmsh.model.addDiscreteEntity(e[0], e[1], [b[1] for b in mesh_data[e][0]])
+        gmsh.model.mesh.addNodes(e[0], e[1], mesh_data[e][1][0], new_coord)
+        gmsh.model.mesh.addElements(e[0], e[1], mesh_data[e][2][0], mesh_data[e][2][1], mesh_data[e][2][2])
+
+    return gmsh_model
+
+def deformCylindricalLocalFFD(gmsh_model, local_mesh_data, nonlocal_mesh_data, CylindricalLattice):
+    # first, add local mesh data
+    gmsh.model = deformCylindricalFFD(gmsh.model, local_mesh_data, CylindricalLattice)
+    
+    # then add the nonlocal data
+    for e in sorted(nonlocal_mesh_data):
+        
+        coord = []
+        for i in range(0, len(nonlocal_mesh_data[e][1][1]), 3):
+            x = nonlocal_mesh_data[e][1][1][i]
+            y = nonlocal_mesh_data[e][1][1][i + 1]
+            z = nonlocal_mesh_data[e][1][1][i + 2]
+            coord.append(x)
+            coord.append(y)
+            coord.append(z)
+
+        gmsh.model.addDiscreteEntity(e[0], e[1], [b[1] for b in nonlocal_mesh_data[e][0]])
+        gmsh.model.mesh.addNodes(e[0], e[1], nonlocal_mesh_data[e][1][0], coord)
+        gmsh.model.mesh.addElements(e[0], e[1], nonlocal_mesh_data[e][2][0], nonlocal_mesh_data[e][2][1], nonlocal_mesh_data[e][2][2])
+
+    return gmsh_model

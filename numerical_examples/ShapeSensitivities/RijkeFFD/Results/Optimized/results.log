@@ -1,0 +1,55 @@
+
+XDMF Mesh - Cell data loaded.
+XDMF Mesh - Facet data loaded.
+Number of cells:  67,325
+Number of cores:  4 
+
+Degree of basis functions:  1 
+
+/\ Temperature function is used for passive flame matrices.
+- Neumann boundaries on boundary 1
+- Robin boundary on boundary 2
+- Robin boundary on boundary 3
+- Passive matrices are assembling..
+- Matrix A is assembled.
+- Matrix B is assembled.
+- Matrix C is assembled.
+
+- Generating matrix D..
+- Submatrix D is Assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
+-> Fixed point iteration started.
+
+* iter =  1
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1166.73557877  -6.68106684j,  |domega| = 3.39e+00
+
+* iter =  2
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1166.19070079  -3.40552962j,  |domega| = 3.32e+00
+
+* iter =  3
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1166.19062502  -3.40537954j,  |domega| = 1.68e-04
+
+* iter =  4
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1166.19062501  -3.40537954j,  |domega| = 4.20e-09
+
+Eigenvalue-> 1166.190625-3.405380j | Eigenfrequency-> 185.605003-0.541983j
+ 
+/home/ee331/Dev/Venvs/paper/repos/src/helmholtz-x/numerical_examples/ShapeSensitivities/RijkeFFD/Results/Optimized/eigenvalue.txt  is saved.
+Total Execution Time:  0:01:39.576492
