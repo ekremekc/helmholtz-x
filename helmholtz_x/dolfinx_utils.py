@@ -1,6 +1,6 @@
+from dolfinx.mesh import meshtags,locate_entities,create_unit_interval, create_unit_square
 from dolfinx.fem import Function, FunctionSpace, form, locate_dofs_topological
 from dolfinx.fem.assemble import assemble_scalar
-from dolfinx.mesh import meshtags,locate_entities,create_unit_interval, create_unit_square
 from dolfinx.io import XDMFFile
 from mpi4py import MPI
 import ufl

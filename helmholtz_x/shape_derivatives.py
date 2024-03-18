@@ -1,10 +1,9 @@
 from .petsc4py_utils import conjugate_function
 from .eigenvectors import normalize_adjoint
 from .dolfinx_utils import unroll_dofmap
-from dolfinx.fem.assemble import assemble_scalar
 from dolfinx.fem import form, locate_dofs_topological, VectorFunctionSpace,Function
+from dolfinx.fem.assemble import assemble_scalar
 from ufl import  FacetNormal, grad, inner, Measure, div
-from mpi4py import MPI
 from math import comb
 import numpy as np
 import gmsh
@@ -14,7 +13,7 @@ def shapeDerivativesFFD(geometry, lattice, physical_facet_tag, omega_dir, p_dir,
     ds = Measure('ds', domain = geometry.mesh, subdomain_data = geometry.facet_tags)
 
     p_adj_norm = normalize_adjoint(omega_dir, p_dir, p_adj, acousticMatrices, FlameMatrix)
-    p_adj_conj = conjugate_function(p_adj_norm) # it should be conjugated once
+    p_adj_conj = conjugate_function(p_adj_norm)
 
     G_neu = div(p_adj_conj * c**2 * grad(p_dir))
 
@@ -29,8 +28,8 @@ def shapeDerivativesFFD(geometry, lattice, physical_facet_tag, omega_dir, p_dir,
         for phi in range(0,lattice.m):
 
             V_ffd = ffd_displacement_vector(geometry, lattice, physical_facet_tag, i, phi, zeta, deg=1)
-            
-            eig = MPI.COMM_WORLD.allreduce(assemble_scalar( form(inner(V_ffd, normal) * G_neu *ds(physical_facet_tag))), op=MPI.SUM)
+            shape_derivative_form = form(inner(V_ffd, normal) * G_neu * ds(physical_facet_tag))
+            eig = assemble_scalar(shape_derivative_form)
 
             derivatives[zeta][phi] = eig
 

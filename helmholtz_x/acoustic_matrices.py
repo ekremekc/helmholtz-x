@@ -1,7 +1,7 @@
 from dolfinx.fem import Function, FunctionSpace, dirichletbc, form, locate_dofs_topological, Constant, assemble_scalar
 from dolfinx.fem.petsc import assemble_matrix
-from helmholtz_x.parameters_utils import sound_speed_variable_gamma, gamma_function
-from helmholtz_x.solver_utils import info
+from .parameters_utils import sound_speed_variable_gamma, gamma_function
+from .solver_utils import info
 from ufl import Measure, TestFunction, TrialFunction, grad, inner
 from petsc4py import PETSc
 from mpi4py import MPI

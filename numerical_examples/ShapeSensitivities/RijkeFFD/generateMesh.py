@@ -45,7 +45,7 @@ gmsh.write("{}.msh".format(path+mesh_dir+mesh_name))
 write_xdmf_mesh(path+mesh_dir+mesh_name,dimension=3)
 
 ### Introducing FFD 
-l, m, n = 2, 4, 5
+l, m, n = 2, 4, 9
 CylindricalLattice = FFDCylindrical(gmsh.model, l, m , n, 3, tag=-1, includeBoundary=True, parametric=False) 
 CylindricalLattice.write_ffd_points(path+mesh_dir+"/FFDinitial")
 

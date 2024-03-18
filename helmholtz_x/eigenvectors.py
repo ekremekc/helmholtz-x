@@ -1,8 +1,8 @@
-from dolfinx.fem import Function, FunctionSpace, Expression, form
 from .petsc4py_utils import multiply, vector_matrix_vector, matrix_vector, FixSign
+from dolfinx.fem import Function, FunctionSpace, Expression, form
 from ufl import dx, VectorElement, grad, inner, sqrt
-from .solver_utils import info
 from dolfinx.fem.assemble import assemble_scalar
+from .solver_utils import info
 from slepc4py import SLEPc
 from mpi4py import MPI
 import numpy as np

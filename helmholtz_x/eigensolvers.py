@@ -1,5 +1,5 @@
-from .eigenvectors import normalize_eigenvector
 from .petsc4py_utils import vector_matrix_vector
+from .eigenvectors import normalize_eigenvector
 from .solver_utils import info
 from slepc4py import SLEPc
 from mpi4py import MPI
