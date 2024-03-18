@@ -29,3 +29,86 @@ Degree of basis functions:  2
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1157.46235092  -4.08229624j,  |domega| = 5.16e+00
+
+* iter =  2
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1156.74336432  +0.86774542j,  |domega| = 5.00e+00
+
+* iter =  3
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1156.74314424  +0.86828282j,  |domega| = 5.81e-04
+
+* iter =  4
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1156.74314422  +0.86828285j,  |domega| = 3.31e-08
+
+* iter =  5
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1156.74314422  +0.86828285j,  |domega| = 1.89e-12
+
+Eigenvalue-> 1156.743144+0.868283j | Eigenfrequency-> 184.101389+0.138192j
+ 
+- Generating matrix D..
+- Submatrix D is Assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
+-> Fixed point iteration started.
+
+* iter =  1
+- Adjoint matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1157.46235094  +4.08229624j,  |domega| = 5.16e+00
+
+* iter =  2
+- Adjoint matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1156.74336436  -0.86774542j,  |domega| = 5.00e+00
+
+* iter =  3
+- Adjoint matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1156.74314429  -0.86828282j,  |domega| = 5.81e-04
+
+* iter =  4
+- Adjoint matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1156.74314427  -0.86828285j,  |domega| = 3.31e-08
+
+* iter =  5
+- Adjoint matrix D is assembling...
+- Matrix D is assembled.
+- PEP solver started.
+- PEP solver converged. Eigenvalue computed.
++ omega = +1156.74314427  -0.86828285j,  |domega| = 1.70e-12
+
+Eigenvalue-> 1156.743144-0.868283j | Eigenfrequency-> 184.101389-0.138192j
+ 
+/home/ee331/Dev/Venvs/paper/repos/src/helmholtz-x/numerical_examples/ShapeSensitivities/RijkeFFD/Results/ShapeDerivatives/eigenvalues.txt  is saved.
+Total Execution Time:  2:09:34.237329
+FFD points are saved as /home/ee331/Dev/Venvs/paper/repos/src/helmholtz-x/numerical_examples/ShapeSensitivities/RijkeFFD/MeshDir/ShapeDerivatives/FFDinitial.vtu
+- Normalizing the adjoint eigenvector to calculate shape derivatives..
+- Derivative of matrix D is assembled.
+! Normalization Check:  (0.9999999999999876-1.9293716472558453e-17j)
+ShapeDerivatives/normalized_new.txt  is saved.

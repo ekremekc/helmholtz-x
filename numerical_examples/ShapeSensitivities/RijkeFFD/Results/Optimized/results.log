@@ -1,8 +1,8 @@
 
 XDMF Mesh - Cell data loaded.
 XDMF Mesh - Facet data loaded.
-Number of cells:  67,325
-Number of cores:  4 
+Number of cells:  68,246
+Number of cores:  8 
 
 Degree of basis functions:  1 
 
@@ -47,9 +47,9 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1166.19062501  -3.40537954j,  |domega| = 4.20e-09
++ omega = +1166.19062501  -3.40537954j,  |domega| = 4.18e-09
 
 Eigenvalue-> 1166.190625-3.405380j | Eigenfrequency-> 185.605003-0.541983j
  
 /home/ee331/Dev/Venvs/paper/repos/src/helmholtz-x/numerical_examples/ShapeSensitivities/RijkeFFD/Results/Optimized/eigenvalue.txt  is saved.
-Total Execution Time:  0:01:39.576492
+Total Execution Time:  0:01:35.398176
