@@ -106,4 +106,4 @@ CylindricalLattice.write_ffd_points(path+mesh_dir+"/FFDinitial")
 # Computing shape derivatives
 derivatives = shapeDerivativesFFD(Rijke3D, CylindricalLattice, 1, omega_dir, p_dir, p_adj, c, matrices, D)
 derivatives_normalized = nonaxisymmetric_derivatives_normalize(derivatives)
-dict_writer("ShapeDerivatives/normalized_new",derivatives_normalized)
+dict_writer("ShapeDerivatives/normalized",derivatives_normalized)
