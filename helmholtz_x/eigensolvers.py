@@ -270,13 +270,13 @@ def fixed_point_iteration( operators, D,  target, nev=2, i=0,
     
     return E
 
-
-def newton_solver(operators, D, init, nev=2, i=0, tol=1e-3, maxiter=100, print_results=False):
+def newtonSolver(operators, D, init, nev=2, i=0, tol=1e-3, maxiter=100, print_results=False):
     """
     The convergence strongly depends/relies on the initial value assigned to omega.
     Targeting zero in the shift-and-invert (spectral) transformation or, more in general,
     seeking for the eigenvalues nearest to zero might also be problematic.
-    The implementation uses the TwoSided option to compute the adjoint eigenvector.
+    The implementation uses the TwoSided option to compute the adjoint eigenvector
+    (IT HAS BEEN TESTED).
     :param operators:
     :param D:
     :param init: initial value assigned to omega
@@ -294,7 +294,6 @@ def newton_solver(operators, D, init, nev=2, i=0, tol=1e-3, maxiter=100, print_r
 
     omega = np.zeros(maxiter, dtype=complex)
     omega[0] = init
-    alpha = 1.0
 
     domega = 2 * tol
     k = 0
@@ -303,6 +302,8 @@ def newton_solver(operators, D, init, nev=2, i=0, tol=1e-3, maxiter=100, print_r
     tol_ = "{:.0e}".format(tol)
     tol_ = int(tol_[-2:])
     s = "{{:+.{}f}}".format(tol_)
+
+    relaxation = 1.0
 
     info("-> Newton solver started.\n")
 
@@ -324,19 +325,21 @@ def newton_solver(operators, D, init, nev=2, i=0, tol=1e-3, maxiter=100, print_r
 
         eig = E.getEigenvalue(i)
 
-        omega_dir, p = normalize_eigenvector(operators.mesh, E, i, degree=operators.degree, which='right', print_eigs=False)
+        omega_dir, p = normalize_eigenvector(operators.mesh, E, i, degree=1, which='right', print_eigs=False)
 
-        omega_adj, p_adj = normalize_eigenvector(operators.mesh, E, i, degree=operators.degree, which='left', print_eigs=False)
+        omega_adj, p_adj = normalize_eigenvector(operators.mesh, E, i, degree=1, which='left', print_eigs=False)
+
+        # convert into PETSc.Vec type
+        p_vec = p.vector
+        p_adj_vec = p_adj.vector
 
         # numerator and denominator
-        num = vector_matrix_vector(p_adj.vector, dL_domega, p.vector)
-        den = vector_matrix_vector(p_adj.vector, C, p.vector)
+        num = vector_matrix_vector(p_adj_vec, dL_domega, p_vec)
+        den = vector_matrix_vector(p_adj_vec, C, p_vec)
 
         deig = num / den
-
-        alpha *= 0.6
-
-        domega = - alpha * eig / deig
+        domega = - relaxation * eig / deig
+        relaxation *= 0.8
 
         omega[k + 1] = omega[k] + domega
         
@@ -346,7 +349,6 @@ def newton_solver(operators, D, init, nev=2, i=0, tol=1e-3, maxiter=100, print_r
 
         k += 1
 
-        if abs(domega) > tol:
-            del E
-            
+        del E
+
     return omega[k], p

@@ -1,0 +1,341 @@
+
+XDMF Mesh - Cell data loaded.
+XDMF Mesh - Facet data loaded.
+Number of cells:  167,401
+Number of cores:  8 
+
+Degree of basis functions:  1 
+
+\/ Speed of sound function is used for passive flame matrices.
+- Robin boundary on boundary 11
+- Passive matrices are assembling..
+- Matrix A is assembled.
+- Matrix B is assembled.
+- Matrix C is assembled.
+
+- Generating matrix D..
+- Matrix contribution of flame 0 is computed.
+- Matrix contribution of flame 1 is computed.
+- Matrix contribution of flame 2 is computed.
+- Matrix contribution of flame 3 is computed.
+- Matrix contribution of flame 4 is computed.
+- Matrix contribution of flame 5 is computed.
+- Matrix contribution of flame 6 is computed.
+- Matrix contribution of flame 7 is computed.
+- Matrix contribution of flame 8 is computed.
+- Matrix contribution of flame 9 is computed.
+- Matrix contribution of flame 10 is computed.
+- Matrix contribution of flame 11 is computed.
+- Matrix contribution of flame 12 is computed.
+- Matrix contribution of flame 13 is computed.
+- Matrix contribution of flame 14 is computed.
+- Matrix contribution of flame 15 is computed.
+- Submatrix D is Assembled.
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  0,  omega = +3249.21  +458.30j,  |domega| = 1.09e+01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  1,  omega = +3246.33  +463.55j,  |domega| = 5.99e+00
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  2,  omega = +3247.62  +466.36j,  |domega| = 3.09e+00
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  3,  omega = +3249.07  +467.08j,  |domega| = 1.62e+00
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  4,  omega = +3249.95  +467.05j,  |domega| = 8.89e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  5,  omega = +3250.44  +466.85j,  |domega| = 5.21e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  6,  omega = +3250.69  +466.65j,  |domega| = 3.23e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  7,  omega = +3250.83  +466.49j,  |domega| = 2.11e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  8,  omega = +3250.90  +466.37j,  |domega| = 1.43e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  9,  omega = +3250.94  +466.27j,  |domega| = 1.01e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 10,  omega = +3250.96  +466.20j,  |domega| = 7.24e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 11,  omega = +3250.98  +466.15j,  |domega| = 5.33e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 12,  omega = +3250.98  +466.11j,  |domega| = 3.99e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 13,  omega = +3250.99  +466.08j,  |domega| = 3.02e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 14,  omega = +3250.99  +466.06j,  |domega| = 2.32e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 15,  omega = +3250.99  +466.04j,  |domega| = 1.79e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 16,  omega = +3250.99  +466.03j,  |domega| = 1.40e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 17,  omega = +3250.99  +466.02j,  |domega| = 1.09e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 18,  omega = +3250.99  +466.01j,  |domega| = 8.59e-03
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  0,  omega = +3256.63  +444.03j,  |domega| = 1.63e+01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  1,  omega = +3241.62  +453.87j,  |domega| = 1.79e+01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  2,  omega = +3241.16  +463.32j,  |domega| = 9.47e+00
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  3,  omega = +3248.14  +459.53j,  |domega| = 7.95e+00
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  4,  omega = +3250.54  +456.07j,  |domega| = 4.20e+00
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  5,  omega = +3248.55  +458.49j,  |domega| = 3.13e+00
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  6,  omega = +3249.84  +456.44j,  |domega| = 2.43e+00
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  7,  omega = +3248.72  +458.02j,  |domega| = 1.94e+00
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  8,  omega = +3249.48  +456.76j,  |domega| = 1.48e+00
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter =  9,  omega = +3248.83  +457.77j,  |domega| = 1.20e+00
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 10,  omega = +3249.29  +456.97j,  |domega| = 9.19e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 11,  omega = +3248.90  +457.62j,  |domega| = 7.53e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 12,  omega = +3249.19  +457.11j,  |domega| = 5.78e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 13,  omega = +3248.95  +457.52j,  |domega| = 4.76e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 14,  omega = +3248.77  +457.85j,  |domega| = 3.65e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 15,  omega = +3248.93  +457.58j,  |domega| = 3.04e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 16,  omega = +3248.82  +457.79j,  |domega| = 2.32e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 17,  omega = +3248.92  +457.62j,  |domega| = 1.93e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 18,  omega = +3248.99  +457.49j,  |domega| = 1.52e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 19,  omega = +3248.93  +457.60j,  |domega| = 1.20e-01
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 20,  omega = +3248.89  +457.68j,  |domega| = 9.49e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 21,  omega = +3248.93  +457.61j,  |domega| = 7.82e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 22,  omega = +3248.96  +457.56j,  |domega| = 6.21e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 23,  omega = +3248.93  +457.60j,  |domega| = 4.88e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 24,  omega = +3248.95  +457.56j,  |domega| = 3.97e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 25,  omega = +3248.94  +457.59j,  |domega| = 3.12e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 26,  omega = +3248.93  +457.61j,  |domega| = 2.49e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 27,  omega = +3248.94  +457.60j,  |domega| = 2.04e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 28,  omega = +3248.94  +457.58j,  |domega| = 1.62e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 29,  omega = +3248.94  +457.59j,  |domega| = 1.27e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 30,  omega = +3248.93  +457.60j,  |domega| = 1.02e-02
+- Direct matrix D is assembling...
+- Matrix D is assembled.
+- Derivative of matrix D is assembled.
+- EPS solver started.
+- EPS solver converged. Eigenvalue computed.
+iter = 31,  omega = +3248.94  +457.60j,  |domega| = 8.33e-03
+Results/Active/NewtonSolver/eigenvalues.txt  is saved.
+Total Execution Time for Direct Modes:  0:01:26.694515
