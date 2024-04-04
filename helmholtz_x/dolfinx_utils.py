@@ -1,10 +1,9 @@
 from dolfinx.mesh import meshtags,locate_entities,create_unit_interval, create_unit_square
-from dolfinx.fem import Function, FunctionSpace, form, locate_dofs_topological
 from dolfinx.fem.assemble import assemble_scalar
-from dolfinx.io import XDMFFile
+from dolfinx.fem import Function, form
 from mpi4py import MPI
-import ufl
 import numpy as np
+import ufl
 
 def cyl2cart(rho, phi, zeta):
     # cylindrical to Cartesian
@@ -70,87 +69,6 @@ def phase(func, deg=True):
     p_angle.x.scatter_forward()
 
     return p_angle
-
-def transient(func, omega, t_start, t_end, step, path):
-
-    p_t = Function(func.function_space)
-
-    xdmf = XDMFFile(func.function_space.mesh.comm, path+".xdmf", "w")
-    xdmf.write_mesh(func.function_space.mesh)
-
-    time = np.linspace(t_start,t_end,step)
-
-    for t in time:
-        # print("t = {0} seconds.".format(t))
-        p_t.x.array[:] = func.x.array[:]*np.exp(-1j*omega*t)
-        p_t.x.scatter_forward()
-        xdmf.write_function(p_t, t)
-        
-    xdmf.close()
-
-def derivatives_visualizer(filename, shape_derivatives, geometry):
-    """ This function generates a .xdmf file which can visualize shape derivative values on boundaries of the geometry.
-        Filename should specify the path excluding extension (don't write .xdmf)
-        Geometry should be object that is built by XDMF Reader class
-
-    Args:
-        filename (str): file name (or path )
-        shape_derivatives (dict): Should have the shape derivatives as a dictionary
-        geometry (XDMFReader): geometry object
-    """
-
-    V = FunctionSpace(geometry.mesh, ("CG",1))
-    fdim = geometry.mesh.topology.dim - 1
-    U = Function(V)
-
-    # print(shape_derivatives)
-    for tag, derivative in shape_derivatives.items():
-        # print(tag, derivative)           
-        facets = np.array(geometry.facet_tags.indices[geometry.facet_tags.values == tag])
-        dofs = locate_dofs_topological(V, fdim, facets)
-        U.x.array[dofs] = derivative #first element of boundary
-    
-    U.x.scatter_forward()
-
-    with XDMFFile(MPI.COMM_WORLD, filename+".xdmf", "w") as xdmf:
-        xdmf.write_mesh(geometry.mesh)
-        xdmf.write_function(U)
-
-def derivatives_normalizer(shape_derivatives, normalize=True):
-    """ This function normalizes the shape derivative values on boundaries of the geometry.
-
-    Args:
-        shape_derivatives (dict): Should have shape derivatives as a dictionary
-        normalize('bool'): Normalize or not (default is True)
-    """
-    shape_derivatives_real = shape_derivatives.copy()
-    shape_derivatives_imag = shape_derivatives.copy()
-
-    for key, value in shape_derivatives.items():
-        
-        if type(value) == complex: # Axial mode derivatives
-            shape_derivatives_real[key] = value.real
-            shape_derivatives_imag[key] = value.imag 
-            shape_derivatives[key] = value  
-        elif type(value) == list: # Azimuthal mode derivatives
-            shape_derivatives_real[key] = value[0].real
-            shape_derivatives_imag[key] = value[0].imag 
-            shape_derivatives[key] = value[0]  # get the first eigenvalue of each list
-
-    if normalize:
-        max_key_real = max(shape_derivatives_real, key=lambda y: abs(shape_derivatives_real[y]))
-        max_value_real = abs(shape_derivatives_real[max_key_real])
-        max_key_imag = max(shape_derivatives_imag, key=lambda y: abs(shape_derivatives_imag[y]))
-        max_value_imag = abs(shape_derivatives_imag[max_key_imag])
-
-        normalized_derivatives = shape_derivatives.copy()
-
-        for key, value in shape_derivatives.items():
-            normalized_derivatives[key] =  value.real/max_value_real + 1j*value.imag/max_value_imag
-
-        shape_derivatives = normalized_derivatives
-
-    return shape_derivatives
 
 def OneDimensionalSetup(n_elem, x_f = 0.25, a_f = 0.025, tag=0):
     """ This function builds one dimensional setup.

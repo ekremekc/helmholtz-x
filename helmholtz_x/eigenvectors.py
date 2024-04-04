@@ -9,14 +9,8 @@ import numpy as np
 
 def normalize_eigenvector(mesh, obj, i, absolute=False, degree=1, which='right',BlochRemapper=None, matrices=None, print_eigs=True):
     """ 
-    This function normalizes the eigensolution vr
-     which is obtained from complex slepc build
-     (vi is set to zero in complex build) 
-
-    Args:
-        mesh ([dolfinx.cpp.mesh.Mesh]): mesh of the domain
-        vr ([petsc4py.PETSc.Vec]): eigensolution
-        degree (int, optional): degree of finite elements. Defaults to 1.
+    This function normalizes the eigensolution vr which is obtained from complex slepc build
+     (vi is set to zero in complex build of slepc) 
 
     Returns:
         [<class 'dolfinx.fem.function.Function'>]: normalized eigensolution such that \int (p p dx) = 1

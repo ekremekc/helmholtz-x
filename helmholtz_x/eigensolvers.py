@@ -275,17 +275,7 @@ def newtonSolver(operators, D, init, nev=2, i=0, tol=1e-3, maxiter=100, print_re
     The convergence strongly depends/relies on the initial value assigned to omega.
     Targeting zero in the shift-and-invert (spectral) transformation or, more in general,
     seeking for the eigenvalues nearest to zero might also be problematic.
-    The implementation uses the TwoSided option to compute the adjoint eigenvector
-    (IT HAS BEEN TESTED).
-    :param operators:
-    :param D:
-    :param init: initial value assigned to omega
-    :param nev:
-    :param i:
-    :param tol:
-    :param maxiter:
-    :param print_results:
-    :return:
+    The implementation uses the TwoSided option to compute the adjoint eigenvector.
     """
 
     A = operators.A
