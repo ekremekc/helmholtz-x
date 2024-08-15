@@ -17,7 +17,7 @@ start = start_time()
 degree = 1
 
 # number of elements in 1D mesh
-n_elem = 3000
+n_elem = 300
 mesh, subdomains, facet_tags = OneDimensionalSetup(n_elem)
 
 # Define the boundary conditions
@@ -74,9 +74,9 @@ if size ==1 and degree==1:
     ax[1].set_ylabel(r"$imag(\hat{p}_1)$")
 
     ax[2].plot(x_coords, p_adjoint.x.array.real)
-    ax[2].set_ylabel(r"$real(\hat{p}_1)$")
+    ax[2].set_ylabel(r"$real(\hat{p}_1^{\dagger})$")
     ax[3].plot(x_coords, p_adjoint.x.array.imag)
-    ax[3].set_ylabel(r"$imag(\hat{p}_1)$")
+    ax[3].set_ylabel(r"$imag(\hat{p}_1^{\dagger})$")
     ax[3].set_xlabel(r"$x$")
 
     ax[0].grid()

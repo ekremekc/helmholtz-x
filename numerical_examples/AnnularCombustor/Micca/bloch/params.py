@@ -58,10 +58,10 @@ def c(mesh):
     for i in range(x.shape[0]):
         midpoint = x[i,:]
         if midpoint[2]< 0:
-            c.vector.setValueLocal(i, sqrt(gamma * r * 300.))
+            c.vector.setValueLocal(i, sqrt(gamma * r * T_amb))
         elif midpoint[2]> 0 and midpoint[2]< l_cc:
             
-            c.vector.setValueLocal(i, sqrt(gamma * r * ((1200. - 1521.) * (midpoint[2]/l_cc)**2 + 1521.)))
+            c.vector.setValueLocal(i, sqrt(gamma * r * ((T_b - T_a) * (midpoint[2]/l_cc)**2 + T_a)))
         else:
-            c.vector.setValueLocal(i, sqrt(gamma * r * 1200.))
+            c.vector.setValueLocal(i, sqrt(gamma * r * T_b))
     return c
