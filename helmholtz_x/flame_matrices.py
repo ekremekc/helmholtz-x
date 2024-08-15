@@ -102,6 +102,8 @@ class FlameMatrix:
         elif problem_type == 'adjoint':
             self._D_adj = self._D_ij_adj * np.conj(self.FTF(np.conj(omega)))
             info("- Adjoint matrix D is assembling...")
+        else:
+            ValueError("The problem type should be specified as 'direct' or 'adjoint'.")
         
         info("- Matrix D is assembled.")
     
@@ -121,6 +123,8 @@ class FlameMatrix:
         elif problem_type == 'adjoint':
             D_ij_adj_bloch = self.bloch_object.blochify(self.adjoint_submatrices)
             self._D_ij_adj = D_ij_adj_bloch
+        else:
+            ValueError("The problem type should be specified as 'direct' or 'adjoint'.")
     
 class PointwiseFlameMatrix(FlameMatrix):
 
@@ -180,6 +184,8 @@ class PointwiseFlameMatrix(FlameMatrix):
             self._D_ij = mat
         elif problem_type == 'adjoint':
             self._D_ij_adj = mat
+        else:
+            ValueError("The problem type should be specified as 'direct' or 'adjoint'.")
 
 class DistributedFlameMatrix(FlameMatrix):
 
@@ -203,6 +209,8 @@ class DistributedFlameMatrix(FlameMatrix):
         elif problem_type == 'adjoint':
             right_vector = distribute_vector_as_chunks(right_vector)
             left_vector = broadcast_vector(left_vector)
+        else:
+            ValueError("The problem type should be specified as 'direct' or 'adjoint'.")
 
         return left_vector, right_vector
 
@@ -231,3 +239,5 @@ class DistributedFlameMatrix(FlameMatrix):
             self._D_ij = mat
         elif problem_type == 'adjoint':
             self._D_ij_adj = mat
+        else:
+            ValueError("The problem type should be specified as 'direct' or 'adjoint'.")

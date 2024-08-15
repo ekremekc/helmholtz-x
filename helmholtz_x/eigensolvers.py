@@ -163,9 +163,12 @@ def fixed_point_iteration_eps(operators, D, target, nev=2, i=0,
             print("* iter = {:2d}".format(k+1))
 
         D.assemble_matrix(omega[k], problem_type)
-        D_Mat = D.matrix
-        if problem_type == 'adjoint':
+        if problem_type == 'direct':
+            D_Mat = D.matrix
+        elif problem_type == 'adjoint':
             D_Mat = D.adjoint_matrix
+        else:
+            raise ValueError("The problem type should be specified as 'direct' or 'adjoint'.")
 
         if not B:
             D_Mat = A - D_Mat
@@ -229,8 +232,10 @@ def fixed_point_iteration_pep( operators, D,  target, nev=2, i=0,
         D.assemble_matrix(omega[k], problem_type)
         if problem_type == 'direct':
             D_Mat = D.matrix
-        if problem_type == 'adjoint':
+        elif problem_type == 'adjoint':
             D_Mat = D.adjoint_matrix
+        else:
+            raise ValueError("The problem type should be specified as 'direct' or 'adjoint'.")
 
         D_Mat = A - D_Mat
 
