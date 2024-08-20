@@ -65,10 +65,18 @@ xdmf_writer("Results/Active/p_adj", mesh, p_adjoint)
 from mpi4py import MPI
 size = MPI.COMM_WORLD.Get_size()
 if size ==1 and degree==1:
+    from scipy.io import loadmat
     import matplotlib.pyplot as plt
+    direct_mat = loadmat('data/direct_data.mat')
+    adjoint_mat = loadmat('data/adjoint_data.mat')
+
+    x_matlab = direct_mat['emode_FEW_DA_nonlin'][0][0][1]
+    p_direct_matlab = direct_mat['emode_FEW_DA_nonlin'][0][0][3]
+    p_adjoint_matlab = adjoint_mat['emode_FEW_DA'][0][0][4]
+
     fig, ax = plt.subplots(4, figsize=(6, 8))
     x_coords = mesh.geometry.x[:,0]
-    ax[0].plot(x_coords, p_active.x.array.real)
+    ax[0].plot(x_coords, p_active.x.array.real, label='helmholtz-x')
     ax[0].set_ylabel(r"$real(\hat{p}_1)$")
     ax[1].plot(x_coords, p_active.x.array.imag)
     ax[1].set_ylabel(r"$imag(\hat{p}_1)$")
@@ -79,10 +87,18 @@ if size ==1 and degree==1:
     ax[3].set_ylabel(r"$imag(\hat{p}_1^{\dagger})$")
     ax[3].set_xlabel(r"$x$")
 
+    # Plot PRF data
+    ax[0].plot(x_matlab, p_direct_matlab.real ,marker='s', markersize=2, label='PRF')
+    ax[1].plot(x_matlab, -p_direct_matlab.imag ,marker='s', markersize=2)
+    ax[2].plot(x_matlab, p_adjoint_matlab.real ,marker='s', markersize=2)
+    ax[3].plot(x_matlab, -p_adjoint_matlab.imag ,marker='s', markersize=2)
+
     ax[0].grid()
     ax[1].grid()
     ax[2].grid()
     ax[3].grid()
+
+    ax[0].legend()
     fig.tight_layout()
 
     plt.savefig("Results/Active/"+"Active"+".pdf")
