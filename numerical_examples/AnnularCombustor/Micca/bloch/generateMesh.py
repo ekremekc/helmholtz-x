@@ -63,8 +63,8 @@ def add_elementary_entities(**kwargs):
               'R_out_cc': .2,
               'l_cc': .2,
               'l_ec': 0.0,
-              'lc_1': 5e-3,
-              'lc_2': 5e-3
+              'lc_1': 9e-3,
+              'lc_2': 9e-3
               }
 
     # Loop for changing default mesh parameters by taken keyword argument(dict)
