@@ -7,6 +7,7 @@ Number of cores:  1
 Degree of basis functions:  1 
 
 \/ Speed of sound function is used for passive flame matrices.
+- Robin boundary on boundary 11
 - Passive matrices are assembling..
 - Matrix A is assembled.
 - Matrix B is assembled.
@@ -88,7 +89,7 @@ Eigenvalue-> 3250.697492+465.643915j | Eigenfrequency-> 517.364574+74.109531j
 Eigenvalue-> 3250.642234+435.378057j | Eigenfrequency-> 517.355780+69.292570j
  
 Results/Active/FPI/eigenvalues_dir.txt  is saved.
-Total Execution Time for Direct Modes:  0:02:03.133427 
+Total Execution Time for Direct Modes:  0:02:06.448591 
 
 - Generating matrix D..
 - Matrix contribution of flame 0 is computed.
@@ -166,4 +167,4 @@ Eigenvalue-> 3250.697492-465.643915j | Eigenfrequency-> 517.364574-74.109531j
 Eigenvalue-> 3250.642234-435.378057j | Eigenfrequency-> 517.355780-69.292570j
  
 Results/Active/FPI/eigenvalues_adj.txt  is saved.
-Total Execution Time:  0:04:19.425042
+Total Execution Time:  0:04:26.598100

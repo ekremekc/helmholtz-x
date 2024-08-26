@@ -19,30 +19,30 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +3.42407503  -0.01221703j,  |domega| = 1.51e-02
++ omega = +3.42489130  -0.01224085j,  |domega| = 1.50e-02
 
 * iter =  2
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +3.42190301  +0.00222309j,  |domega| = 1.46e-02
++ omega = +3.42271394  +0.00219373j,  |domega| = 1.46e-02
 
 * iter =  3
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +3.42190235  +0.00222462j,  |domega| = 1.66e-06
++ omega = +3.42271328  +0.00219526j,  |domega| = 1.66e-06
 
 * iter =  4
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +3.42190235  +0.00222462j,  |domega| = 8.96e-11
++ omega = +3.42271328  +0.00219526j,  |domega| = 9.23e-11
 
-Eigenvalue-> 3.421902+0.002225j | Eigenfrequency-> 0.544613+0.000354j
+Eigenvalue-> 3.422713+0.002195j | Eigenfrequency-> 0.544742+0.000349j
  
 - Generating matrix D..
 - Submatrix D is Assembled.
@@ -55,29 +55,29 @@ Eigenvalue-> 3.421902+0.002225j | Eigenfrequency-> 0.544613+0.000354j
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +3.42407503  +0.01221703j,  |domega| = 1.51e-02
++ omega = +3.42489130  +0.01224085j,  |domega| = 1.50e-02
 
 * iter =  2
 - Adjoint matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +3.42190301  -0.00222309j,  |domega| = 1.46e-02
++ omega = +3.42271394  -0.00219373j,  |domega| = 1.46e-02
 
 * iter =  3
 - Adjoint matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +3.42190235  -0.00222462j,  |domega| = 1.66e-06
++ omega = +3.42271328  -0.00219526j,  |domega| = 1.66e-06
 
 * iter =  4
 - Adjoint matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +3.42190235  -0.00222462j,  |domega| = 9.03e-11
++ omega = +3.42271328  -0.00219526j,  |domega| = 9.23e-11
 
-Eigenvalue-> 3.421902-0.002225j | Eigenfrequency-> 0.544613-0.000354j
+Eigenvalue-> 3.422713-0.002195j | Eigenfrequency-> 0.544742-0.000349j
  
-Total Execution Time:  0:00:05.314065
+Total Execution Time:  0:00:02.399344

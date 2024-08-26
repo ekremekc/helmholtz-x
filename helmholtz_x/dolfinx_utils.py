@@ -1,4 +1,4 @@
-from dolfinx.mesh import meshtags,locate_entities,create_unit_interval, create_unit_square
+from dolfinx.mesh import meshtags,locate_entities,create_interval, create_unit_square, create_rectangle
 from dolfinx.fem.assemble import assemble_scalar
 from dolfinx.fem import Function, form
 from mpi4py import MPI
@@ -70,7 +70,7 @@ def phase(func, deg=True):
 
     return p_angle
 
-def OneDimensionalSetup(n_elem, x_f = 0.25, a_f = 0.025, tag=0):
+def OneDimensionalSetup(n_elem, x_f = 0.25, a_f = 0.025, x_end=1.0, tag=0):
     """ This function builds one dimensional setup.
         For boundaries, Tag 1 specifies left end and Tag 2 specifies right end. 
     Args:
@@ -79,8 +79,7 @@ def OneDimensionalSetup(n_elem, x_f = 0.25, a_f = 0.025, tag=0):
     Returns:
         mesh, subdomains, facet_tags
     """
-    
-    mesh = create_unit_interval(MPI.COMM_WORLD, n_elem)
+    mesh = create_interval(MPI.COMM_WORLD, n_elem, [0.0, 1.0])
 
     def fl_subdomain_func(x, x_f=x_f, a_f=a_f, eps=1e-16):
         x = x[0]
@@ -133,6 +132,44 @@ def SquareSetup(n_elem, x_f = 0.25, a_f = 0.025,):
                   (2, lambda x: np.isclose(x[0], 1)), # Right
                   (3, lambda x: np.isclose(x[1], 0)), # Bottom
                   (4, lambda x: np.isclose(x[1], 1))] # Top
+
+    facet_indices, facet_markers = [], []
+    fdim = mesh.topology.dim - 1
+    for (marker, locator) in boundaries:
+        facets = locate_entities(mesh, fdim, locator)
+        facet_indices.append(facets)
+        facet_markers.append(np.full(len(facets), marker))
+    facet_indices = np.array(np.hstack(facet_indices), dtype=np.int32)
+    facet_markers = np.array(np.hstack(facet_markers), dtype=np.int32)
+    sorted_facets = np.argsort(facet_indices)
+    facet_tags = meshtags(mesh, fdim, facet_indices[sorted_facets], facet_markers[sorted_facets])
+
+    return mesh, subdomains, facet_tags
+
+def RectangleSetup(nx, ny, L, h,  x_f = 0.25, a_f = 0.025):
+    """ This function builds two dimensional setup.
+        For boundaries, Tag 1 specifies left boundary, 
+                        Tag 2 specifies right boundary,
+                        Tag 3 specifies bottom boundary,
+                        Tag 4 specifies top boundary.  
+
+    """
+    
+    mesh = create_rectangle(MPI.COMM_WORLD, [np.array([0.0, 0.0]), np.array([L, h])],
+                        [nx, ny])
+
+    def fl_subdomain_func(x, x_f=x_f,a_f = a_f, eps=1e-16):
+        x = x[0]
+        return np.logical_and(x_f - a_f - eps <= x, x <= x_f + a_f + eps)
+    tdim = mesh.topology.dim
+    marked_cells = locate_entities(mesh, tdim, fl_subdomain_func)
+    fl = 0
+    subdomains = meshtags(mesh, tdim, marked_cells, np.full(len(marked_cells), fl, dtype=np.int32))
+
+    boundaries = [(1, lambda x: np.isclose(x[0], 0)), # Left
+                  (2, lambda x: np.isclose(x[0], L)), # Right
+                  (3, lambda x: np.isclose(x[1], 0)), # Bottom
+                  (4, lambda x: np.isclose(x[1], h))] # Top
 
     facet_indices, facet_markers = [], []
     fdim = mesh.topology.dim - 1

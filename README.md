@@ -66,6 +66,10 @@ source /usr/local/bin/dolfinx-complex-mode
 ```
 to activate the complex build of DOLFINx, upon your every new login to the docker container.
 
+#### TODO
+(https://github.com/ComputationalPhysiology/oasisx/blob/main/Dockerfile)
+(https://github.com/jorgensd/fenics22-tutorial/blob/main/Dockerfile)
+
 ### Conda
 
 It is advised to use **helmholtz-x** using *docker* images. But, users may install the dependencies with the conda, which generally takes much longer time to install, compared to the installation of *docker*. Here is the livestock for [PETSc/SLEPc/FEniCSx](https://fenicsproject.discourse.group/t/error-when-trying-to-solve-complex-eigenvalue-problem-in-parallel/13546/3);
