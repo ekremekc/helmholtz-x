@@ -56,7 +56,7 @@ for ind, impedance in enumerate(Z_helmholtz_a):
 analytic_b_real, analytic_b_imag = [], []
 analytic_a_real, analytic_a_imag = [], []
 
-f=open('analytical.txt',"r")
+f=open('matlab_data/analytical.txt',"r")
 lines=f.readlines()
 for x in lines:
     analytic_b_real.append(float(x.split(' ')[0]))
@@ -66,7 +66,7 @@ for x in lines:
 f.close()
 Z_analytic = np.linspace(-10, 10, len(analytic_a_real))
 
-fig, ((ax1, ax2)) = plt.subplots(1, 2, figsize=(8,3))
+fig, ((ax1, ax2)) = plt.subplots(1, 2, figsize=(8,2))
 ax1.plot(Z_analytic, analytic_b_real)
 ax1.plot(Z_helmholtz_b.imag, f_helmholtz_b.real,'^')
 ax1.set_xlabel(r"$b$")
@@ -83,7 +83,7 @@ fig.tight_layout()
 plt.savefig("A2_manufacturedSolution_a.pdf", bbox_inches='tight')
 plt.show()
 
-fig, ((ax3, ax4)) = plt.subplots(1, 2, figsize=(8,3))
+fig, ((ax3, ax4)) = plt.subplots(1, 2, figsize=(8,2))
 
 ax3.plot(Z_analytic, analytic_a_real)
 ax3.plot(Z_helmholtz_a.real, f_helmholtz_a.real,'^')
