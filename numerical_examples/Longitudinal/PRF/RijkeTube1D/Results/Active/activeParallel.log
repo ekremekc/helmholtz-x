@@ -40,7 +40,7 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +3.42271328  +0.00219526j,  |domega| = 9.24e-11
++ omega = +3.42271328  +0.00219526j,  |domega| = 9.23e-11
 
 Eigenvalue-> 3.422713+0.002195j | Eigenfrequency-> 0.544742+0.000349j
  
@@ -76,8 +76,8 @@ Eigenvalue-> 3.422713+0.002195j | Eigenfrequency-> 0.544742+0.000349j
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +3.42271328  -0.00219526j,  |domega| = 9.25e-11
++ omega = +3.42271328  -0.00219526j,  |domega| = 9.23e-11
 
 Eigenvalue-> 3.422713-0.002195j | Eigenfrequency-> 0.544742-0.000349j
  
-Total Execution Time:  0:00:00.812422
+Total Execution Time:  0:00:02.474820

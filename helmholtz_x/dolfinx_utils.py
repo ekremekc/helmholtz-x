@@ -186,7 +186,7 @@ def RectangleSetup(nx, ny, L, h,  x_f = 0.25, a_f = 0.025):
 
 def distribute_vector_as_chunks(vector):
     vector = MPI.COMM_WORLD.gather(vector, root=0)
-    if MPI.COMM_WORLD.Get_rank() == 0:
+    if vector:
         vector = [j for i in vector for j in i]
         chunks = [[] for _ in range(MPI.COMM_WORLD.Get_size())]
         for i, chunk in enumerate(vector):
