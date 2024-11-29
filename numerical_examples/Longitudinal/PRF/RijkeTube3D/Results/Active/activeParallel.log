@@ -1,13 +1,15 @@
 
 XDMF Mesh - Cell data loaded.
 XDMF Mesh - Facet data loaded.
-Number of cells:  8,711
+Number of cells:  8,712
 Number of cores:  4 
 
 Degree of basis functions:  1 
 
 \/ Speed of sound function is used for passive flame matrices.
 - Neumann boundaries on boundary 1
+- Robin boundary on boundary 2
+- Robin boundary on boundary 3
 - Passive matrices are assembling..
 - Matrix A is assembled.
 - Matrix B is assembled.
@@ -85,4 +87,4 @@ Eigenvalue-> 3.420690+0.002667j | Eigenfrequency-> 0.544420+0.000424j
 
 Eigenvalue-> 3.420690-0.002667j | Eigenfrequency-> 0.544420-0.000424j
  
-Total Execution Time:  0:00:03.127781
+Total Execution Time:  0:00:01.938236

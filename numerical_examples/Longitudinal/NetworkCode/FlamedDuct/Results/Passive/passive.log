@@ -1,7 +1,7 @@
 
 XDMF Mesh - Cell data loaded.
 XDMF Mesh - Facet data loaded.
-Number of cells:  177,737
+Number of cells:  177,771
 Number of cores:  1 
 
 Degree of basis functions:  1 
@@ -24,20 +24,21 @@ Degree of basis functions:  1
 Number of iterations of the method: 11
 Solution method: toar
 Number of requested eigenvalues: 10
-Stopping condition: tol=1e-15, maxit=5417
-Number of converged eigenpairs 10
+Stopping condition: tol=1e-15, maxit=5416
+Number of converged eigenpairs 11
 
-    1644.903847,      -11.921408
+    1644.923520,      -11.921369
       -0.000000,       -0.000000
-      -0.000000,      -10.583687
-    3817.028929,       -4.846468
-   -1644.903847,      -11.921408
-    5834.260339,       -6.864551
-   -3817.028929,       -4.846468
-    7937.710543,       -6.326577
-   -5834.260339,       -6.864551
-    9203.646739,       -1.810748
+       0.000000,      -10.583687
+    3817.046023,       -4.846332
+   -1644.923520,      -11.921369
+    5834.364565,       -6.864748
+   -3817.046023,       -4.846332
+    7937.726620,       -6.326746
+   -5834.364565,       -6.864748
+    9203.635140,       -1.810208
+    9203.728888,       -1.811219
 
-Eigenvalue-> 1644.903847-11.921408j | Eigenfrequency-> 261.794578-1.897351j
+Eigenvalue-> 1644.923520-11.921369j | Eigenfrequency-> 261.797709-1.897345j
  
-Total Execution Time:  0:00:32.269599
+Total Execution Time:  0:00:27.386038

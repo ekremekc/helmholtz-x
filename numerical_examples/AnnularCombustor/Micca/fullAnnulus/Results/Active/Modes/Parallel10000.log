@@ -1,12 +1,13 @@
 
 XDMF Mesh - Cell data loaded.
 XDMF Mesh - Facet data loaded.
-Number of cells:  167,401
+Number of cells:  167,374
 Number of cores:  8 
 
 Degree of basis functions:  1 
 
 \/ Speed of sound function is used for passive flame matrices.
+- Robin boundary on boundary 11
 - Passive matrices are assembling..
 - Matrix A is assembled.
 - Matrix B is assembled.
@@ -39,24 +40,24 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +10171.253  -11.023j,  |domega| = 1.28e+01
++ omega = +10171.516  -10.927j,  |domega| = 1.27e+01
 
 * iter =  2
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +10164.622  -22.147j,  |domega| = 1.30e+01
++ omega = +10164.921  -21.953j,  |domega| = 1.28e+01
 
 * iter =  3
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +10164.621  -22.148j,  |domega| = 5.90e-04
++ omega = +10164.920  -21.953j,  |domega| = 5.71e-04
 
-Eigenvalue-> 10164.621370-22.147899j | Eigenfrequency-> 1617.749736-3.524948j
+Eigenvalue-> 10164.920306-21.952976j | Eigenfrequency-> 1617.797313-3.493925j
  
 Results/Active/Modes/eigenvalues_1617Hz.txt  is saved.
-Total Execution Time for Direct Modes:  0:00:08.649561 
+Total Execution Time for Direct Modes:  0:00:07.418216 
 

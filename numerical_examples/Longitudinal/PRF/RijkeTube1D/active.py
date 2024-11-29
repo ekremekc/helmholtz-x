@@ -88,7 +88,7 @@ if size ==1 and degree==1:
     ax[3].set_xlabel(r"$x$")
 
     # Plot PRF data
-    ax[0].plot(x_matlab, p_direct_matlab.real ,marker='s', markersize=2, label='[21]')
+    ax[0].plot(x_matlab, p_direct_matlab.real ,marker='s', markersize=2, label='[19]')
     ax[1].plot(x_matlab, -p_direct_matlab.imag ,marker='s', markersize=2)
     ax[2].plot(x_matlab, p_adjoint_matlab.real ,marker='s', markersize=2)
     ax[3].plot(x_matlab, -p_adjoint_matlab.imag ,marker='s', markersize=2)

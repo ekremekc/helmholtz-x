@@ -1,11 +1,12 @@
 from .petsc4py_utils import multiply, vector_matrix_vector, matrix_vector, FixSign
-from dolfinx.fem import Function, FunctionSpace, Expression, form
-from ufl import dx, VectorElement, grad, inner, sqrt
+from dolfinx.fem import Function, functionspace, Expression, form
+from ufl import dx, grad, inner, sqrt
 from dolfinx.fem.assemble import assemble_scalar
 from .solver_utils import info
 from slepc4py import SLEPc
 from mpi4py import MPI
 import numpy as np
+import basix
 
 def normalize_eigenvector(mesh, obj, i, absolute=False, degree=1, which='right',BlochRemapper=None, matrices=None, print_eigs=True):
     """ 
@@ -37,11 +38,11 @@ def normalize_eigenvector(mesh, obj, i, absolute=False, degree=1, which='right',
     if matrices:
         V=matrices.V
     else:
-        V = FunctionSpace(mesh, ("CG", degree))
+        V = functionspace(mesh, ("CG", degree))
 
     p = Function(V)
     FixSign(vr)
-    p.vector.setArray(vr.array)
+    p.x.petsc_vec.setArray(vr.array)
     p.x.scatter_forward()
     meas = np.sqrt(mesh.comm.allreduce(assemble_scalar(form(p*p*dx)), op=MPI.SUM))
     
@@ -54,7 +55,7 @@ def normalize_eigenvector(mesh, obj, i, absolute=False, degree=1, which='right',
         temp = abs_temp/max_temp
 
     p_normalized = Function(V) # Required for Parallel runs
-    p_normalized.vector.setArray(temp)
+    p_normalized.x.petsc_vec.setArray(temp)
     p_normalized.x.scatter_forward()
 
     if MPI.COMM_WORLD.rank == 0 and print_eigs:
@@ -78,10 +79,10 @@ def velocity_eigenvector(mesh, p, omega, rho, degree=1, normalize=True, absolute
     
     """
     if mesh.topology.dim ==1:
-        Q = FunctionSpace(mesh, ("CG",degree))
+        Q = functionspace(mesh, ("CG",degree))
     else:
-        v_cg = VectorElement("CG", mesh.ufl_cell(), degree)
-        Q = FunctionSpace(mesh, v_cg)
+        v_cg = basix.ufl.element("Lagrange", mesh.topology.cell_name(), degree, shape=(mesh.geometry.dim,))
+        Q = functionspace(mesh, v_cg)
    
     v_h = Function(Q)
     v_h.name = "U"
@@ -108,7 +109,7 @@ def velocity_eigenvector(mesh, p, omega, rho, degree=1, normalize=True, absolute
         elif len(v_h)==3:
             mag = sqrt(v_h[0]**2 + v_h[1]**2 + v_h[2]**2)
 
-        V = FunctionSpace(mesh,("CG", degree))
+        V = functionspace(mesh,("CG", degree))
         vs_mag = Function(V)
         vs_mag_expr = Expression(mag, V.element.interpolation_points())
         vs_mag.interpolate(vs_mag_expr) 
@@ -140,8 +141,8 @@ def normalize_adjoint(omega_dir, p_dir, p_adj, matrices, D=None):
 
     B = matrices.B
 
-    p_dir_vec = p_dir.vector
-    p_adj_vec = p_adj.vector
+    p_dir_vec = p_dir.x.petsc_vec
+    p_adj_vec = p_adj.x.petsc_vec
 
     if not B and not D:
         # + 2 \omega C
@@ -166,10 +167,10 @@ def normalize_adjoint(omega_dir, p_dir, p_adj, matrices, D=None):
 
     p_adj1 = p_adj
     p_adj1.name = "p_adj"
-    p_adj1.vector.setArray(p_adj_vec.getArray())
+    p_adj1.x.petsc_vec.setArray(p_adj_vec.getArray())
     p_adj1.x.scatter_forward()
 
-    integral = vector_matrix_vector(p_adj1.vector, dL_domega, p_dir_vec)
+    integral = vector_matrix_vector(p_adj1.x.petsc_vec, dL_domega, p_dir_vec)
     
     if MPI.COMM_WORLD.rank == 0:
         print("! Normalization Check: ", integral)

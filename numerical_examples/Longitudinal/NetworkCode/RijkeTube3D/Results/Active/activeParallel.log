@@ -1,7 +1,7 @@
 
 XDMF Mesh - Cell data loaded.
 XDMF Mesh - Facet data loaded.
-Number of cells:  9,229
+Number of cells:  8,712
 Number of cores:  4 
 
 Degree of basis functions:  1 
@@ -20,7 +20,7 @@ Degree of basis functions:  1
 
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ Starting eigenvalue is found: +1249.92148448  -0.00000000j. 
++ Starting eigenvalue is found: +1249.66494052  -0.00000000j. 
 -> Iterations are starting.
  
 * iter =  1
@@ -28,29 +28,29 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1248.78784704  +3.42956819j,  |domega| = 3.61e+00
++ omega = +1248.52758621  +3.44467515j,  |domega| = 3.63e+00
 
 * iter =  2
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1247.70071094  +6.79786693j,  |domega| = 3.54e+00
++ omega = +1247.43709122  +6.82752793j,  |domega| = 3.55e+00
 
 * iter =  3
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1247.70054429  +6.79797695j,  |domega| = 2.00e-04
++ omega = +1247.43692255  +6.82763951j,  |domega| = 2.02e-04
 
 * iter =  4
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1247.70054428  +6.79797695j,  |domega| = 5.55e-09
++ omega = +1247.43692255  +6.82763951j,  |domega| = 5.67e-09
 
-Eigenvalue-> 1247.700544+6.797977j | Eigenfrequency-> 198.577709+1.081932j
+Eigenvalue-> 1247.436923+6.827640j | Eigenfrequency-> 198.535752+1.086653j
  
-Total Execution Time:  0:00:01.511935
+Total Execution Time:  0:00:01.535218

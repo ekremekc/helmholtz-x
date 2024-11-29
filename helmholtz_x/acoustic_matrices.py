@@ -1,4 +1,4 @@
-from dolfinx.fem import Function, FunctionSpace, dirichletbc, form, locate_dofs_topological, Constant, assemble_scalar
+from dolfinx.fem import Function, functionspace, dirichletbc, form, locate_dofs_topological, Constant, assemble_scalar
 from dolfinx.fem.petsc import assemble_matrix
 from .parameters_utils import sound_speed_variable_gamma, gamma_function
 from .solver_utils import info
@@ -22,9 +22,9 @@ class AcousticMatrices:
         self.dx = Measure('dx', domain=mesh)
         self.ds = Measure('ds', domain=mesh, subdomain_data=facet_tags)
 
-        self.V = FunctionSpace(self.mesh, ("Lagrange", degree))
+        self.V = functionspace(self.mesh, ("Lagrange", degree))
 
-        self.phi_i = TrialFunction(self.V)
+        self.phi_k = TrialFunction(self.V)
         self.phi_j = TestFunction(self.V)
         
         self.AreaConstant = Constant(mesh, PETSc.ScalarType(1))
@@ -68,7 +68,7 @@ class AcousticMatrices:
             if 'Robin' in boundary_conditions[boundary]:
                 R = boundary_conditions[boundary]['Robin']
                 Z = (1+R)/(1-R)
-                integrals_Impedance = 1j * self.c / Z * inner(self.phi_i, self.phi_j) * self.ds(boundary)
+                integrals_Impedance = 1j * self.c / Z * inner(self.phi_k, self.phi_j) * self.ds(boundary)
                 self.integrals_R.append(integrals_Impedance)
                 info("- Robin boundary on boundary "+str(boundary))
 
@@ -80,7 +80,7 @@ class AcousticMatrices:
                 Mach = boundary_conditions[boundary]['ChokedInlet']
                 R = (1-gamma_inlet*Mach/(1+(gamma_inlet-1)*Mach**2))/(1+gamma_inlet*Mach/(1+(gamma_inlet-1)*Mach**2))
                 Z = (1+R)/(1-R)
-                integral_C_i = 1j * self.c / Z * inner(self.phi_i, self.phi_j) * self.ds(boundary)
+                integral_C_i = 1j * self.c / Z * inner(self.phi_k, self.phi_j) * self.ds(boundary)
                 self.integrals_R.append(integral_C_i)
                 info("- Choked inlet boundary on boundary "+str(boundary))
 
@@ -92,13 +92,13 @@ class AcousticMatrices:
                 Mach = boundary_conditions[boundary]['ChokedOutlet']
                 R = (1-0.5*(gamma_outlet-1)*Mach)/(1+0.5*(gamma_outlet-1)*Mach)
                 Z = (1+R)/(1-R)
-                integral_C_o = 1j * self.c / Z * inner(self.phi_i, self.phi_j) * self.ds(boundary)
+                integral_C_o = 1j * self.c / Z * inner(self.phi_k, self.phi_j) * self.ds(boundary)
                 self.integrals_R.append(integral_C_o)
                 info("- Choked outlet boundary on boundary "+str(boundary))
 
         info("- Passive matrices are assembling..")
 
-        self.a_form = form(-self.c**2* inner(grad(self.phi_i), grad(self.phi_j))*self.dx) 
+        self.a_form = form(-self.c**2* inner(grad(self.phi_k), grad(self.phi_j))*self.dx) 
         A = assemble_matrix(self.a_form, bcs=self.bcs_Dirichlet)
         A.assemble()
         info("- Matrix A is assembled.")
@@ -118,7 +118,7 @@ class AcousticMatrices:
             self._B = B
             self._B_adj = B_adj
 
-        self.c_form = form(inner(self.phi_i , self.phi_j) * self.dx)
+        self.c_form = form(inner(self.phi_k , self.phi_j) * self.dx)
         C = assemble_matrix(self.c_form, self.bcs_Dirichlet)
         C.assemble()
         info("- Matrix C is assembled.\n")

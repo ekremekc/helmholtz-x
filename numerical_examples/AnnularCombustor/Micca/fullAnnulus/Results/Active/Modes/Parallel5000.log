@@ -1,12 +1,13 @@
 
 XDMF Mesh - Cell data loaded.
 XDMF Mesh - Facet data loaded.
-Number of cells:  167,401
+Number of cells:  167,374
 Number of cores:  8 
 
 Degree of basis functions:  1 
 
 \/ Speed of sound function is used for passive flame matrices.
+- Robin boundary on boundary 11
 - Passive matrices are assembling..
 - Matrix A is assembled.
 - Matrix B is assembled.
@@ -39,38 +40,38 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +4590.045  -8.098j,  |domega| = 5.19e+01
++ omega = +4588.144  -8.369j,  |domega| = 5.40e+01
 
 * iter =  2
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +4530.748  +3.744j,  |domega| = 6.05e+01
++ omega = +4526.351  +4.768j,  |domega| = 6.32e+01
 
 * iter =  3
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +4531.481  +3.873j,  |domega| = 7.44e-01
++ omega = +4527.158  +4.883j,  |domega| = 8.15e-01
 
 * iter =  4
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +4531.477  +3.871j,  |domega| = 4.92e-03
++ omega = +4527.153  +4.882j,  |domega| = 5.66e-03
 
 * iter =  5
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +4531.477  +3.871j,  |domega| = 4.03e-07
++ omega = +4527.153  +4.882j,  |domega| = 5.10e-07
 
-Eigenvalue-> 4531.476685+3.870847j | Eigenfrequency-> 721.206914+0.616064j
+Eigenvalue-> 4527.152561+4.881680j | Eigenfrequency-> 720.518708+0.776943j
  
-Results/Active/Modes/eigenvalues_721Hz.txt  is saved.
-Total Execution Time for Direct Modes:  0:00:11.881680 
+Results/Active/Modes/eigenvalues_720Hz.txt  is saved.
+Total Execution Time for Direct Modes:  0:00:10.612848 
 

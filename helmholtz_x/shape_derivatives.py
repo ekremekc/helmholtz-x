@@ -1,12 +1,13 @@
 from .petsc4py_utils import conjugate_function
 from .eigenvectors import normalize_adjoint
 from .dolfinx_utils import unroll_dofmap
-from dolfinx.fem import form, locate_dofs_topological, VectorFunctionSpace,Function
+from dolfinx.fem import form, locate_dofs_topological,Function, functionspace
 from dolfinx.fem.assemble import assemble_scalar
 from ufl import  FacetNormal, grad, inner, Measure, div
 from math import comb
 import numpy as np
 import gmsh
+import basix
 
 def shapeDerivativesFFD(geometry, lattice, physical_facet_tag, omega_dir, p_dir, p_adj, c, acousticMatrices, FlameMatrix):
     normal = FacetNormal(geometry.mesh)
@@ -39,8 +40,8 @@ def ffd_displacement_vector(geometry, FFDLattice, surface_physical_tag, i, j, k,
                             includeBoundary=True, returnParametricCoord=True, tol=1e-6, deg=1):
 
     mesh, _, facet_tags = geometry.getAll()
-    
-    Q = VectorFunctionSpace(mesh, ("CG", deg))
+    v_cg = basix.ufl.element("Lagrange", mesh.topology.cell_name(), deg, shape=(mesh.geometry.dim,))
+    Q = functionspace(mesh, v_cg)
 
     facets = facet_tags.find(surface_physical_tag)
     indices = locate_dofs_topological(Q, mesh.topology.dim-1 , facets)

@@ -8,6 +8,8 @@ Degree of basis functions:  1
 
 \/ Speed of sound function is used for passive flame matrices.
 - Neumann boundaries on boundary 1
+- Robin boundary on boundary 2
+- Robin boundary on boundary 3
 - Passive matrices are assembling..
 - Matrix A is assembled.
 - Matrix B is assembled.
@@ -85,4 +87,4 @@ Eigenvalue-> 3.420690+0.002667j | Eigenfrequency-> 0.544420+0.000424j
 
 Eigenvalue-> 3.420690-0.002667j | Eigenfrequency-> 0.544420-0.000424j
  
-Total Execution Time:  0:00:02.947830
+Total Execution Time:  0:00:03.700465

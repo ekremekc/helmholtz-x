@@ -1,7 +1,7 @@
 
 XDMF Mesh - Cell data loaded.
 XDMF Mesh - Facet data loaded.
-Number of cells:  25,246
+Number of cells:  25,253
 Number of cores:  1 
 
 Degree of basis functions:  1 
@@ -26,37 +26,37 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1157.52964696  -4.08453364j,  |domega| = 5.16e+00
++ omega = +1157.51055202  -4.08341139j,  |domega| = 5.16e+00
 
 * iter =  2
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1156.81009408  +0.86459478j,  |domega| = 5.00e+00
++ omega = +1156.79106084  +0.86638207j,  |domega| = 5.00e+00
 
 * iter =  3
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1156.80987383  +0.86513179j,  |domega| = 5.80e-04
++ omega = +1156.79084056  +0.86691931j,  |domega| = 5.81e-04
 
 * iter =  4
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1156.80987381  +0.86513182j,  |domega| = 3.30e-08
++ omega = +1156.79084054  +0.86691934j,  |domega| = 3.30e-08
 
 * iter =  5
 - Direct matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1156.80987381  +0.86513182j,  |domega| = 3.43e-12
++ omega = +1156.79084054  +0.86691934j,  |domega| = 1.68e-12
 
-Eigenvalue-> 1156.809874+0.865132j | Eigenfrequency-> 184.112010+0.137690j
+Eigenvalue-> 1156.790841+0.866919j | Eigenfrequency-> 184.108980+0.137974j
  
 - Generating matrix D..
 - Submatrix D is Assembled.
@@ -69,37 +69,37 @@ Eigenvalue-> 1156.809874+0.865132j | Eigenfrequency-> 184.112010+0.137690j
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1157.52964696  +4.08453364j,  |domega| = 5.16e+00
++ omega = +1157.51055202  +4.08341139j,  |domega| = 5.16e+00
 
 * iter =  2
 - Adjoint matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1156.81009408  -0.86459478j,  |domega| = 5.00e+00
++ omega = +1156.79106084  -0.86638207j,  |domega| = 5.00e+00
 
 * iter =  3
 - Adjoint matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1156.80987383  -0.86513179j,  |domega| = 5.80e-04
++ omega = +1156.79084056  -0.86691931j,  |domega| = 5.81e-04
 
 * iter =  4
 - Adjoint matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1156.80987381  -0.86513182j,  |domega| = 3.30e-08
++ omega = +1156.79084054  -0.86691934j,  |domega| = 3.30e-08
 
 * iter =  5
 - Adjoint matrix D is assembling...
 - Matrix D is assembled.
 - PEP solver started.
 - PEP solver converged. Eigenvalue computed.
-+ omega = +1156.80987381  -0.86513182j,  |domega| = 3.71e-12
++ omega = +1156.79084054  -0.86691934j,  |domega| = 6.14e-12
 
-Eigenvalue-> 1156.809874-0.865132j | Eigenfrequency-> 184.112010-0.137690j
+Eigenvalue-> 1156.790841-0.866919j | Eigenfrequency-> 184.108980-0.137974j
  
-/home/ee331/Dev/Venvs/paper/repos/src/helmholtz-x/numerical_examples/ShapeSensitivities/RijkeFFD/Results/Original/eigenvalues.txt  is saved.
-Total Execution Time:  0:00:34.995888
+/root/shared/numerical_examples/ShapeSensitivities/RijkeFFD/Results/Original/eigenvalues.txt  is saved.
+Total Execution Time:  0:00:32.994790

@@ -26,7 +26,7 @@ We advise to install those packages from source in Ubuntu/Linux OS, but there is
 
 You can get packaged installation of dependencies such as [PETSc](https://petsc.org/release/overview/), [SLEPc](https://slepc.upv.es/) and [FEniCSx](https://github.com/FEniCS) using Docker images. To install the docker into your system, you can find the instructions in this [link](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository). 
 
-The **helmholtz-x** runs with the v0.7.3 of [DOLFINx](https://github.com/FEniCS/dolfinx). First, you need to clone the **helmholtz-x** repository by typing;
+The **helmholtz-x** runs with the v0.9.0 of [DOLFINx](https://github.com/FEniCS/dolfinx). First, you need to clone the **helmholtz-x** repository by typing;
 
 ```
 git clone https://github.com/ekremekc/helmholtz-x.git
@@ -39,7 +39,7 @@ cd helmholtz-x
 Now, you need to pull the docker container for DOLFINx. You can make a docker environment for **helmholtz-x** by typing;
 
 ```
-sudo docker run -ti -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $(pwd):/root/shared -w /root/shared --name=helmholtz-x dolfinx/dolfinx:v0.7.3
+sudo docker run -ti -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $(pwd):/root/shared -w /root/shared --name=helmholtz-x dolfinx/dolfinx:v0.9.0
 ```
 Pulling the image might take some time (5-10 min) depending on your system and internet connection. Then you will be in the new terminal within the docker container. At the present working directory (helmholtz-x), you should run;
 
@@ -77,7 +77,7 @@ It is advised to use **helmholtz-x** using *docker* images. But, users may insta
 ```shell
 conda create -n helmholtzx-env
 conda activate helmholtzx-env
-conda install -c conda-forge python=3.10 mpich fenics-dolfinx hdf5=1.14.2 petsc=*=complex* slepc=*=complex*
+conda install -c conda-forge python=3.12.3 mpich fenics-dolfinx=0.9.0 hdf5=1.14.2 petsc=*=complex* slepc=*=complex*
 ```
 Then **helmholtz-x** can be installed within this conda environment by typing.
 
