@@ -1,5 +1,5 @@
 from helmholtz_x.parameters_utils import c_step, gaussianFunction
-from dolfinx.fem import Function, FunctionSpace
+from dolfinx.fem import Function, functionspace
 from math import sqrt
 import numpy as np
 
@@ -44,7 +44,7 @@ def density(x, x_f, sigma, rho_d, rho_u):
     return rho_u + (rho_d-rho_u)/2*(1+np.tanh((x-x_f)/(sigma)))
 
 def rho_func(mesh, x_f, a_f, rho_d, rho_u, degree=1):
-    V = FunctionSpace(mesh, ("CG", degree))
+    V = functionspace(mesh, ("CG", degree))
     rho = Function(V)
     if mesh.geometry.dim == 1 or mesh.geometry.dim == 2:
         x_f = x_f[0]

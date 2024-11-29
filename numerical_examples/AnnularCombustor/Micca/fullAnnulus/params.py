@@ -47,11 +47,11 @@ x_r = np.array([cyl2cart(r_r, i*theta, z_r) for i in range(N_sector)])
 # Outlet reflection coefficient
 R_outlet = -0.875-0.2j
 
-from dolfinx.fem import Function, FunctionSpace
+from dolfinx.fem import Function, functionspace
 
 # Axial speed of sound field
 def c(mesh):
-    V = FunctionSpace(mesh, ("DG", 0))
+    V = functionspace(mesh, ("DG", 0))
     c = Function(V)
     x = V.tabulate_dof_coordinates()
     global gamma
@@ -60,12 +60,12 @@ def c(mesh):
     for i in range(x.shape[0]):
         midpoint = x[i,:]
         if midpoint[2]< 0:
-            c.vector.setValueLocal(i, sqrt(gamma * r * T_amb))
+            c.x.petsc_vec.setValueLocal(i, sqrt(gamma * r * T_amb))
         elif midpoint[2]> 0 and midpoint[2]< l_cc:
             
-            c.vector.setValueLocal(i, sqrt(gamma * r * ((T_b - T_a) * (midpoint[2]/l_cc)**2 + T_a)))
+            c.x.petsc_vec.setValueLocal(i, sqrt(gamma * r * ((T_b - T_a) * (midpoint[2]/l_cc)**2 + T_a)))
         else:
-            c.vector.setValueLocal(i, sqrt(gamma * r * T_b))
+            c.x.petsc_vec.setValueLocal(i, sqrt(gamma * r * T_b))
     # c.x.scatter_forward()
     return c
 

@@ -50,8 +50,8 @@ Degree of basis functions:  1
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1242.57817889  +6.66863098j,  |domega| = 4.97e-09
++ omega = +1242.57817889  +6.66863098j,  |domega| = 4.96e-09
 
 Eigenvalue-> 1242.578179+6.668631j | Eigenfrequency-> 197.762459+1.061346j
  
-Total Execution Time:  0:00:00.179082
+Total Execution Time:  0:00:00.140935

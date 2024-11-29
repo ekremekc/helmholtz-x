@@ -72,6 +72,6 @@ Degree of basis functions:  1
 - PEP solver converged. Eigenvalue computed.
 + omega = +3235.145  +436.055j,  |domega| = 5.72e-04
 
-Eigenvalue-> 3235.145357+436.054667j | Eigenfrequency-> 514.889375+69.400256j
+Eigenvalue-> 3235.145363+436.054594j | Eigenfrequency-> 514.889376+69.400244j
  
-Total Execution Time:  0:00:01.478756
+Total Execution Time:  0:00:01.404836

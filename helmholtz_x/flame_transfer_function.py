@@ -1,4 +1,5 @@
 import numpy as np
+from math import factorial
 from ufl import exp
 
 class nTau:
@@ -24,7 +25,7 @@ class stateSpace:
     def __call__(self, omega):
         k = 0
         omega = np.conj(omega)
-        Mat = (- 1j) ** k * np.math.factorial(k) * \
+        Mat = (- 1j) ** k * factorial(k) * \
             np.linalg.matrix_power(1j * omega * self.Id - self.A, - (k + 1))
         row = np.dot(self.c, Mat)
         H = np.dot(row, self.b)
@@ -34,7 +35,7 @@ class stateSpace:
     def derivative(self, omega):
         k = 1
         omega = np.conj(omega)
-        Mat = (- 1j) ** k * np.math.factorial(k) * \
+        Mat = (- 1j) ** k * factorial(k) * \
             np.linalg.matrix_power(1j * omega * self.Id - self.A, - (k + 1))
         row = np.dot(self.c, Mat)
         H = np.dot(row, self.b)

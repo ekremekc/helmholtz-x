@@ -81,8 +81,8 @@ Eigenvalue-> 1242.185123+6.683160j | Eigenfrequency-> 197.699903+1.063658j
 - Matrix D is assembled.
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ omega = +1242.18512307  -6.68316034j,  |domega| = 5.94e-09
++ omega = +1242.18512307  -6.68316034j,  |domega| = 5.93e-09
 
 Eigenvalue-> 1242.185123-6.683160j | Eigenfrequency-> 197.699903-1.063658j
  
-Total Execution Time:  0:00:07.681525
+Total Execution Time:  0:00:05.112955

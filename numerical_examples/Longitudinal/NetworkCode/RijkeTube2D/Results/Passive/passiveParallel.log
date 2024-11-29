@@ -26,13 +26,12 @@ Number of iterations of the method: 1
 Solution method: krylovschur
 Number of requested eigenvalues: 2
 Stopping condition: tol=1e-15, maxit=100
-Number of converged eigenpairs 4
+Number of converged eigenpairs 3
 
  1132645.968031,       -0.000000
-       0.000000,        0.000000
- 4531402.663992,       -0.000000
-10198686.445145,        0.000000
+       0.000000,       -0.000000
+ 4531402.663992,        0.000000
 
 Eigenvalue-> 1064.258412-0.000000j | Eigenfrequency-> 169.381987-0.000000j
  
-Total Execution Time:  0:00:00.112343
+Total Execution Time:  0:00:00.075399

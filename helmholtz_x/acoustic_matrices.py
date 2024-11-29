@@ -1,4 +1,4 @@
-from dolfinx.fem import Function, FunctionSpace, dirichletbc, form, locate_dofs_topological, Constant, assemble_scalar
+from dolfinx.fem import Function, functionspace, dirichletbc, form, locate_dofs_topological, Constant, assemble_scalar
 from dolfinx.fem.petsc import assemble_matrix
 from .parameters_utils import sound_speed_variable_gamma, gamma_function
 from .solver_utils import info
@@ -22,7 +22,7 @@ class AcousticMatrices:
         self.dx = Measure('dx', domain=mesh)
         self.ds = Measure('ds', domain=mesh, subdomain_data=facet_tags)
 
-        self.V = FunctionSpace(self.mesh, ("Lagrange", degree))
+        self.V = functionspace(self.mesh, ("Lagrange", degree))
 
         self.phi_k = TrialFunction(self.V)
         self.phi_j = TestFunction(self.V)

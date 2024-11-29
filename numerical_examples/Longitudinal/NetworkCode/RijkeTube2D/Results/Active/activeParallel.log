@@ -21,7 +21,7 @@ Degree of basis functions:  1
 
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-+ Starting eigenvalue is found: +1244.69894962  -0.00000000j. 
++ Starting eigenvalue is found: +1244.69894962  +0.00000000j. 
 -> Iterations are starting.
  
 * iter =  1
@@ -54,4 +54,4 @@ Degree of basis functions:  1
 
 Eigenvalue-> 1242.578179+6.668631j | Eigenfrequency-> 197.762459+1.061346j
  
-Total Execution Time:  0:00:00.382354
+Total Execution Time:  0:00:00.256880

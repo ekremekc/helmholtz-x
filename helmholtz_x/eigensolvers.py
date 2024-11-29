@@ -325,8 +325,8 @@ def newtonSolver(operators, D, init, nev=2, i=0, tol=1e-3, maxiter=100, print_re
         omega_adj, p_adj = normalize_eigenvector(operators.mesh, E, i, degree=1, which='left', print_eigs=False)
 
         # convert into PETSc.Vec type
-        p_vec = p.vector
-        p_adj_vec = p_adj.vector
+        p_vec = p.x.petsc_vec
+        p_adj_vec = p_adj.x.petsc_vec
 
         # numerator and denominator
         num = vector_matrix_vector(p_adj_vec, dL_domega, p_vec)

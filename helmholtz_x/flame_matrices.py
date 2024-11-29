@@ -1,7 +1,7 @@
 from ufl import Measure, TestFunction, TrialFunction, inner, as_vector, grad, dx
 from dolfinx.cpp.geometry import determine_point_ownership
 from dolfinx.fem.petsc import assemble_vector
-from dolfinx.fem  import FunctionSpace, Expression, form
+from dolfinx.fem  import Expression, form, functionspace
 from .parameters_utils import gamma_function
 from .dolfinx_utils import distribute_vector_as_chunks, broadcast_vector
 from .solver_utils import info
@@ -21,7 +21,7 @@ class FlameMatrix:
         self.bloch_object=bloch_object
         self.tol = tol
         
-        self.V = FunctionSpace(mesh, ("Lagrange", degree))
+        self.V = functionspace(mesh, ("Lagrange", degree))
         self.dofmaps = self.V.dofmap
         self.phi_k = TrialFunction(self.V)
         self.phi_j = TestFunction(self.V)
@@ -141,12 +141,13 @@ class PointwiseFlameMatrix(FlameMatrix):
         left_form = form((self.gamma - 1) * self.q_0 / self.u_b * inner(self.h, self.phi_j)*self.dx(flame))
         left_vector = self.indices_and_values(left_form)
 
-        _, _, owning_points, cell = determine_point_ownership( self.mesh._cpp_object, point, 1e-10)
+        point_ownership_data = determine_point_ownership( self.mesh._cpp_object, point, 1e-10)
+        cell = point_ownership_data.dest_cells
         right_vector = []
 
-        if len(cell) > 0: # Only add contribution if cell is owned 
-            cell_geometry = self.mesh.geometry.x[self.mesh.geometry.dofmap[cell[0]], :self.gdim]
-            point_ref = self.mesh.geometry.cmaps[0].pull_back([point], cell_geometry)
+        if len(cell) > 0: # Only add contribution if cell is owned
+            geom_dofs = self.mesh.geometry.dofmap[cell[0]]
+            point_ref = self.mesh.geometry.cmap.pull_back(point.reshape(-1, 3), self.mesh.geometry.x[geom_dofs])
             right_form = Expression(inner(grad(TestFunction(self.V)), self.n_r), point_ref, comm=MPI.COMM_SELF)
             dphij_x_rs = right_form.eval(self.mesh, cell)[0]           
             right_values = dphij_x_rs / self.rho_u
@@ -225,8 +226,8 @@ class DistributedFlameMatrix(FlameMatrix):
 
         info("- Generating matrix D..")
 
-        ONNZ = len(col)*np.ones(self.local_size,dtype=np.int32)
-        mat.setPreallocationNNZ([ONNZ, ONNZ])
+        NNZ = len(col)
+        mat.setPreallocationNNZ([NNZ, NNZ])
         mat.setOption(PETSc.Mat.Option.NEW_NONZERO_ALLOCATION_ERR, False)
         mat.setUp()
         mat.setValues(row, col, val, addv=PETSc.InsertMode.ADD_VALUES)

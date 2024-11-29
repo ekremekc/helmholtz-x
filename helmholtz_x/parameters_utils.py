@@ -1,4 +1,4 @@
-from dolfinx.fem import FunctionSpace, Function, form, Constant, assemble_scalar, locate_dofs_topological
+from dolfinx.fem import functionspace, Function, form, Constant, assemble_scalar, locate_dofs_topological
 from .dolfinx_utils import normalize, unroll_dofmap
 from petsc4py import PETSc
 from mpi4py import MPI
@@ -33,7 +33,7 @@ def gaussian(x, x_ref, sigma, n):
     return amplitude*spatial_term
 
 def gaussianFunction(mesh, x_r, a_r, degree=1):
-    V = FunctionSpace(mesh, ("CG", degree))
+    V = functionspace(mesh, ("CG", degree))
     w = Function(V)
     
     ndim = mesh.geometry.dim
@@ -43,7 +43,7 @@ def gaussianFunction(mesh, x_r, a_r, degree=1):
     return w
 
 def halfGaussianFunction(mesh,x_flame,a_flame,degree=1):
-    V = FunctionSpace(mesh, ("CG", degree))
+    V = functionspace(mesh, ("CG", degree))
     h = gaussianFunction(mesh, x_flame, a_flame, degree=degree)
     if len(x_flame)==1:
         x_flame = x_flame[0]
@@ -55,7 +55,7 @@ def halfGaussianFunction(mesh,x_flame,a_flame,degree=1):
             value = 0.
         else:
             value = h.x.array[i]
-        h.vector.setValueLocal(i, value)
+        h.x.petsc_vec.setValueLocal(i, value)
     h = normalize(h)
     return h
 
@@ -79,7 +79,7 @@ def gamma_function(temperature):
 
 def sound_speed_variable_gamma(mesh, temperature, degree=1):
     # https://www.engineeringtoolbox.com/air-speed-sound-d_603.html
-    # V = FunctionSpace(mesh, ("CG", degree))
+    # V = functionspace(mesh, ("CG", degree))
     c = Function(temperature.function_space)
     c.name = "soundspeed"
     r_gas = 287.1
@@ -107,7 +107,7 @@ def density_step(x, x_f, sigma, rho_d, rho_u):
     return rho_u + (rho_d-rho_u)/2*(1+np.tanh((x-x_f)/(sigma)))
 
 def rho_step(mesh, x_f, a_f, rho_d, rho_u, degree=1):
-    V = FunctionSpace(mesh, ("CG", degree))
+    V = functionspace(mesh, ("CG", degree))
     rho = Function(V)
     # x = V.tabulate_dof_coordinates()   
     if mesh.geometry.dim == 1 or mesh.geometry.dim == 2:
@@ -127,7 +127,7 @@ def rho_ideal(temperature, p_0, r_gas):
     return density
 
 def c_step(mesh, x_f, c_u, c_d):
-    V = FunctionSpace(mesh, ("CG", 1))
+    V = functionspace(mesh, ("CG", 1))
     c = Function(V)
     c.name = "soundspeed"
     x = V.tabulate_dof_coordinates()
@@ -146,14 +146,14 @@ def c_step(mesh, x_f, c_u, c_d):
     for i in range(x.shape[0]):
         midpoint = x[i,:]
         if midpoint[axis]< x_f:
-            c.vector.setValueLocal(i, c_u)
+            c.x.petsc_vec.setValueLocal(i, c_u)
         else:
-            c.vector.setValueLocal(i, c_d)
+            c.x.petsc_vec.setValueLocal(i, c_d)
     c.x.scatter_forward()
     return c
 
 def c_uniform(mesh, sos, degree=1):
-    V = FunctionSpace(mesh, ("CG", degree))
+    V = functionspace(mesh, ("CG", degree))
     c = Function(V)
     c.name = "soundspeed"
     c.x.array[:]= sos
@@ -162,7 +162,7 @@ def c_uniform(mesh, sos, degree=1):
 
 def temperature(mesh, soundSpeed):
     # https://www.engineeringtoolbox.com/air-speed-sound-d_603.html
-    V = FunctionSpace(mesh, ("CG", 1))
+    V = functionspace(mesh, ("CG", 1))
     T = Function(V)
     T.name = "temperature"
     r_gas =  287.1
@@ -175,7 +175,7 @@ def temperature(mesh, soundSpeed):
     return T
 
 def temperature_uniform(mesh, temp):
-    V = FunctionSpace(mesh, ("CG", 1))
+    V = functionspace(mesh, ("CG", 1))
     T = Function(V)
     T.name = "temperature"
     T.x.array[:]=temp
@@ -183,7 +183,7 @@ def temperature_uniform(mesh, temp):
     return T
 
 def temperature_step(mesh, x_f, T_u, T_d, degree=1):
-    V = FunctionSpace(mesh, ("CG", degree))
+    V = functionspace(mesh, ("CG", degree))
     T = Function(V)
     T.name = "temperature"
     x = V.tabulate_dof_coordinates()
@@ -202,14 +202,14 @@ def temperature_step(mesh, x_f, T_u, T_d, degree=1):
     for i in range(x.shape[0]):
         midpoint = x[i,:]
         if midpoint[axis]< x_f:
-            T.vector.setValueLocal(i, T_u)
+            T.x.petsc_vec.setValueLocal(i, T_u)
         else:
-            T.vector.setValueLocal(i, T_d)
+            T.x.petsc_vec.setValueLocal(i, T_d)
     return T
 
 def Q_volumetric(mesh, subdomains, Q_total, flame_tag=0, degree=0):
     # volumetric Heat release rate field using subdomains which integrates to 1.
-    V = FunctionSpace(mesh, ("DG", degree))
+    V = functionspace(mesh, ("DG", degree))
     q = Function(V)
     dx = Measure("dx", subdomain_data=subdomains)
     volume_form = form(Constant(mesh, PETSc.ScalarType(1))*dx(flame_tag))
@@ -227,7 +227,7 @@ def Q_volumetric(mesh, subdomains, Q_total, flame_tag=0, degree=0):
 
 def Q_multiple(mesh, subdomains, N_sector, degree=0):
 
-    V = FunctionSpace(mesh, ("DG", degree))
+    V = functionspace(mesh, ("DG", degree))
     q = Function(V)
     dx = Measure("dx", subdomain_data=subdomains)
 

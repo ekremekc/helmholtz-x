@@ -1,7 +1,7 @@
 
 XDMF Mesh - Cell data loaded.
 XDMF Mesh - Facet data loaded.
-Number of cells:  47,672
+Number of cells:  9,686
 Number of cores:  1 
 
 Degree of basis functions:  1 
@@ -24,10 +24,10 @@ Degree of basis functions:  1
 
 - EPS solver started.
 - EPS solver converged. Eigenvalue computed.
-Eigenvalue-> 2913.667876+0.000000j | Eigenfrequency-> 463.724645+0.000000j
+Eigenvalue-> 2931.177998+0.000000j | Eigenfrequency-> 466.511467+0.000000j
  
-Eigenvalue-> 4625.333481+0.000000j | Eigenfrequency-> 736.144687+0.000000j
+Eigenvalue-> 4633.352640-0.000000j | Eigenfrequency-> 737.420976-0.000000j
  
-Eigenvalue-> 10971.585406-0.000000j | Eigenfrequency-> 1746.182051-0.000000j
+Eigenvalue-> 11107.674019-0.000000j | Eigenfrequency-> 1767.841226-0.000000j
  
-Total Execution Time:  0:00:02.459872
+Total Execution Time:  0:00:00.244814

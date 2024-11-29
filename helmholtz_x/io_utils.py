@@ -1,4 +1,4 @@
-from dolfinx.fem import Function, FunctionSpace
+from dolfinx.fem import Function, functionspace
 from dolfinx.io import XDMFFile, VTKFile
 from .solver_utils import info
 from mpi4py import MPI
@@ -48,7 +48,7 @@ def xdmf_writer(name, mesh, function):
     el = function.function_space.element 
     if el.basix_element.degree>1:
         el_type = el.basix_element.family
-        V = FunctionSpace(mesh, (el_type,1))
+        V = functionspace(mesh, (el_type,1))
         function_interpolation = Function(V)
         function_interpolation.interpolate(function)
     else:
@@ -175,7 +175,9 @@ class XDMFReader:
             self._mesh = xdmf.read_mesh(name="Grid")
             self._cell_tags = xdmf.read_meshtags(self.mesh, name="Grid")
         info("\nXDMF Mesh - Cell data loaded.")
-        
+
+        self._mesh.topology.create_connectivity(self.mesh.topology.dim, self.mesh.topology.dim)        
+        self._mesh.topology.create_connectivity(self.mesh.topology.dim-1, self.mesh.topology.dim)        
         self._mesh.topology.create_connectivity(self.mesh.topology.dim, self.mesh.topology.dim-1)
         with XDMFFile(MPI.COMM_WORLD, tag_loader_name, "r") as xdmf:
             self._facet_tags = xdmf.read_meshtags(self.mesh, name="Grid")    
