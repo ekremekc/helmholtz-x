@@ -23,7 +23,7 @@ class FlameMatrix:
         
         self.V = FunctionSpace(mesh, ("Lagrange", degree))
         self.dofmaps = self.V.dofmap
-        self.phi_i = TrialFunction(self.V)
+        self.phi_k = TrialFunction(self.V)
         self.phi_j = TestFunction(self.V)
         self.gdim = self.mesh.geometry.dim
 
@@ -195,7 +195,7 @@ class DistributedFlameMatrix(FlameMatrix):
         if gamma==None: # Variable gamma depends on temperature
             gamma = gamma_function(T) 
 
-        self.left_form = form((gamma - 1) * q_0 / u_b * self.phi_i * h *  dx)
+        self.left_form = form((gamma - 1) * q_0 / u_b * self.phi_k * h *  dx)
         self.right_form = form(inner(self.n_r,grad(self.phi_j)) / rho * w * dx)
     
     def _assemble_vectors(self, problem_type='direct'):
