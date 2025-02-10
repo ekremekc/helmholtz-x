@@ -16,7 +16,18 @@ and we solve this matrix system with **helmholtz-x**.
 
 ## Citation
 
-We are currently writing a journal paper to describe internal mechanics of **helmholtz-x**, and the .bibtex will be available here after publication.
+**helmholtz-x** is published in *Engineering with Computers*. The article available online and is accessible from [this link](https://link.springer.com/article/10.1007/s00366-025-02107-1).
+
+```bibtex
+@article{ekici2025helmholtz,
+  title={Helmholtz-x: Parallelized adjoint open source solver for the thermoacoustic Helmholtz equation},
+  author={Ekici, Ekrem and Falco, Stefano and Juniper, Matthew P},
+  journal={Engineering with Computers},
+  pages={1--28},
+  year={2025},
+  publisher={Springer}
+}
+```
 
 ## Installation
 
@@ -28,22 +39,22 @@ You can get packaged installation of dependencies such as [PETSc](https://petsc.
 
 The **helmholtz-x** runs with the v0.9.0 of [DOLFINx](https://github.com/FEniCS/dolfinx). First, you need to clone the **helmholtz-x** repository by typing;
 
-```
+```shell
 git clone https://github.com/ekremekc/helmholtz-x.git
 ```
 in your Linux/Ubuntu terminal then `cd` into the **helmholtz-x** with
 
-```
+```shell
 cd helmholtz-x
 ```
 Now, you need to pull the docker container for DOLFINx. You can make a docker environment for **helmholtz-x** by typing;
 
-```
+```shell
 sudo docker run -ti -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $(pwd):/root/shared -w /root/shared --name=helmholtz-x dolfinx/dolfinx:v0.9.0
 ```
 Pulling the image might take some time (5-10 min) depending on your system and internet connection. Then you will be in the new terminal within the docker container. At the present working directory (helmholtz-x), you should run;
 
-```
+```shell
 pip3 install -e .
 ```
 to install **helmholtz-x** within the docker container environment. Then, lastly you need to activate the complex number mode of DOLFINx, as the **helmholtz-x** utilizes complex builds of DOLFINx/PETSc/SLEPc. It can be activated running;
@@ -56,7 +67,7 @@ Now, you should be able to run the demos in the *numerical_example* directory.
 
 When you exit the terminal by typing `Ctrl+D`, you can always log back into the docker container for **helmholtz-x** by typing;
 
-```
+```shell
 sudo docker start -i helmholtz-x
 ```
 then you are again in the **helmholtz-x** directory in the fresh terminal. It is important to note that, you always have to run
@@ -81,7 +92,7 @@ conda install -c conda-forge python=3.12.3 mpich fenics-dolfinx=0.9.0 hdf5=1.14.
 ```
 Then **helmholtz-x** can be installed within this conda environment by typing.
 
-```
+```shell
 pip3 install -e .
 ```
 in the **helmholtz-x** directory.
@@ -90,11 +101,11 @@ in the **helmholtz-x** directory.
 
 You just need to navigate the example case you like in */numerical_examples* folder and type 
 
-```
+```shell
 python3 -u file.py
 ```
 in the terminal. Each example case includes `runAll.sh`, which includes the example commands for running files in serial as well as in parallel. It can be executed with;
-```
+```shell
 source runAll.sh
 ```
 to perform testing for serial and parallel runs and writes the log file in the */Results* directory.
