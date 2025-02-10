@@ -16,14 +16,14 @@ and we solve this matrix system with **helmholtz-x**.
 
 ## Citation
 
-**helmholtz-x** is accepted to be published in *Engineering with Computers*. More details will be added once the article available online.
+**helmholtz-x** is published in *Engineering with Computers*. The article available online and is accessible from [this link](https://link.springer.com/article/10.1007/s00366-025-02107-1).
 
 ```bibtex
-@article{ekici2025helmholtzx,
-  title={helmholtz-x : Parallelized Adjoint Open Source Solver for the Thermoacoustic Helmholtz Equation (accepted)},
-  author={Ekici, Ekrem and Falco, Stefano and Juniper, Matthew P.},
+@article{ekici2025helmholtz,
+  title={Helmholtz-x: Parallelized adjoint open source solver for the thermoacoustic Helmholtz equation},
+  author={Ekici, Ekrem and Falco, Stefano and Juniper, Matthew P},
   journal={Engineering with Computers},
-  pages={x},
+  pages={1--28},
   year={2025},
   publisher={Springer}
 }
